@@ -484,7 +484,7 @@ gantt
 > > * RoleRepository interface created extending JpaRepository to provide CRUD operations for Role entity, custom method findByName added to retrieve roles by RoleType enum for role assignment purposes.
 > 
 > * Entity Class Diagram
-> ```mermaid
+> >```mermaid
 > >classDiagram
 > >    class User {
 > >        -Long id
