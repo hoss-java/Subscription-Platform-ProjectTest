@@ -456,12 +456,12 @@ gantt
 > - [x] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
 > - [x] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
 > - [x] 3. Create Permission entity with fields: id, name, description
-> - [ ] 4. Map Many-to-Many relationship between User and Role
-> - [ ] 5. Map Many-to-Many relationship between Role and Permission
-> - [ ] 6. Add validation annotations (@Email, @NotBlank, @Size)
-> - [ ] 7. Create UserRepository interface extending JpaRepository
-> - [ ] 8. Create RoleRepository interface extending JpaRepository
-> - [ ] 9. Add database initialization script (schema creation)
+> - [x] 4. Map Many-to-Many relationship between User and Role
+> - [x] 5. Map Many-to-Many relationship between Role and Permission
+> - [x] 6. Add validation annotations (@Email, @NotBlank, @Size)
+> - [x] 7. Create UserRepository interface extending JpaRepository
+> - [x] 8. Create RoleRepository interface extending JpaRepository
+> - [x] 9. Add database initialization script (schema creation)
 > - [ ] 10. Test entity creation and relationships via unit tests
 > 
 > # Reports:
@@ -474,4 +474,55 @@ gantt
 > > * Permission entity created with JPA @Entity annotation, unique constraint on name field, and validation constraints (@NotBlank) for name and description fields to ensure data integrity.
 > * Map Many-to-Many relationship between User and Role
 > > * Many-to-Many relationship established using @ManyToMany annotation with @JoinTable creating a user_roles junction table, FetchType.LAZY to optimize database queries, and bidirectional mapping with mappedBy in Role entity to maintain relationship consistency.
+> * Map Many-to-Many relationship between Role and Permission
+> > * Many-to-Many relationship established using @ManyToMany annotation with @JoinTable creating a role_permissions junction table, FetchType.LAZY for query optimization, and bidirectional mapping with mappedBy in Permission entity to maintain relationship consistency.
+> * Add validation annotations (@Email, @NotBlank, @Size)
+> > * Validation annotations already added in User entity: @Email on email field to validate email format, @NotBlank on password, firstName, lastName fields to ensure they are not empty, @Size on password field to enforce minimum 6 characters length. Role and Permission entities have @NotBlank on name and description fields for data integrity.
+> * Create UserRepository interface extending JpaRepository
+> > * UserRepository interface created extending JpaRepository to provide CRUD operations for User entity, custom method findByEmail added to retrieve users by email for authentication purposes.
+> * Create RoleRepository interface extending JpaRepository
+> > * RoleRepository interface created extending JpaRepository to provide CRUD operations for Role entity, custom method findByName added to retrieve roles by RoleType enum for role assignment purposes.
+> 
+> * Entity Class Diagram
+> 
+> >```mermaid
+> >erDiagram
+> >    USER ||--o{ USER\_ROLES : has
+> >    ROLE ||--o{ USER\_ROLES : has
+> >    ROLE ||--o{ ROLE\_PERMISSIONS : has
+> >    PERMISSION ||--o{ ROLE\_PERMISSIONS : has
+> >
+> >    USER {
+> >        long id PK
+> >        string email UK
+> >        string password
+> >        string firstName
+> >        string lastName
+> >        boolean isActive
+> >        timestamp createdAt
+> >        timestamp updatedAt
+> >    }
+> >
+> >    ROLE {
+> >        long id PK
+> >        string name UK
+> >        string description
+> >    }
+> >
+> >    PERMISSION {
+> >        long id PK
+> >        string name UK
+> >        string description
+> >    }
+> >
+> >    USER\_ROLES {
+> >        long user\_id FK
+> >        long role\_id FK
+> >    }
+> >
+> >    ROLE\_PERMISSIONS {
+> >        long role\_id FK
+> >        long permission\_id FK
+> >    }
+> >```
 > </details>
