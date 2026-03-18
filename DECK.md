@@ -42,16 +42,9 @@ gantt
 > </details>
 
 ## 001-0002
-> **Untitled** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> **Setup Maven project with Spring Boot and authentication dependencies.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
 > <details >
 >     <summary>Details</summary>
-> Title: Setup Maven project with Spring Boot and authentication dependencies.
-> Tags: Backend, Setup, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to initialize a Spring Boot Maven project with all necessary dependencies for implementing JWT-based authentication and role-based access control.
 > 
 > # DOD (definition of done):
@@ -108,16 +101,9 @@ gantt
 > </details>
 
 ## 001-0003
-> **Untitled** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> **Create User entity and Role entity with database schema.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
 > <details >
 >     <summary>Details</summary>
-> Title: Create User entity and Role entity with database schema.
-> Tags: Backend, Database, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to define the User and Role entities that form the foundation of the authentication system, including database tables and relationships.
 > 
 > # DOD (definition of done):
@@ -208,16 +194,9 @@ gantt
 > </details>
 
 ## 001-0005
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Implement user login endpoint with JWT token generation.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Implement user login endpoint with JWT token generation.
-> Tags: Backend, Authentication, JWT, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to create a login endpoint that authenticates users and generates JWT tokens for subsequent API requests.
 > 
 > # DOD (definition of done):
@@ -249,16 +228,9 @@ gantt
 > </details>
 
 ## 001-0006
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Implement JWT token validation filter and Spring Security configuration.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Implement JWT token validation filter and Spring Security configuration.
-> Tags: Backend, Security, JWT, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to create a security filter that validates JWT tokens on incoming requests and integrate it with Spring Security configuration.
 > 
 > # DOD (definition of done):
@@ -292,16 +264,9 @@ gantt
 > </details>
 
 ## 001-0007
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Implement role-based access control with authorization annotations.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Implement role-based access control with authorization annotations.
-> Tags: Backend, Authorization, RBAC, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to implement authorization checks based on user roles, allowing different endpoints to be accessible only to specific roles.
 > 
 > # DOD (definition of done):
@@ -333,16 +298,9 @@ gantt
 > </details>
 
 ## 001-0008
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Implement password change and password reset functionality.
-> Tags: Backend, Authentication, Security, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to provide users with the ability to change their password when authenticated and to reset their password if forgotten.
 > 
 > # DOD (definition of done):
@@ -376,16 +334,9 @@ gantt
 > </details>
 
 ## 001-0009
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Create comprehensive integration tests for authentication system.
-> Tags: Backend, Testing, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to create integration tests that verify the entire authentication flow works correctly end-to-end.
 > 
 > # DOD (definition of done):
@@ -419,16 +370,9 @@ gantt
 > </details>
 
 ## 001-0010
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Create frontend authentication service and global state management.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Create frontend authentication service and global state management.
-> Tags: Frontend, Authentication, State-Management, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to build the authentication service layer and state management (Redux/Zustand/Context) for managing user authentication state on the frontend.
 > 
 > # DOD (definition of done):
@@ -460,16 +404,9 @@ gantt
 > </details>
 
 ## 001-0011
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Create login and registration UI components with form validation.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
-> Title: Create login and registration UI components with form validation.
-> Tags: Frontend, UI, Forms, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to build responsive login and registration pages with client-side validation and error handling.
 > 
 > # DOD (definition of done):
@@ -492,16 +429,9 @@ gantt
 > </details>
 
 ## 001-0004
-> **Untitled** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> **Implement user registration endpoint with validation and password hashing.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
-> Title: Implement user registration endpoint with validation and password hashing.
-> Tags: Backend, Authentication, Phase-1
-> Creator: 
-> AssignedTo: 
-> # Time tracker settings
-> StartAt: 
-> EndAt: 
 > The goal of this card is to create a REST endpoint that allows new users to register with email and password, including input validation and secure password storage.
 > 
 > # DOD (definition of done):
