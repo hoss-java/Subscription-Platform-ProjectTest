@@ -92,4 +92,5 @@ The goal of this card is to define the User and Role entities that form the foun
 >        long role\_id FK
 >        long permission\_id FK
 >    }
+>
 >```
