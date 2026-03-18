@@ -1,0 +1,61 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Implement user registration endpoint with validation and password hashing.
+Tags: Backend, Authentication, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to create a REST endpoint that allows new users to register with email and password, including input validation and secure password storage.
+
+# DOD (definition of done):
+- POST /api/auth/register endpoint is created and functional
+- Request DTO (RegisterRequest) validates email and password format
+- Response DTO (AuthResponse) returns success message
+- Passwords are hashed using bcrypt before storage
+- Duplicate email prevention is implemented
+- Default CUSTOMER role is assigned to new users
+- Endpoint returns appropriate HTTP status codes (201 Created, 400 Bad Request, 409 Conflict)
+- Endpoint is tested with valid and invalid inputs
+
+# TODO:
+- [x] 1. Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
+- [x] 2. Create AuthResponse DTO with message, token (null for registration), and user details
+- [x] 3. Create AuthController with register method
+- [x] 4. Implement password hashing using BCryptPasswordEncoder
+- [x] 5. Create UserService with registerUser method
+- [x] 6. Add email uniqueness validation (check if email already exists)
+- [x] 7. Add password confirmation validation
+- [x] 8. Add password strength validation (minimum length, complexity)
+- [x] 9. Assign default CUSTOMER role to newly registered users
+- [x] 10. Create unit tests for registration logic
+- [x] 11. Create integration tests for /api/auth/register endpoint
+
+# Reports:
+* Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
+> * RegisterRequest DTO created with validation annotations (@Email, @NotBlank, @Size) for email, password, passwordConfirm, firstName, and lastName fields to validate user registration input data.
+* Create AuthResponse DTO with message, token (null for registration), and user details
+> * AuthResponse DTO created with message field for response messages, token field (null for registration, populated for login), and nested UserDetails class containing id, email, firstName, lastName, and isActive fields for returning user information.
+* Create AuthController with register method
+> * AuthController created with @RestController and @RequestMapping("/api/auth") annotations, register method handles POST /api/auth/register endpoint, @Valid annotation validates RegisterRequest DTO, returns HTTP 201 Created status with AuthResponse body.
+* Implement password hashing using BCryptPasswordEncoder
+> * SecurityConfig configuration class created with @Configuration annotation, BCryptPasswordEncoder bean defined as PasswordEncoder to provide password hashing functionality throughout the application using bcrypt algorithm.
+* Create UserService with registerUser method
+> * UserService created with registerUser method that validates email uniqueness, checks password confirmation, hashes password using BCryptPasswordEncoder, retrieves default CUSTOMER role, creates User entity with hashed password and role assignment, saves to database, and returns AuthResponse with user details and success message.
+* Add email uniqueness validation (check if email already exists)
+> * Email uniqueness validation already implemented in UserService.registerUser method using userRepository.findByEmail() to check if email exists, throws RuntimeException with message "Email already exists" if duplicate email is found before user creation.
+* Add password confirmation validation
+> * Password confirmation validation already implemented in UserService.registerUser method comparing password and passwordConfirm fields, throws RuntimeException with message "Passwords do not match" if passwords do not match before user creation.
+* Add password strength validation (minimum length, complexity)
+> * PasswordValidator utility class created with regex pattern validation requiring minimum 8 characters, at least one uppercase letter, one lowercase letter, one digit, and one special character (@$!%*?&), integrated into UserService.registerUser method to validate password strength before user creation.
+* Assign default CUSTOMER role to newly registered users
+> * Default CUSTOMER role assignment already implemented in UserService.registerUser method using roleRepository.findByName(RoleType.CUSTOMER) to retrieve CUSTOMER role, adds role to user's roles set before user creation and persistence to database.
+* Create unit tests for registration logic
+> * Unit tests created for UserService.registerUser method using Mockito to test successful registration, duplicate email prevention, password mismatch validation, weak password rejection, and missing CUSTOMER role handling with assertions verifying response data and mock interactions.
+* Create integration tests for /api/auth/register endpoint
+> * Integration tests created using @SpringBootTest and MockMvc to test POST /api/auth/register endpoint with valid registration returning HTTP 201 Created, duplicate email returning 400 Bad Request, password mismatch validation, invalid email format rejection, weak password rejection, missing fields validation, and verification that default CUSTOMER role is assigned to newly registered users.
