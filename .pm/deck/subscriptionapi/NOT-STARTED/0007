@@ -3,7 +3,6 @@
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
 #...
----
 Title: Implement role-based access control with authorization annotations.
 Tags: Backend, Authorization, RBAC, Phase-1
 Creator: 

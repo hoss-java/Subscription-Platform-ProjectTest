@@ -3,7 +3,6 @@
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
 #...
----
 Title: Implement user registration endpoint with validation and password hashing.
 Tags: Backend, Authentication, Phase-1
 Creator: 
