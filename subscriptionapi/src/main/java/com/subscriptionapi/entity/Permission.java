@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+import java.util.HashSet;
+
 @Entity
 @Table(name = "permissions")
 @Data
@@ -26,4 +29,7 @@ public class Permission {
     @Column(nullable = false)
     @NotBlank(message = "Description cannot be blank")
     private String description;
+
+    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
+    private Set<Role> roles = new HashSet<>();
 }
