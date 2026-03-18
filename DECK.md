@@ -193,38 +193,58 @@ gantt
 > > * RoleType enum created with predefined role names (CUSTOMER, OPERATOR, ADMIN), Role entity updated to use RoleType enum instead of String for name field with @Enumerated(EnumType.STRING) annotation to store enum values in database, ensuring type safety and consistency for role assignments.
 > </details>
 
-## 001-0005
-> **Implement user login endpoint with JWT token generation.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+## 001-0004
+> **Implement user registration endpoint with validation and password hashing.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
 > <details >
 >     <summary>Details</summary>
-> The goal of this card is to create a login endpoint that authenticates users and generates JWT tokens for subsequent API requests.
+> The goal of this card is to create a REST endpoint that allows new users to register with email and password, including input validation and secure password storage.
 > 
 > # DOD (definition of done):
-> - POST /api/auth/login endpoint is created and functional
-> - JWT access token is generated upon successful login
-> - Refresh token is generated and stored securely
-> - Token contains user id, email, and roles as claims
-> - Invalid credentials return 401 Unauthorized
-> - Tokens have configurable expiration times
-> - Token payload is verifiable and tamper-proof
-> - Endpoint is tested with correct and incorrect credentials
+> - POST /api/auth/register endpoint is created and functional
+> - Request DTO (RegisterRequest) validates email and password format
+> - Response DTO (AuthResponse) returns success message
+> - Passwords are hashed using bcrypt before storage
+> - Duplicate email prevention is implemented
+> - Default CUSTOMER role is assigned to new users
+> - Endpoint returns appropriate HTTP status codes (201 Created, 400 Bad Request, 409 Conflict)
+> - Endpoint is tested with valid and invalid inputs
 > 
 > # TODO:
-> - [ ] 1. Create LoginRequest DTO with email and password fields
-> - [ ] 2. Create JwtTokenProvider service for token generation and validation
-> - [ ] 3. Configure JWT secret key and expiration times in application.yml
-> - [ ] 4. Implement token generation with user claims (id, email, roles)
-> - [ ] 5. Implement token signing with HS256 algorithm
-> - [ ] 6. Create login method in AuthController
-> - [ ] 7. Implement authentication logic in UserService
-> - [ ] 8. Create RefreshToken entity for storing refresh tokens
-> - [ ] 9. Implement refresh token persistence and retrieval
-> - [ ] 10. Return JWT token and refresh token in AuthResponse
-> - [ ] 11. Create unit tests for JwtTokenProvider
-> - [ ] 12. Create integration tests for /api/auth/login endpoint
+> - [x] 1. Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
+> - [x] 2. Create AuthResponse DTO with message, token (null for registration), and user details
+> - [x] 3. Create AuthController with register method
+> - [x] 4. Implement password hashing using BCryptPasswordEncoder
+> - [x] 5. Create UserService with registerUser method
+> - [x] 6. Add email uniqueness validation (check if email already exists)
+> - [x] 7. Add password confirmation validation
+> - [x] 8. Add password strength validation (minimum length, complexity)
+> - [x] 9. Assign default CUSTOMER role to newly registered users
+> - [x] 10. Create unit tests for registration logic
+> - [x] 11. Create integration tests for /api/auth/register endpoint
 > 
 > # Reports:
-> *
+> * Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
+> > * RegisterRequest DTO created with validation annotations (@Email, @NotBlank, @Size) for email, password, passwordConfirm, firstName, and lastName fields to validate user registration input data.
+> * Create AuthResponse DTO with message, token (null for registration), and user details
+> > * AuthResponse DTO created with message field for response messages, token field (null for registration, populated for login), and nested UserDetails class containing id, email, firstName, lastName, and isActive fields for returning user information.
+> * Create AuthController with register method
+> > * AuthController created with @RestController and @RequestMapping("/api/auth") annotations, register method handles POST /api/auth/register endpoint, @Valid annotation validates RegisterRequest DTO, returns HTTP 201 Created status with AuthResponse body.
+> * Implement password hashing using BCryptPasswordEncoder
+> > * SecurityConfig configuration class created with @Configuration annotation, BCryptPasswordEncoder bean defined as PasswordEncoder to provide password hashing functionality throughout the application using bcrypt algorithm.
+> * Create UserService with registerUser method
+> > * UserService created with registerUser method that validates email uniqueness, checks password confirmation, hashes password using BCryptPasswordEncoder, retrieves default CUSTOMER role, creates User entity with hashed password and role assignment, saves to database, and returns AuthResponse with user details and success message.
+> * Add email uniqueness validation (check if email already exists)
+> > * Email uniqueness validation already implemented in UserService.registerUser method using userRepository.findByEmail() to check if email exists, throws RuntimeException with message "Email already exists" if duplicate email is found before user creation.
+> * Add password confirmation validation
+> > * Password confirmation validation already implemented in UserService.registerUser method comparing password and passwordConfirm fields, throws RuntimeException with message "Passwords do not match" if passwords do not match before user creation.
+> * Add password strength validation (minimum length, complexity)
+> > * PasswordValidator utility class created with regex pattern validation requiring minimum 8 characters, at least one uppercase letter, one lowercase letter, one digit, and one special character (@$!%*?&), integrated into UserService.registerUser method to validate password strength before user creation.
+> * Assign default CUSTOMER role to newly registered users
+> > * Default CUSTOMER role assignment already implemented in UserService.registerUser method using roleRepository.findByName(RoleType.CUSTOMER) to retrieve CUSTOMER role, adds role to user's roles set before user creation and persistence to database.
+> * Create unit tests for registration logic
+> > * Unit tests created for UserService.registerUser method using Mockito to test successful registration, duplicate email prevention, password mismatch validation, weak password rejection, and missing CUSTOMER role handling with assertions verifying response data and mock interactions.
+> * Create integration tests for /api/auth/register endpoint
+> > * Integration tests created using @SpringBootTest and MockMvc to test POST /api/auth/register endpoint with valid registration returning HTTP 201 Created, duplicate email returning 400 Bad Request, password mismatch validation, invalid email format rejection, weak password rejection, missing fields validation, and verification that default CUSTOMER role is assigned to newly registered users.
 > </details>
 
 ## 001-0006
@@ -428,34 +448,35 @@ gantt
 > - [ ] 5. Add password strength validation
 > </details>
 
-## 001-0004
-> **Implement user registration endpoint with validation and password hashing.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+## 001-0005
+> **Implement user login endpoint with JWT token generation.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
-> The goal of this card is to create a REST endpoint that allows new users to register with email and password, including input validation and secure password storage.
+> The goal of this card is to create a login endpoint that authenticates users and generates JWT tokens for subsequent API requests.
 > 
 > # DOD (definition of done):
-> - POST /api/auth/register endpoint is created and functional
-> - Request DTO (RegisterRequest) validates email and password format
-> - Response DTO (AuthResponse) returns success message
-> - Passwords are hashed using bcrypt before storage
-> - Duplicate email prevention is implemented
-> - Default CUSTOMER role is assigned to new users
-> - Endpoint returns appropriate HTTP status codes (201 Created, 400 Bad Request, 409 Conflict)
-> - Endpoint is tested with valid and invalid inputs
+> - POST /api/auth/login endpoint is created and functional
+> - JWT access token is generated upon successful login
+> - Refresh token is generated and stored securely
+> - Token contains user id, email, and roles as claims
+> - Invalid credentials return 401 Unauthorized
+> - Tokens have configurable expiration times
+> - Token payload is verifiable and tamper-proof
+> - Endpoint is tested with correct and incorrect credentials
 > 
 > # TODO:
-> - [ ] 1. Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
-> - [ ] 2. Create AuthResponse DTO with message, token (null for registration), and user details
-> - [ ] 3. Create AuthController with register method
-> - [ ] 4. Implement password hashing using BCryptPasswordEncoder
-> - [ ] 5. Create UserService with registerUser method
-> - [ ] 6. Add email uniqueness validation (check if email already exists)
-> - [ ] 7. Add password confirmation validation
-> - [ ] 8. Add password strength validation (minimum length, complexity)
-> - [ ] 9. Assign default CUSTOMER role to newly registered users
-> - [ ] 10. Create unit tests for registration logic
-> - [ ] 11. Create integration tests for /api/auth/register endpoint
+> - [ ] 1. Create LoginRequest DTO with email and password fields
+> - [ ] 2. Create JwtTokenProvider service for token generation and validation
+> - [ ] 3. Configure JWT secret key and expiration times in application.yml
+> - [ ] 4. Implement token generation with user claims (id, email, roles)
+> - [ ] 5. Implement token signing with HS256 algorithm
+> - [ ] 6. Create login method in AuthController
+> - [ ] 7. Implement authentication logic in UserService
+> - [ ] 8. Create RefreshToken entity for storing refresh tokens
+> - [ ] 9. Implement refresh token persistence and retrieval
+> - [ ] 10. Return JWT token and refresh token in AuthResponse
+> - [ ] 11. Create unit tests for JwtTokenProvider
+> - [ ] 12. Create integration tests for /api/auth/login endpoint
 > 
 > # Reports:
 > *
