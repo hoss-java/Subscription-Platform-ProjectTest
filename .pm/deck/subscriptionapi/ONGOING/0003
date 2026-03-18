@@ -21,9 +21,9 @@ The goal of this card is to define the User and Role entities that form the foun
 - Entity validation constraints are in place (email format, password length)
 
 # TODO:
-- [ ] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
-- [ ] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
-- [ ] 3. Create Permission entity with fields: id, name, description
+- [x] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
+- [x] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
+- [x] 3. Create Permission entity with fields: id, name, description
 - [ ] 4. Map Many-to-Many relationship between User and Role
 - [ ] 5. Map Many-to-Many relationship between Role and Permission
 - [ ] 6. Add validation annotations (@Email, @NotBlank, @Size)
@@ -33,4 +33,10 @@ The goal of this card is to define the User and Role entities that form the foun
 - [ ] 10. Test entity creation and relationships via unit tests
 
 # Reports:
-*
+* Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
+> * User entity created with JPA @Entity annotation, database mapping via @Table, validation constraints (@Email, @NotBlank, @Size), Lombok annotations for boilerplate reduction, and automatic timestamp management for createdAt and updatedAt fields.
+> * @Data (Lombok) — generates getters, setters, equals, hashCode, toString for the entity itself
+* Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
+> * Role entity created with JPA @Entity annotation, RoleType enum for predefined role names (CUSTOMER, OPERATOR, ADMIN), @Enumerated annotation to store enum as string in database, and validation constraints (@NotBlank) for description field.
+* Create Permission entity with fields: id, name, description
+> * Permission entity created with JPA @Entity annotation, unique constraint on name field, and validation constraints (@NotBlank) for name and description fields to ensure data integrity.

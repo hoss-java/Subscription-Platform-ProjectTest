@@ -1,0 +1,53 @@
+package com.subscriptionapi.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    @Email(message = "Email should be valid")
+    private String email;
+    
+    @Column(nullable = false)
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    private String password;
+    
+    @Column(nullable = false)
+    @NotBlank(message = "First name cannot be blank")
+    private String firstName;
+    
+    @Column(nullable = false)
+    @NotBlank(message = "Last name cannot be blank")
+    private String lastName;
+    
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isActive = true;
+    
+    @Column(nullable = false, updatable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(nullable = false)
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
+}

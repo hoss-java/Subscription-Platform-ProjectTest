@@ -1,0 +1,29 @@
+package com.subscriptionapi.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "permissions")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Permission {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    @NotBlank(message = "Permission name cannot be blank")
+    private String name;
+    
+    @Column(nullable = false)
+    @NotBlank(message = "Description cannot be blank")
+    private String description;
+}
