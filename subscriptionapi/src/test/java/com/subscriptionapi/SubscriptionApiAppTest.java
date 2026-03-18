@@ -1,4 +1,4 @@
-package com.subscript;
+package com.subscriptionapi;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -7,7 +7,7 @@ import junit.framework.TestSuite;
 /**
  * Unit test for simple App.
  */
-public class SubscriptAppTest 
+public class SubscriptionApiAppTest 
     extends TestCase
 {
     /**
@@ -15,7 +15,7 @@ public class SubscriptAppTest
      *
      * @param testName name of the test case
      */
-    public SubscriptAppTest( String testName )
+    public SubscriptionApiAppTest( String testName )
     {
         super( testName );
     }
@@ -25,13 +25,13 @@ public class SubscriptAppTest
      */
     public static Test suite()
     {
-        return new TestSuite( SubscriptAppTest.class );
+        return new TestSuite( SubscriptionApiAppTest.class );
     }
 
     /**
      * Rigourous Test :-)
      */
-    public void testSubscriptApp()
+    public void testSubscriptionApiApp()
     {
         assertTrue( true );
     }

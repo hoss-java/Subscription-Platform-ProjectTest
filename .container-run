@@ -1,4 +1,4 @@
-mvn@maven:mvn -f Subscription-Platform-ProjectTest/subscript
+mvn@maven:mvn -f Subscription-Platform-ProjectTest/subscriptionapi
 javac@maven:javac -d ./classes
 mysql@mysql:mysql -u root -pmypass
 cli@sshd:bash

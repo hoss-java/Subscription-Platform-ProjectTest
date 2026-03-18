@@ -9,11 +9,11 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   
-  <groupId>com.subscript</groupId>
-  <artifactId>subscript</artifactId>
+  <groupId>com.subscriptionapi</groupId>
+  <artifactId>subscriptionapi</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>subscript</name>
+  <name>subscriptionapi</name>
   <description>Subscription Platform Projecttest</description>
   <url>http://maven.apache.org</url>
   
