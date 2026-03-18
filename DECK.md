@@ -107,44 +107,104 @@ gantt
 > > * Only `config` and `security` are need to add
 > </details>
 
-## 001-0004
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+## 001-0003
+> **Untitled** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
 > <details >
 >     <summary>Details</summary>
-> Title: Implement user registration endpoint with validation and password hashing.
-> Tags: Backend, Authentication, Phase-1
+> Title: Create User entity and Role entity with database schema.
+> Tags: Backend, Database, Phase-1
 > Creator: 
 > AssignedTo: 
 > # Time tracker settings
 > StartAt: 
 > EndAt: 
-> The goal of this card is to create a REST endpoint that allows new users to register with email and password, including input validation and secure password storage.
+> The goal of this card is to define the User and Role entities that form the foundation of the authentication system, including database tables and relationships.
 > 
 > # DOD (definition of done):
-> - POST /api/auth/register endpoint is created and functional
-> - Request DTO (RegisterRequest) validates email and password format
-> - Response DTO (AuthResponse) returns success message
-> - Passwords are hashed using bcrypt before storage
-> - Duplicate email prevention is implemented
-> - Default CUSTOMER role is assigned to new users
-> - Endpoint returns appropriate HTTP status codes (201 Created, 400 Bad Request, 409 Conflict)
-> - Endpoint is tested with valid and invalid inputs
+> - User entity is created with email, password, active status, and timestamps
+> - Role entity is created with role names and permissions
+> - User-Role relationship is properly mapped (Many-to-Many)
+> - Database schema is generated via Hibernate
+> - UserRepository and RoleRepository interfaces are created
+> - Entity validation constraints are in place (email format, password length)
 > 
 > # TODO:
-> - [ ] 1. Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
-> - [ ] 2. Create AuthResponse DTO with message, token (null for registration), and user details
-> - [ ] 3. Create AuthController with register method
-> - [ ] 4. Implement password hashing using BCryptPasswordEncoder
-> - [ ] 5. Create UserService with registerUser method
-> - [ ] 6. Add email uniqueness validation (check if email already exists)
-> - [ ] 7. Add password confirmation validation
-> - [ ] 8. Add password strength validation (minimum length, complexity)
-> - [ ] 9. Assign default CUSTOMER role to newly registered users
-> - [ ] 10. Create unit tests for registration logic
-> - [ ] 11. Create integration tests for /api/auth/register endpoint
+> - [x] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
+> - [x] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
+> - [x] 3. Create Permission entity with fields: id, name, description
+> - [x] 4. Map Many-to-Many relationship between User and Role
+> - [x] 5. Map Many-to-Many relationship between Role and Permission
+> - [x] 6. Add validation annotations (@Email, @NotBlank, @Size)
+> - [x] 7. Create UserRepository interface extending JpaRepository
+> - [x] 8. Create RoleRepository interface extending JpaRepository
+> - [x] 9. Add database initialization script (schema creation)
+> - [x] 10. Test entity creation and relationships via unit tests
 > 
 > # Reports:
-> *
+> * Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
+> > * User entity created with JPA @Entity annotation, database mapping via @Table, validation constraints (@Email, @NotBlank, @Size), Lombok annotations for boilerplate reduction, and automatic timestamp management for createdAt and updatedAt fields.
+> > * @Data (Lombok) — generates getters, setters, equals, hashCode, toString for the entity itself
+> * Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
+> > * Role entity created with JPA @Entity annotation, RoleType enum for predefined role names (CUSTOMER, OPERATOR, ADMIN), @Enumerated annotation to store enum as string in database, and validation constraints (@NotBlank) for description field.
+> * Create Permission entity with fields: id, name, description
+> > * Permission entity created with JPA @Entity annotation, unique constraint on name field, and validation constraints (@NotBlank) for name and description fields to ensure data integrity.
+> * Map Many-to-Many relationship between User and Role
+> > * Many-to-Many relationship established using @ManyToMany annotation with @JoinTable creating a user_roles junction table, FetchType.LAZY to optimize database queries, and bidirectional mapping with mappedBy in Role entity to maintain relationship consistency.
+> * Map Many-to-Many relationship between Role and Permission
+> > * Many-to-Many relationship established using @ManyToMany annotation with @JoinTable creating a role_permissions junction table, FetchType.LAZY for query optimization, and bidirectional mapping with mappedBy in Permission entity to maintain relationship consistency.
+> * Add validation annotations (@Email, @NotBlank, @Size)
+> > * Validation annotations already added in User entity: @Email on email field to validate email format, @NotBlank on password, firstName, lastName fields to ensure they are not empty, @Size on password field to enforce minimum 6 characters length. Role and Permission entities have @NotBlank on name and description fields for data integrity.
+> * Create UserRepository interface extending JpaRepository
+> > * UserRepository interface created extending JpaRepository to provide CRUD operations for User entity, custom method findByEmail added to retrieve users by email for authentication purposes.
+> * Create RoleRepository interface extending JpaRepository
+> > * RoleRepository interface created extending JpaRepository to provide CRUD operations for Role entity, custom method findByName added to retrieve roles by RoleType enum for role assignment purposes.
+> 
+> * Entity Class Diagram
+> 
+> >```mermaid
+> >classDiagram
+> >    class User {
+> >        -Long id
+> >        -String email
+> >        -String password
+> >        -String firstName
+> >        -String lastName
+> >        -Boolean isActive
+> >        -LocalDateTime createdAt
+> >        -LocalDateTime updatedAt
+> >        -Set~Role~ roles
+> >    }
+> >
+> >    class Role {
+> >        -Long id
+> >        -RoleType name
+> >        -String description
+> >        -Set~User~ users
+> >        -Set~Permission~ permissions
+> >    }
+> >
+> >    class RoleType {
+> >        <<enumeration>>
+> >        CUSTOMER
+> >        OPERATOR
+> >        ADMIN
+> >    }
+> >
+> >    class Permission {
+> >        -Long id
+> >        -String name
+> >        -String description
+> >        -Set~Role~ roles
+> >    }
+> >
+> >    User "1" --> "\*" Role : has
+> >    Role "1" --> "\*" Permission : has
+> >    Role --> RoleType : uses
+> >```
+> 
+> * * Test entity creation and relationships via unit tests
+> > * Unit tests created to verify: User entity creation with all fields (email, password, firstName, lastName, isActive), User-Role Many-to-Many relationship bidirectional mapping, Role entity creation with RoleType enum (CUSTOMER, OPERATOR, ADMIN), Role-Permission Many-to-Many relationship bidirectional mapping, Permission entity creation with name and description, and RoleType enum values assignment.
+> > * RoleType enum created with predefined role names (CUSTOMER, OPERATOR, ADMIN), Role entity updated to use RoleType enum instead of String for name field with @Enumerated(EnumType.STRING) annotation to store enum values in database, ensuring type safety and consistency for role assignments.
 > </details>
 
 ## 001-0005
@@ -431,90 +491,42 @@ gantt
 > - [ ] 5. Add password strength validation
 > </details>
 
-## 001-0003
+## 001-0004
 > **Untitled** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
-> Title: Create User entity and Role entity with database schema.
-> Tags: Backend, Database, Phase-1
+> Title: Implement user registration endpoint with validation and password hashing.
+> Tags: Backend, Authentication, Phase-1
 > Creator: 
 > AssignedTo: 
 > # Time tracker settings
 > StartAt: 
 > EndAt: 
-> The goal of this card is to define the User and Role entities that form the foundation of the authentication system, including database tables and relationships.
+> The goal of this card is to create a REST endpoint that allows new users to register with email and password, including input validation and secure password storage.
 > 
 > # DOD (definition of done):
-> - User entity is created with email, password, active status, and timestamps
-> - Role entity is created with role names and permissions
-> - User-Role relationship is properly mapped (Many-to-Many)
-> - Database schema is generated via Hibernate
-> - UserRepository and RoleRepository interfaces are created
-> - Entity validation constraints are in place (email format, password length)
+> - POST /api/auth/register endpoint is created and functional
+> - Request DTO (RegisterRequest) validates email and password format
+> - Response DTO (AuthResponse) returns success message
+> - Passwords are hashed using bcrypt before storage
+> - Duplicate email prevention is implemented
+> - Default CUSTOMER role is assigned to new users
+> - Endpoint returns appropriate HTTP status codes (201 Created, 400 Bad Request, 409 Conflict)
+> - Endpoint is tested with valid and invalid inputs
 > 
 > # TODO:
-> - [x] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
-> - [x] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
-> - [x] 3. Create Permission entity with fields: id, name, description
-> - [x] 4. Map Many-to-Many relationship between User and Role
-> - [x] 5. Map Many-to-Many relationship between Role and Permission
-> - [x] 6. Add validation annotations (@Email, @NotBlank, @Size)
-> - [x] 7. Create UserRepository interface extending JpaRepository
-> - [x] 8. Create RoleRepository interface extending JpaRepository
-> - [x] 9. Add database initialization script (schema creation)
-> - [ ] 10. Test entity creation and relationships via unit tests
+> - [ ] 1. Create RegisterRequest DTO with email, password, passwordConfirm, firstName, lastName fields
+> - [ ] 2. Create AuthResponse DTO with message, token (null for registration), and user details
+> - [ ] 3. Create AuthController with register method
+> - [ ] 4. Implement password hashing using BCryptPasswordEncoder
+> - [ ] 5. Create UserService with registerUser method
+> - [ ] 6. Add email uniqueness validation (check if email already exists)
+> - [ ] 7. Add password confirmation validation
+> - [ ] 8. Add password strength validation (minimum length, complexity)
+> - [ ] 9. Assign default CUSTOMER role to newly registered users
+> - [ ] 10. Create unit tests for registration logic
+> - [ ] 11. Create integration tests for /api/auth/register endpoint
 > 
 > # Reports:
-> * Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
-> > * User entity created with JPA @Entity annotation, database mapping via @Table, validation constraints (@Email, @NotBlank, @Size), Lombok annotations for boilerplate reduction, and automatic timestamp management for createdAt and updatedAt fields.
-> > * @Data (Lombok) — generates getters, setters, equals, hashCode, toString for the entity itself
-> * Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
-> > * Role entity created with JPA @Entity annotation, RoleType enum for predefined role names (CUSTOMER, OPERATOR, ADMIN), @Enumerated annotation to store enum as string in database, and validation constraints (@NotBlank) for description field.
-> * Create Permission entity with fields: id, name, description
-> > * Permission entity created with JPA @Entity annotation, unique constraint on name field, and validation constraints (@NotBlank) for name and description fields to ensure data integrity.
-> * Map Many-to-Many relationship between User and Role
-> > * Many-to-Many relationship established using @ManyToMany annotation with @JoinTable creating a user_roles junction table, FetchType.LAZY to optimize database queries, and bidirectional mapping with mappedBy in Role entity to maintain relationship consistency.
-> * Map Many-to-Many relationship between Role and Permission
-> > * Many-to-Many relationship established using @ManyToMany annotation with @JoinTable creating a role_permissions junction table, FetchType.LAZY for query optimization, and bidirectional mapping with mappedBy in Permission entity to maintain relationship consistency.
-> * Add validation annotations (@Email, @NotBlank, @Size)
-> > * Validation annotations already added in User entity: @Email on email field to validate email format, @NotBlank on password, firstName, lastName fields to ensure they are not empty, @Size on password field to enforce minimum 6 characters length. Role and Permission entities have @NotBlank on name and description fields for data integrity.
-> * Create UserRepository interface extending JpaRepository
-> > * UserRepository interface created extending JpaRepository to provide CRUD operations for User entity, custom method findByEmail added to retrieve users by email for authentication purposes.
-> * Create RoleRepository interface extending JpaRepository
-> > * RoleRepository interface created extending JpaRepository to provide CRUD operations for Role entity, custom method findByName added to retrieve roles by RoleType enum for role assignment purposes.
-> 
-> * Entity Class Diagram
-> >```mermaid
-> >classDiagram
-> >    class User {
-> >        -Long id
-> >        -String email
-> >        -String password
-> >        -String firstName
-> >        -String lastName
-> >        -Boolean isActive
-> >        -LocalDateTime createdAt
-> >        -LocalDateTime updatedAt
-> >        -Set~Role~ roles
-> >    }
-> >
-> >    class Role {
-> >        -Long id
-> >        -RoleType name
-> >        -String description
-> >        -Set~User~ users
-> >        -Set~Permission~ permissions
-> >    }
-> >
-> >    class Permission {
-> >        -Long id
-> >        -String name
-> >        -String description
-> >        -Set~Role~ roles
-> >    }
-> >
-> >    User "1" --> "\*" Role : has
-> >    Role "1" --> "\*" Permission : has
-> >
-> >```
+> *
 > </details>
