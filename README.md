@@ -2,6 +2,8 @@
 
 # Subscription Platform Backend Development Plan
 
+[**Deck Board**](https://github.com/hoss-java/Subscription-Platform-ProjectTest/blob/main/DECK.md)
+
 ## Project Overview
 
 The subscription platform will serve multiple service providers (operators), each managing their own catalog of subscription plans. Customers will authenticate, browse available plans across operators, manage subscriptions, and switch between offerings. The system requires role-based access control to handle different user types and permissions.
