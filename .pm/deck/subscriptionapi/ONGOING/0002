@@ -1,0 +1,34 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Setup Maven project with Spring Boot and authentication dependencies.
+Tags: Backend, Setup, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to initialize a Spring Boot Maven project with all necessary dependencies for implementing JWT-based authentication and role-based access control.
+
+# DOD (definition of done):
+- Maven project is created and compiles successfully
+- All required dependencies are added (Spring Security, JWT library, Spring Data JPA, MySQL/PostgreSQL driver)
+- Application properties are configured for database connection
+- Project structure follows Spring Boot best practices
+- README includes setup instructions for running the project locally
+
+# TODO:
+- [ ] 1. Create new Maven project with Spring Boot starter parent
+- [ ] 2. Add Spring Security dependency to pom.xml
+- [ ] 3. Add JWT library (jjwt or io.jsonwebtoken)
+- [ ] 4. Add Spring Data JPA and database driver dependencies
+- [ ] 5. Add Lombok dependency for reducing boilerplate
+- [ ] 6. Configure application.yml with database and server settings
+- [ ] 7. Create package structure (config, controller, service, repository, entity, dto, exception, security)
+- [ ] 8. Verify project builds without errors
+- [ ] 9. Create .gitignore and initial commit
+
+# Reports:
+*

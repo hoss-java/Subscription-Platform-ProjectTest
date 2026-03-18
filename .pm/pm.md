@@ -1,12 +1,12 @@
 ---
-Title: %GITNAME%
+Title: Subscription-Api
 Description: plans and project management sheets
 Date: 
 Robots: noindex,nofollow
 Template: index
 ---
 
-# %GITNAME%
+# Subscription-Api
 
 ## Analyzing all parts
 

@@ -1,4 +1,6 @@
-# Subscription-Platform - ProjectTest v1 - Subscription Platform Backend Development Plan
+# Subscription-Platform - ProjectTest v1
+
+# Subscription Platform Backend Development Plan
 
 ## Project Overview
 

@@ -1,0 +1,42 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Implement JWT token validation filter and Spring Security configuration.
+Tags: Backend, Security, JWT, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to create a security filter that validates JWT tokens on incoming requests and integrate it with Spring Security configuration.
+
+# DOD (definition of done):
+- JwtAuthenticationFilter is created and intercepts requests
+- Token validation checks signature, expiration, and claims
+- Invalid or expired tokens are rejected with 401 Unauthorized
+- Valid tokens extract user information and populate SecurityContext
+- SecurityConfig configures filter chain and public/protected endpoints
+- CORS is configured to allow frontend communication
+- Token extraction from Authorization header works correctly
+- Filter is tested with valid, expired, and invalid tokens
+
+# TODO:
+- [ ] 1. Create JwtAuthenticationFilter extending OncePerRequestFilter
+- [ ] 2. Implement token extraction from Authorization header (Bearer scheme)
+- [ ] 3. Implement token validation (signature, expiration, format)
+- [ ] 4. Create custom exception for invalid tokens (JwtAuthenticationException)
+- [ ] 5. Implement UserDetailsService to load user from database
+- [ ] 6. Populate SecurityContext with authenticated user on valid token
+- [ ] 7. Create SecurityConfig class with @EnableWebSecurity
+- [ ] 8. Configure filter chain in SecurityConfig
+- [ ] 9. Define public endpoints (/api/auth/login, /api/auth/register)
+- [ ] 10. Define protected endpoints (require authentication)
+- [ ] 11. Configure CORS settings for frontend origin
+- [ ] 12. Configure exception handling for authentication failures
+- [ ] 13. Create unit tests for JwtAuthenticationFilter
+- [ ] 14. Create integration tests for protected endpoints
+
+# Reports:
+*

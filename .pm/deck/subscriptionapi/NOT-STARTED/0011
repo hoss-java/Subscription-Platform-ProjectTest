@@ -1,0 +1,31 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Create login and registration UI components with form validation.
+Tags: Frontend, UI, Forms, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to build responsive login and registration pages with client-side validation and error handling.
+
+# DOD (definition of done):
+- Login component displays email and password fields
+- Registration component displays email, password, confirm password, firstName, lastName fields
+- Form validation provides real-time feedback
+- Submit buttons are disabled during API requests
+- Error messages are displayed for failed requests
+- Success messages are displayed for successful registration
+- User is redirected to dashboard after successful login
+- Components are responsive and styled consistently
+- Accessibility standards are met (ARIA labels, semantic HTML)
+
+# TODO:
+- [ ] 1. Create LoginForm component with email and password inputs
+- [ ] 2. Create RegistrationForm component with all required fields
+- [ ] 3. Implement form validation library (React Hook Form, Formik, etc.)
+- [ ] 4. Add email format validation
+- [ ] 5. Add password strength validation

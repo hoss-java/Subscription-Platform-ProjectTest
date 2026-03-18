@@ -1,0 +1,36 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Create User entity and Role entity with database schema.
+Tags: Backend, Database, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to define the User and Role entities that form the foundation of the authentication system, including database tables and relationships.
+
+# DOD (definition of done):
+- User entity is created with email, password, active status, and timestamps
+- Role entity is created with role names and permissions
+- User-Role relationship is properly mapped (Many-to-Many)
+- Database schema is generated via Hibernate
+- UserRepository and RoleRepository interfaces are created
+- Entity validation constraints are in place (email format, password length)
+
+# TODO:
+- [ ] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
+- [ ] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
+- [ ] 3. Create Permission entity with fields: id, name, description
+- [ ] 4. Map Many-to-Many relationship between User and Role
+- [ ] 5. Map Many-to-Many relationship between Role and Permission
+- [ ] 6. Add validation annotations (@Email, @NotBlank, @Size)
+- [ ] 7. Create UserRepository interface extending JpaRepository
+- [ ] 8. Create RoleRepository interface extending JpaRepository
+- [ ] 9. Add database initialization script (schema creation)
+- [ ] 10. Test entity creation and relationships via unit tests
+
+# Reports:
+*

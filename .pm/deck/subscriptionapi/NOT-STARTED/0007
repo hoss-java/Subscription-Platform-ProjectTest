@@ -1,0 +1,40 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Implement role-based access control with authorization annotations.
+Tags: Backend, Authorization, RBAC, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to implement authorization checks based on user roles, allowing different endpoints to be accessible only to specific roles.
+
+# DOD (definition of done):
+- @PreAuthorize annotations are used on controller methods
+- Three roles are defined: CUSTOMER, OPERATOR, ADMIN
+- Role-based endpoint access is enforced
+- Unauthorized access returns 403 Forbidden
+- Custom authorization exceptions are handled gracefully
+- Role hierarchy is established (ADMIN > OPERATOR > CUSTOMER)
+- Authorization is tested for each role type
+
+# TODO:
+- [ ] 1. Create Role enum with CUSTOMER, OPERATOR, ADMIN values
+- [ ] 2. Create Permission enum with specific permissions
+- [ ] 3. Implement role-permission mapping in Role entity
+- [ ] 4. Configure @EnableGlobalMethodSecurity in SecurityConfig
+- [ ] 5. Create custom @Authorize annotation (optional)
+- [ ] 6. Add @PreAuthorize("hasRole('CUSTOMER')") to customer endpoints
+- [ ] 7. Add @PreAuthorize("hasRole('OPERATOR')") to operator endpoints
+- [ ] 8. Add @PreAuthorize("hasRole('ADMIN')") to admin endpoints
+- [ ] 9. Create AccessDeniedException handler
+- [ ] 10. Implement role hierarchy logic
+- [ ] 11. Create unit tests for authorization logic
+- [ ] 12. Create integration tests for role-based endpoint access
+- [ ] 13. Test unauthorized access scenarios
+
+# Reports:
+*

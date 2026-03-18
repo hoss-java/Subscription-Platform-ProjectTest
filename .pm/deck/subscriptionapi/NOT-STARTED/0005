@@ -1,0 +1,40 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Implement user login endpoint with JWT token generation.
+Tags: Backend, Authentication, JWT, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to create a login endpoint that authenticates users and generates JWT tokens for subsequent API requests.
+
+# DOD (definition of done):
+- POST /api/auth/login endpoint is created and functional
+- JWT access token is generated upon successful login
+- Refresh token is generated and stored securely
+- Token contains user id, email, and roles as claims
+- Invalid credentials return 401 Unauthorized
+- Tokens have configurable expiration times
+- Token payload is verifiable and tamper-proof
+- Endpoint is tested with correct and incorrect credentials
+
+# TODO:
+- [ ] 1. Create LoginRequest DTO with email and password fields
+- [ ] 2. Create JwtTokenProvider service for token generation and validation
+- [ ] 3. Configure JWT secret key and expiration times in application.yml
+- [ ] 4. Implement token generation with user claims (id, email, roles)
+- [ ] 5. Implement token signing with HS256 algorithm
+- [ ] 6. Create login method in AuthController
+- [ ] 7. Implement authentication logic in UserService
+- [ ] 8. Create RefreshToken entity for storing refresh tokens
+- [ ] 9. Implement refresh token persistence and retrieval
+- [ ] 10. Return JWT token and refresh token in AuthResponse
+- [ ] 11. Create unit tests for JwtTokenProvider
+- [ ] 12. Create integration tests for /api/auth/login endpoint
+
+# Reports:
+*
