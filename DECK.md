@@ -524,5 +524,6 @@ gantt
 > >        long role\_id FK
 > >        long permission\_id FK
 > >    }
+> >
 > >```
 > </details>
