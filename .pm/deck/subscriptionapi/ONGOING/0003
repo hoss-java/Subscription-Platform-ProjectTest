@@ -52,45 +52,36 @@ The goal of this card is to define the User and Role entities that form the foun
 > * RoleRepository interface created extending JpaRepository to provide CRUD operations for Role entity, custom method findByName added to retrieve roles by RoleType enum for role assignment purposes.
 
 * Entity Class Diagram
-
->```mermaid
->erDiagram
->    USER ||--o{ USER\_ROLES : has
->    ROLE ||--o{ USER\_ROLES : has
->    ROLE ||--o{ ROLE\_PERMISSIONS : has
->    PERMISSION ||--o{ ROLE\_PERMISSIONS : has
->
->    USER {
->        long id PK
->        string email UK
->        string password
->        string firstName
->        string lastName
->        boolean isActive
->        timestamp createdAt
->        timestamp updatedAt
+```mermaid
+>classDiagram
+>    class User {
+>        -Long id
+>        -String email
+>        -String password
+>        -String firstName
+>        -String lastName
+>        -Boolean isActive
+>        -LocalDateTime createdAt
+>        -LocalDateTime updatedAt
+>        -Set~Role~ roles
 >    }
 >
->    ROLE {
->        long id PK
->        string name UK
->        string description
+>    class Role {
+>        -Long id
+>        -RoleType name
+>        -String description
+>        -Set~User~ users
+>        -Set~Permission~ permissions
 >    }
 >
->    PERMISSION {
->        long id PK
->        string name UK
->        string description
+>    class Permission {
+>        -Long id
+>        -String name
+>        -String description
+>        -Set~Role~ roles
 >    }
 >
->    USER\_ROLES {
->        long user\_id FK
->        long role\_id FK
->    }
->
->    ROLE\_PERMISSIONS {
->        long role\_id FK
->        long permission\_id FK
->    }
+>    User "1" --> "\*" Role : has
+>    Role "1" --> "\*" Permission : has
 >
 >```
