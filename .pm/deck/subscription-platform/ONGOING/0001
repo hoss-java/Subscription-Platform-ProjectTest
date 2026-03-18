@@ -1,0 +1,23 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Setup a maven project.
+Tags:
+Creator:
+AssignedTo:
+# Time tracker settings
+tartAt:
+EndAt:
+---
+The goal of this card is to set up a maven project for Subscription-Platform.
+
+# DOD (definition of done):
+A maven is setup.
+
+# TODO:
+- [ ] 1. 
+
+# Reports:
+*

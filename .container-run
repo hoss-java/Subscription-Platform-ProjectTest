@@ -1,0 +1,9 @@
+mvn@maven:mvn -f Subscription-Platform-ProjectTest/subscript
+javac@maven:javac -d ./classes
+mysql@mysql:mysql -u root -pmypass
+cli@sshd:bash
+remotemysql@sshd:mysql -u eventman -peventmanpass -h 172.32.0.16
+mongosh@sshd:mongo 172.32.0.17:27017
+cssh@sshd:ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+mongo@mongodb:mongo
+node@nodejs:node
