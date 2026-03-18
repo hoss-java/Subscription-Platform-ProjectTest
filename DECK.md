@@ -41,41 +41,70 @@ gantt
 > *
 > </details>
 
-## 001-0003
-> **Untitled** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+## 001-0002
+> **Untitled** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
 > <details >
 >     <summary>Details</summary>
-> Title: Create User entity and Role entity with database schema.
-> Tags: Backend, Database, Phase-1
+> Title: Setup Maven project with Spring Boot and authentication dependencies.
+> Tags: Backend, Setup, Phase-1
 > Creator: 
 > AssignedTo: 
 > # Time tracker settings
 > StartAt: 
 > EndAt: 
-> The goal of this card is to define the User and Role entities that form the foundation of the authentication system, including database tables and relationships.
+> The goal of this card is to initialize a Spring Boot Maven project with all necessary dependencies for implementing JWT-based authentication and role-based access control.
 > 
 > # DOD (definition of done):
-> - User entity is created with email, password, active status, and timestamps
-> - Role entity is created with role names and permissions
-> - User-Role relationship is properly mapped (Many-to-Many)
-> - Database schema is generated via Hibernate
-> - UserRepository and RoleRepository interfaces are created
-> - Entity validation constraints are in place (email format, password length)
+> - Maven project is created and compiles successfully
+> - All required dependencies are added (Spring Security, JWT library, Spring Data JPA, MySQL/PostgreSQL driver)
+> - Application properties are configured for database connection
+> - Project structure follows Spring Boot best practices
+> - README includes setup instructions for running the project locally
 > 
 > # TODO:
-> - [ ] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
-> - [ ] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
-> - [ ] 3. Create Permission entity with fields: id, name, description
-> - [ ] 4. Map Many-to-Many relationship between User and Role
-> - [ ] 5. Map Many-to-Many relationship between Role and Permission
-> - [ ] 6. Add validation annotations (@Email, @NotBlank, @Size)
-> - [ ] 7. Create UserRepository interface extending JpaRepository
-> - [ ] 8. Create RoleRepository interface extending JpaRepository
-> - [ ] 9. Add database initialization script (schema creation)
-> - [ ] 10. Test entity creation and relationships via unit tests
+> - [x] 1. Create new Maven project with Spring Boot starter parent
+> - [x] 2. Add Spring Security dependency to pom.xml
+> - [x] 3. Add JWT library (jjwt or io.jsonwebtoken)
+> - [x] 4. Add Spring Data JPA and database driver dependencies
+> - [x] 5. Add Lombok dependency for reducing boilerplate
+> - [x] 6. Configure application.yml with database and server settings
+> - [x] 7. Create package structure (config, controller, service, repository, entity, dto, exception, security)
+> - [x] 8. Verify project builds without errors
+> - [x] 9. Create .gitignore and initial commit
 > 
 > # Reports:
-> *
+> * Add Spring Security dependency to pom.xml
+> > * spring-boot-starter-security provides authentication and authorization mechanisms — it secures your application by handling user login, password management, and access control to protect your endpoints.
+> >>```
+> >><dependency>
+> >>    <groupId>org.springframework.boot</groupId>
+> >>    <artifactId>spring-boot-starter-security</artifactId>
+> >></dependency>
+> >>```
+> * Add JWT library (jjwt or io.jsonwebtoken)
+> > * io.jsonwebtoken (jjwt) creates and validates JWT tokens for stateless authentication — users receive a token after login and use it to access protected resources without storing session data on the server.
+> >>```
+> >><!-- JWT Library for token-based authentication -->
+> >><dependency>
+> >>    <groupId>io.jsonwebtoken</groupId>
+> >>    <artifactId>jjwt-api</artifactId>
+> >>    <version>0.12.3</version>
+> >></dependency>
+> >><dependency>
+> >>    <groupId>io.jsonwebtoken</groupId>
+> >>    <artifactId>jjwt-impl</artifactId>
+> >>    <version>0.12.3</version>
+> >>    <scope>runtime</scope>
+> >></dependency>
+> >><dependency>
+> >>    <groupId>io.jsonwebtoken</groupId>
+> >>    <artifactId>jjwt-jackson</artifactId>
+> >>    <version>0.12.3</version>
+> >>    <scope>runtime</scope>
+> >></dependency>
+> >>```
+> * Create package structure (config, controller, service, repository, entity, dto, exception, security)
+> > * Only `config` and `security` are need to add
 > </details>
 
 ## 001-0004
@@ -402,36 +431,38 @@ gantt
 > - [ ] 5. Add password strength validation
 > </details>
 
-## 001-0002
+## 001-0003
 > **Untitled** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
-> Title: Setup Maven project with Spring Boot and authentication dependencies.
-> Tags: Backend, Setup, Phase-1
+> Title: Create User entity and Role entity with database schema.
+> Tags: Backend, Database, Phase-1
 > Creator: 
 > AssignedTo: 
 > # Time tracker settings
 > StartAt: 
 > EndAt: 
-> The goal of this card is to initialize a Spring Boot Maven project with all necessary dependencies for implementing JWT-based authentication and role-based access control.
+> The goal of this card is to define the User and Role entities that form the foundation of the authentication system, including database tables and relationships.
 > 
 > # DOD (definition of done):
-> - Maven project is created and compiles successfully
-> - All required dependencies are added (Spring Security, JWT library, Spring Data JPA, MySQL/PostgreSQL driver)
-> - Application properties are configured for database connection
-> - Project structure follows Spring Boot best practices
-> - README includes setup instructions for running the project locally
+> - User entity is created with email, password, active status, and timestamps
+> - Role entity is created with role names and permissions
+> - User-Role relationship is properly mapped (Many-to-Many)
+> - Database schema is generated via Hibernate
+> - UserRepository and RoleRepository interfaces are created
+> - Entity validation constraints are in place (email format, password length)
 > 
 > # TODO:
-> - [ ] 1. Create new Maven project with Spring Boot starter parent
-> - [ ] 2. Add Spring Security dependency to pom.xml
-> - [ ] 3. Add JWT library (jjwt or io.jsonwebtoken)
-> - [ ] 4. Add Spring Data JPA and database driver dependencies
-> - [ ] 5. Add Lombok dependency for reducing boilerplate
-> - [ ] 6. Configure application.yml with database and server settings
-> - [ ] 7. Create package structure (config, controller, service, repository, entity, dto, exception, security)
-> - [ ] 8. Verify project builds without errors
-> - [ ] 9. Create .gitignore and initial commit
+> - [ ] 1. Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
+> - [ ] 2. Create Role entity with fields: id, name (CUSTOMER, OPERATOR, ADMIN), description
+> - [ ] 3. Create Permission entity with fields: id, name, description
+> - [ ] 4. Map Many-to-Many relationship between User and Role
+> - [ ] 5. Map Many-to-Many relationship between Role and Permission
+> - [ ] 6. Add validation annotations (@Email, @NotBlank, @Size)
+> - [ ] 7. Create UserRepository interface extending JpaRepository
+> - [ ] 8. Create RoleRepository interface extending JpaRepository
+> - [ ] 9. Add database initialization script (schema creation)
+> - [ ] 10. Test entity creation and relationships via unit tests
 > 
 > # Reports:
 > *
