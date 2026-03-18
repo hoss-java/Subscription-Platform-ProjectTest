@@ -2,6 +2,9 @@ package com.subscriptionapi.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +27,9 @@ public class Role {
     
     @Column(unique = true, nullable = false)
     @NotBlank(message = "Role name cannot be blank")
-    private String name;
-    
+    @Enumerated(EnumType.STRING)
+    private RoleType name;    
+
     @Column(nullable = false)
     @NotBlank(message = "Description cannot be blank")
     private String description;

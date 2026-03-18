@@ -30,7 +30,7 @@ The goal of this card is to define the User and Role entities that form the foun
 - [x] 7. Create UserRepository interface extending JpaRepository
 - [x] 8. Create RoleRepository interface extending JpaRepository
 - [x] 9. Add database initialization script (schema creation)
-- [ ] 10. Test entity creation and relationships via unit tests
+- [x] 10. Test entity creation and relationships via unit tests
 
 # Reports:
 * Create User entity with fields: id, email, password, firstName, lastName, isActive, createdAt, updatedAt
@@ -52,6 +52,7 @@ The goal of this card is to define the User and Role entities that form the foun
 > * RoleRepository interface created extending JpaRepository to provide CRUD operations for Role entity, custom method findByName added to retrieve roles by RoleType enum for role assignment purposes.
 
 * Entity Class Diagram
+
 >```mermaid
 >classDiagram
 >    class User {
@@ -74,6 +75,13 @@ The goal of this card is to define the User and Role entities that form the foun
 >        -Set~Permission~ permissions
 >    }
 >
+>    class RoleType {
+>        <<enumeration>>
+>        CUSTOMER
+>        OPERATOR
+>        ADMIN
+>    }
+>
 >    class Permission {
 >        -Long id
 >        -String name
@@ -83,5 +91,9 @@ The goal of this card is to define the User and Role entities that form the foun
 >
 >    User "1" --> "\*" Role : has
 >    Role "1" --> "\*" Permission : has
->
+>    Role --> RoleType : uses
 >```
+
+* * Test entity creation and relationships via unit tests
+> * Unit tests created to verify: User entity creation with all fields (email, password, firstName, lastName, isActive), User-Role Many-to-Many relationship bidirectional mapping, Role entity creation with RoleType enum (CUSTOMER, OPERATOR, ADMIN), Role-Permission Many-to-Many relationship bidirectional mapping, Permission entity creation with name and description, and RoleType enum values assignment.
+> * RoleType enum created with predefined role names (CUSTOMER, OPERATOR, ADMIN), Role entity updated to use RoleType enum instead of String for name field with @Enumerated(EnumType.STRING) annotation to store enum values in database, ensuring type safety and consistency for role assignments.
