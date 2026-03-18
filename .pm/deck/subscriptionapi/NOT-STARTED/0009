@@ -1,6 +1,8 @@
 ---
+#...
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
+#...
 ---
 Title: Create comprehensive integration tests for authentication system.
 Tags: Backend, Testing, Phase-1

@@ -1,6 +1,8 @@
 ---
+#...
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
+#...
 ---
 Title: Implement user login endpoint with JWT token generation.
 Tags: Backend, Authentication, JWT, Phase-1

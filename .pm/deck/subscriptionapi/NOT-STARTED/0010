@@ -1,6 +1,8 @@
 ---
+#...
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
+#...
 ---
 Title: Create frontend authentication service and global state management.
 Tags: Frontend, Authentication, State-Management, Phase-1

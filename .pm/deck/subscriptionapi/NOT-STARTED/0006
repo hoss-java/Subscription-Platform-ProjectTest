@@ -1,6 +1,8 @@
 ---
+#...
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
+#...
 ---
 Title: Implement JWT token validation filter and Spring Security configuration.
 Tags: Backend, Security, JWT, Phase-1
