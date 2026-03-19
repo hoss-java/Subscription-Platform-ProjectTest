@@ -247,210 +247,9 @@ gantt
 > > * Integration tests created using @SpringBootTest and MockMvc to test POST /api/auth/register endpoint with valid registration returning HTTP 201 Created, duplicate email returning 400 Bad Request, password mismatch validation, invalid email format rejection, weak password rejection, missing fields validation, and verification that default CUSTOMER role is assigned to newly registered users.
 > </details>
 
-## 001-0006
-> **Implement JWT token validation filter and Spring Security configuration.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to create a security filter that validates JWT tokens on incoming requests and integrate it with Spring Security configuration.
-> 
-> # DOD (definition of done):
-> - JwtAuthenticationFilter is created and intercepts requests
-> - Token validation checks signature, expiration, and claims
-> - Invalid or expired tokens are rejected with 401 Unauthorized
-> - Valid tokens extract user information and populate SecurityContext
-> - SecurityConfig configures filter chain and public/protected endpoints
-> - CORS is configured to allow frontend communication
-> - Token extraction from Authorization header works correctly
-> - Filter is tested with valid, expired, and invalid tokens
-> 
-> # TODO:
-> - [ ] 1. Create JwtAuthenticationFilter extending OncePerRequestFilter
-> - [ ] 2. Implement token extraction from Authorization header (Bearer scheme)
-> - [ ] 3. Implement token validation (signature, expiration, format)
-> - [ ] 4. Create custom exception for invalid tokens (JwtAuthenticationException)
-> - [ ] 5. Implement UserDetailsService to load user from database
-> - [ ] 6. Populate SecurityContext with authenticated user on valid token
-> - [ ] 7. Create SecurityConfig class with @EnableWebSecurity
-> - [ ] 8. Configure filter chain in SecurityConfig
-> - [ ] 9. Define public endpoints (/api/auth/login, /api/auth/register)
-> - [ ] 10. Define protected endpoints (require authentication)
-> - [ ] 11. Configure CORS settings for frontend origin
-> - [ ] 12. Configure exception handling for authentication failures
-> - [ ] 13. Create unit tests for JwtAuthenticationFilter
-> - [ ] 14. Create integration tests for protected endpoints
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0007
-> **Implement role-based access control with authorization annotations.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to implement authorization checks based on user roles, allowing different endpoints to be accessible only to specific roles.
-> 
-> # DOD (definition of done):
-> - @PreAuthorize annotations are used on controller methods
-> - Three roles are defined: CUSTOMER, OPERATOR, ADMIN
-> - Role-based endpoint access is enforced
-> - Unauthorized access returns 403 Forbidden
-> - Custom authorization exceptions are handled gracefully
-> - Role hierarchy is established (ADMIN > OPERATOR > CUSTOMER)
-> - Authorization is tested for each role type
-> 
-> # TODO:
-> - [ ] 1. Create Role enum with CUSTOMER, OPERATOR, ADMIN values
-> - [ ] 2. Create Permission enum with specific permissions
-> - [ ] 3. Implement role-permission mapping in Role entity
-> - [ ] 4. Configure @EnableGlobalMethodSecurity in SecurityConfig
-> - [ ] 5. Create custom @Authorize annotation (optional)
-> - [ ] 6. Add @PreAuthorize("hasRole('CUSTOMER')") to customer endpoints
-> - [ ] 7. Add @PreAuthorize("hasRole('OPERATOR')") to operator endpoints
-> - [ ] 8. Add @PreAuthorize("hasRole('ADMIN')") to admin endpoints
-> - [ ] 9. Create AccessDeniedException handler
-> - [ ] 10. Implement role hierarchy logic
-> - [ ] 11. Create unit tests for authorization logic
-> - [ ] 12. Create integration tests for role-based endpoint access
-> - [ ] 13. Test unauthorized access scenarios
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0008
-> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to provide users with the ability to change their password when authenticated and to reset their password if forgotten.
-> 
-> # DOD (definition of done):
-> - POST /api/auth/change-password endpoint allows authenticated users to change password
-> - POST /api/auth/forgot-password endpoint initiates password reset
-> - POST /api/auth/reset-password endpoint completes password reset with token
-> - Old password verification is required for password change
-> - Reset tokens are time-limited and single-use
-> - Passwords are hashed before storage
-> - Both endpoints are tested with valid and invalid inputs
-> 
-> # TODO:
-> - [ ] 1. Create ChangePasswordRequest DTO with oldPassword and newPassword
-> - [ ] 2. Create ForgotPasswordRequest DTO with email
-> - [ ] 3. Create ResetPasswordRequest DTO with token and newPassword
-> - [ ] 4. Create PasswordResetToken entity with token, user, expiration
-> - [ ] 5. Create PasswordResetTokenRepository
-> - [ ] 6. Implement changePassword method in UserService
-> - [ ] 7. Implement forgotPassword method in UserService
-> - [ ] 8. Implement resetPassword method in UserService
-> - [ ] 9. Implement password reset token generation and validation
-> - [ ] 10. Create email service for sending reset links (mock or real)
-> - [ ] 11. Add change-password endpoint to AuthController
-> - [ ] 12. Add forgot-password endpoint to AuthController
-> - [ ] 13. Add reset-password endpoint to AuthController
-> - [ ] 14. Create unit tests for password change/reset logic
-> - [ ] 15. Create integration tests for password endpoints
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0009
-> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to create integration tests that verify the entire authentication flow works correctly end-to-end.
-> 
-> # DOD (definition of done):
-> - Integration tests cover registration, login, token validation, and logout
-> - Tests use TestRestTemplate or MockMvc for HTTP testing
-> - Database is properly set up and torn down for each test
-> - All success and failure scenarios are tested
-> - Test coverage for authentication is above 80%
-> - Tests are documented and easy to understand
-> - All tests pass consistently
-> 
-> # TODO:
-> - [ ] 1. Create AuthenticationIntegrationTest class
-> - [ ] 2. Configure test database and test properties
-> - [ ] 3. Create test for successful user registration
-> - [ ] 4. Create test for duplicate email registration (409 Conflict)
-> - [ ] 5. Create test for invalid email format (400 Bad Request)
-> - [ ] 6. Create test for successful login
-> - [ ] 7. Create test for login with invalid credentials (401 Unauthorized)
-> - [ ] 8. Create test for accessing protected endpoint with valid token
-> - [ ] 9. Create test for accessing protected endpoint without token (401 Unauthorized)
-> - [ ] 10. Create test for accessing protected endpoint with expired token
-> - [ ] 11. Create test for token refresh
-> - [ ] 12. Create test for role-based access control
-> - [ ] 13. Create test for password change
-> - [ ] 14. Create test for password reset flow
-> - [ ] 15. Run tests and verify coverage
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0010
-> **Create frontend authentication service and global state management.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to build the authentication service layer and state management (Redux/Zustand/Context) for managing user authentication state on the frontend.
-> 
-> # DOD (definition of done):
-> - AuthService handles API calls to backend authentication endpoints
-> - State management stores user, token, and authentication status
-> - Token is persisted to localStorage/sessionStorage
-> - Token refresh is handled automatically
-> - User role information is available globally
-> - Service is type-safe (TypeScript)
-> - Authentication state changes trigger UI updates
-> 
-> # TODO:
-> - [ ] 1. Create AuthService with register, login, logout methods
-> - [ ] 2. Create HTTP interceptor to add Authorization header to requests
-> - [ ] 3. Create HTTP interceptor to handle 401 responses and refresh tokens
-> - [ ] 4. Implement token storage in localStorage
-> - [ ] 5. Implement token retrieval from localStorage on app startup
-> - [ ] 6. Create Redux/Zustand/Context store for auth state
-> - [ ] 7. Create auth reducer/actions for login, logout, register
-> - [ ] 8. Create selectors for user, token, isAuthenticated, userRole
-> - [ ] 9. Implement automatic token refresh logic
-> - [ ] 10. Create TypeScript interfaces for User, AuthResponse, LoginRequest
-> - [ ] 11. Create unit tests for AuthService
-> - [ ] 12. Create unit tests for state management
-> - [ ] 13. Test token persistence and retrieval
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0011
-> **Create login and registration UI components with form validation.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to build responsive login and registration pages with client-side validation and error handling.
-> 
-> # DOD (definition of done):
-> - Login component displays email and password fields
-> - Registration component displays email, password, confirm password, firstName, lastName fields
-> - Form validation provides real-time feedback
-> - Submit buttons are disabled during API requests
-> - Error messages are displayed for failed requests
-> - Success messages are displayed for successful registration
-> - User is redirected to dashboard after successful login
-> - Components are responsive and styled consistently
-> - Accessibility standards are met (ARIA labels, semantic HTML)
-> 
-> # TODO:
-> - [ ] 1. Create LoginForm component with email and password inputs
-> - [ ] 2. Create RegistrationForm component with all required fields
-> - [ ] 3. Implement form validation library (React Hook Form, Formik, etc.)
-> - [ ] 4. Add email format validation
-> - [ ] 5. Add password strength validation
-> </details>
-
 ## 001-0005
-> **Implement user login endpoint with JWT token generation.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Implement user login endpoint with JWT token generation.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > The goal of this card is to create a login endpoint that authenticates users and generates JWT tokens for subsequent API requests.
 > 
@@ -476,7 +275,7 @@ gantt
 > - [x] 9. Implement refresh token persistence and retrieval
 > - [x] 10. Return JWT token and refresh token in AuthResponse
 > - [x] 11. Create unit tests for JwtTokenProvider
-> - [ ] 12. Create integration tests for /api/auth/login endpoint
+> - [x] 12. Create integration tests for /api/auth/login endpoint
 > 
 > # Reports:
 > * Create LoginRequest DTO with email and password fields
@@ -933,4 +732,205 @@ gantt
 > >>- **`@DataJpaTest`** → Focuses on repository/database testing
 > >>- **`@SpringBootTest`** → Full application context (slower, use for integration >>tests)
 > >>- Always add **`@DisplayName`** for clarity in test reports
+> </details>
+
+## 001-0007
+> **Implement role-based access control with authorization annotations.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> The goal of this card is to implement authorization checks based on user roles, allowing different endpoints to be accessible only to specific roles.
+> 
+> # DOD (definition of done):
+> - @PreAuthorize annotations are used on controller methods
+> - Three roles are defined: CUSTOMER, OPERATOR, ADMIN
+> - Role-based endpoint access is enforced
+> - Unauthorized access returns 403 Forbidden
+> - Custom authorization exceptions are handled gracefully
+> - Role hierarchy is established (ADMIN > OPERATOR > CUSTOMER)
+> - Authorization is tested for each role type
+> 
+> # TODO:
+> - [ ] 1. Create Role enum with CUSTOMER, OPERATOR, ADMIN values
+> - [ ] 2. Create Permission enum with specific permissions
+> - [ ] 3. Implement role-permission mapping in Role entity
+> - [ ] 4. Configure @EnableGlobalMethodSecurity in SecurityConfig
+> - [ ] 5. Create custom @Authorize annotation (optional)
+> - [ ] 6. Add @PreAuthorize("hasRole('CUSTOMER')") to customer endpoints
+> - [ ] 7. Add @PreAuthorize("hasRole('OPERATOR')") to operator endpoints
+> - [ ] 8. Add @PreAuthorize("hasRole('ADMIN')") to admin endpoints
+> - [ ] 9. Create AccessDeniedException handler
+> - [ ] 10. Implement role hierarchy logic
+> - [ ] 11. Create unit tests for authorization logic
+> - [ ] 12. Create integration tests for role-based endpoint access
+> - [ ] 13. Test unauthorized access scenarios
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0008
+> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> The goal of this card is to provide users with the ability to change their password when authenticated and to reset their password if forgotten.
+> 
+> # DOD (definition of done):
+> - POST /api/auth/change-password endpoint allows authenticated users to change password
+> - POST /api/auth/forgot-password endpoint initiates password reset
+> - POST /api/auth/reset-password endpoint completes password reset with token
+> - Old password verification is required for password change
+> - Reset tokens are time-limited and single-use
+> - Passwords are hashed before storage
+> - Both endpoints are tested with valid and invalid inputs
+> 
+> # TODO:
+> - [ ] 1. Create ChangePasswordRequest DTO with oldPassword and newPassword
+> - [ ] 2. Create ForgotPasswordRequest DTO with email
+> - [ ] 3. Create ResetPasswordRequest DTO with token and newPassword
+> - [ ] 4. Create PasswordResetToken entity with token, user, expiration
+> - [ ] 5. Create PasswordResetTokenRepository
+> - [ ] 6. Implement changePassword method in UserService
+> - [ ] 7. Implement forgotPassword method in UserService
+> - [ ] 8. Implement resetPassword method in UserService
+> - [ ] 9. Implement password reset token generation and validation
+> - [ ] 10. Create email service for sending reset links (mock or real)
+> - [ ] 11. Add change-password endpoint to AuthController
+> - [ ] 12. Add forgot-password endpoint to AuthController
+> - [ ] 13. Add reset-password endpoint to AuthController
+> - [ ] 14. Create unit tests for password change/reset logic
+> - [ ] 15. Create integration tests for password endpoints
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0009
+> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> The goal of this card is to create integration tests that verify the entire authentication flow works correctly end-to-end.
+> 
+> # DOD (definition of done):
+> - Integration tests cover registration, login, token validation, and logout
+> - Tests use TestRestTemplate or MockMvc for HTTP testing
+> - Database is properly set up and torn down for each test
+> - All success and failure scenarios are tested
+> - Test coverage for authentication is above 80%
+> - Tests are documented and easy to understand
+> - All tests pass consistently
+> 
+> # TODO:
+> - [ ] 1. Create AuthenticationIntegrationTest class
+> - [ ] 2. Configure test database and test properties
+> - [ ] 3. Create test for successful user registration
+> - [ ] 4. Create test for duplicate email registration (409 Conflict)
+> - [ ] 5. Create test for invalid email format (400 Bad Request)
+> - [ ] 6. Create test for successful login
+> - [ ] 7. Create test for login with invalid credentials (401 Unauthorized)
+> - [ ] 8. Create test for accessing protected endpoint with valid token
+> - [ ] 9. Create test for accessing protected endpoint without token (401 Unauthorized)
+> - [ ] 10. Create test for accessing protected endpoint with expired token
+> - [ ] 11. Create test for token refresh
+> - [ ] 12. Create test for role-based access control
+> - [ ] 13. Create test for password change
+> - [ ] 14. Create test for password reset flow
+> - [ ] 15. Run tests and verify coverage
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0010
+> **Create frontend authentication service and global state management.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> The goal of this card is to build the authentication service layer and state management (Redux/Zustand/Context) for managing user authentication state on the frontend.
+> 
+> # DOD (definition of done):
+> - AuthService handles API calls to backend authentication endpoints
+> - State management stores user, token, and authentication status
+> - Token is persisted to localStorage/sessionStorage
+> - Token refresh is handled automatically
+> - User role information is available globally
+> - Service is type-safe (TypeScript)
+> - Authentication state changes trigger UI updates
+> 
+> # TODO:
+> - [ ] 1. Create AuthService with register, login, logout methods
+> - [ ] 2. Create HTTP interceptor to add Authorization header to requests
+> - [ ] 3. Create HTTP interceptor to handle 401 responses and refresh tokens
+> - [ ] 4. Implement token storage in localStorage
+> - [ ] 5. Implement token retrieval from localStorage on app startup
+> - [ ] 6. Create Redux/Zustand/Context store for auth state
+> - [ ] 7. Create auth reducer/actions for login, logout, register
+> - [ ] 8. Create selectors for user, token, isAuthenticated, userRole
+> - [ ] 9. Implement automatic token refresh logic
+> - [ ] 10. Create TypeScript interfaces for User, AuthResponse, LoginRequest
+> - [ ] 11. Create unit tests for AuthService
+> - [ ] 12. Create unit tests for state management
+> - [ ] 13. Test token persistence and retrieval
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0011
+> **Create login and registration UI components with form validation.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> The goal of this card is to build responsive login and registration pages with client-side validation and error handling.
+> 
+> # DOD (definition of done):
+> - Login component displays email and password fields
+> - Registration component displays email, password, confirm password, firstName, lastName fields
+> - Form validation provides real-time feedback
+> - Submit buttons are disabled during API requests
+> - Error messages are displayed for failed requests
+> - Success messages are displayed for successful registration
+> - User is redirected to dashboard after successful login
+> - Components are responsive and styled consistently
+> - Accessibility standards are met (ARIA labels, semantic HTML)
+> 
+> # TODO:
+> - [ ] 1. Create LoginForm component with email and password inputs
+> - [ ] 2. Create RegistrationForm component with all required fields
+> - [ ] 3. Implement form validation library (React Hook Form, Formik, etc.)
+> - [ ] 4. Add email format validation
+> - [ ] 5. Add password strength validation
+> </details>
+
+## 001-0006
+> **Implement JWT token validation filter and Spring Security configuration.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> The goal of this card is to create a security filter that validates JWT tokens on incoming requests and integrate it with Spring Security configuration.
+> 
+> # DOD (definition of done):
+> - JwtAuthenticationFilter is created and intercepts requests
+> - Token validation checks signature, expiration, and claims
+> - Invalid or expired tokens are rejected with 401 Unauthorized
+> - Valid tokens extract user information and populate SecurityContext
+> - SecurityConfig configures filter chain and public/protected endpoints
+> - CORS is configured to allow frontend communication
+> - Token extraction from Authorization header works correctly
+> - Filter is tested with valid, expired, and invalid tokens
+> 
+> # TODO:
+> - [ ] 1. Create JwtAuthenticationFilter extending OncePerRequestFilter
+> - [ ] 2. Implement token extraction from Authorization header (Bearer scheme)
+> - [ ] 3. Implement token validation (signature, expiration, format)
+> - [ ] 4. Create custom exception for invalid tokens (JwtAuthenticationException)
+> - [ ] 5. Implement UserDetailsService to load user from database
+> - [ ] 6. Populate SecurityContext with authenticated user on valid token
+> - [ ] 7. Create SecurityConfig class with @EnableWebSecurity
+> - [ ] 8. Configure filter chain in SecurityConfig
+> - [ ] 9. Define public endpoints (/api/auth/login, /api/auth/register)
+> - [ ] 10. Define protected endpoints (require authentication)
+> - [ ] 11. Configure CORS settings for frontend origin
+> - [ ] 12. Configure exception handling for authentication failures
+> - [ ] 13. Create unit tests for JwtAuthenticationFilter
+> - [ ] 14. Create integration tests for protected endpoints
+> 
+> # Reports:
+> *
 > </details>
