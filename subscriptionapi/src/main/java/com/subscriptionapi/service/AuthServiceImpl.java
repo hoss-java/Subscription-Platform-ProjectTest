@@ -1,6 +1,7 @@
 package com.subscriptionapi.service;
 
 import com.subscriptionapi.dto.RegisterRequest;
+import com.subscriptionapi.dto.LoginRequest;
 import com.subscriptionapi.dto.AuthResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,4 +16,10 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         return userService.registerUser(registerRequest);
     }
+
+    @Override
+    public AuthResponse loginUser(LoginRequest loginRequest) {
+        return userService.loginUser(loginRequest);
+    }
 }
+

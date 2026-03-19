@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.subscriptionapi.util.PasswordValidator;
+import com.subscriptionapi.jwt.JwtTokenProvider;
+import com.subscriptionapi.dto.LoginRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordValidator passwordValidator;
+    private final JwtTokenProvider jwtTokenProvider;
     
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         // Add this to the registerUser method after password confirmation check
@@ -74,6 +77,43 @@ public class UserService {
                         .firstName(savedUser.getFirstName())
                         .lastName(savedUser.getLastName())
                         .isActive(savedUser.getIsActive())
+                        .build())
+                .build();
+    }
+
+    public AuthResponse loginUser(LoginRequest loginRequest) {
+        // Find user by email
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+        
+        // Check if user is active
+        if (!user.getIsActive()) {
+            throw new RuntimeException("User account is inactive");
+        }
+        
+        // Verify password
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+        
+        // Generate JWT token and refresh token
+        String token = jwtTokenProvider.generateToken(user);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+        
+        // Save refresh token
+        jwtTokenProvider.saveRefreshToken(user, refreshToken);
+        
+        // Build response
+        return AuthResponse.builder()
+                .message("Login successful")
+                .token(token)
+                .refreshToken(refreshToken)
+                .userDetails(AuthResponse.UserDetails.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .isActive(user.getIsActive())
                         .build())
                 .build();
     }
