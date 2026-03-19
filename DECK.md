@@ -465,20 +465,42 @@ gantt
 > - Endpoint is tested with correct and incorrect credentials
 > 
 > # TODO:
-> - [ ] 1. Create LoginRequest DTO with email and password fields
-> - [ ] 2. Create JwtTokenProvider service for token generation and validation
-> - [ ] 3. Configure JWT secret key and expiration times in application.yml
-> - [ ] 4. Implement token generation with user claims (id, email, roles)
-> - [ ] 5. Implement token signing with HS256 algorithm
-> - [ ] 6. Create login method in AuthController
-> - [ ] 7. Implement authentication logic in UserService
-> - [ ] 8. Create RefreshToken entity for storing refresh tokens
-> - [ ] 9. Implement refresh token persistence and retrieval
-> - [ ] 10. Return JWT token and refresh token in AuthResponse
+> - [x] 1. Create LoginRequest DTO with email and password fields
+> - [x] 2. Create JwtTokenProvider service for token generation and validation
+> - [x] 3. Configure JWT secret key and expiration times in application.yml
+> - [x] 4. Implement token generation with user claims (id, email, roles)
+> - [x] 5. Implement token signing with HS256 algorithm
+> - [x] 6. Create login method in AuthController
+> - [x] 7. Implement authentication logic in UserService
+> - [x] 8. Create RefreshToken entity for storing refresh tokens
+> - [x] 9. Implement refresh token persistence and retrieval
+> - [x] 10. Return JWT token and refresh token in AuthResponse
 > - [ ] 11. Create unit tests for JwtTokenProvider
 > - [ ] 12. Create integration tests for /api/auth/login endpoint
 > 
 > # Reports:
+> * Create LoginRequest DTO with email and password fields
+> > * LoginRequest DTO created with @NotBlank and @Email validation for email field, @NotBlank and @Size(min=6) validation for password field to validate login input data.
+> * Create JwtTokenProvider service for token generation and validation
+> > * JwtTokenProvider component created in com.subscriptionapi.jwt package with @Component annotation, generateToken() creates JWT access tokens with user claims (id, email, roles), generateRefreshToken() creates refresh tokens, isTokenValid() validates token signature and expiration using HS256 algorithm, getEmailFromToken() and getUserIdFromToken() extract claims from tokens.
+> * Configure JWT secret key and expiration times in application.properties
+> > * JWT configuration added to application.properties with jwt.secret property (256-bit minimum for HS256), jwt.expiration set to 3600000ms (1 hour) for access tokens, jwt.refresh.expiration set to 604800000ms (7 days) for refresh tokens, values injected into JwtTokenProvider via @Value annotations.
+> * Implement token generation with user claims (id, email, roles)
+> > * Token generation implemented in JwtTokenProvider.generateToken() method, creates JWT with claims map containing user id, email, and roles list extracted from user.getRoles() stream, subject set to user email, signed with HS256 algorithm and configured expiration time.
+> * Implement token signing with HS256 algorithm
+> > * Token signing implemented in JwtTokenProvider.createToken() method using Jwts.builder().signWith(getSigningKey(), SignatureAlgorithm.HS256), getSigningKey() generates SecretKey from jwt.secret property using Keys.hmacShaKeyFor() for HS256 algorithm security.
+> * Create login method in AuthController
+> > * Login method created in AuthController as POST /api/auth/login endpoint, accepts @Valid LoginRequest DTO, calls authService.loginUser(), returns HTTP 200 Ok with AuthResponse body containing JWT token and user details.
+> * Implement authentication logic in UserService
+> > * loginUser() method created in UserService, finds user by email from repository, validates user is active, verifies password using passwordEncoder.matches(), generates JWT token via JwtTokenProvider.generateToken(), returns AuthResponse with token and user details, throws RuntimeException for invalid credentials or inactive users.
+> * Create RefreshToken entity for storing refresh tokens
+> > * RefreshToken entity created with @Entity annotation, contains token field (unique, non-nullable), many-to-one relationship with User, expiryDate field for token expiration, isRevoked boolean flag for token invalidation, createdAt timestamp for audit purposes.
+> * Implement refresh token persistence and retrieval
+> > * RefreshTokenRepository created extending JpaRepository with findByToken(), findByUser(), deleteByUser() methods, saveRefreshToken() method in JwtTokenProvider persists refresh tokens with expiry date and revoked status, isRefreshTokenValid() validates token existence and expiration, revokeRefreshToken() marks tokens as revoked, loginUser() now saves refresh token after successful authentication.
+> * Return JWT token and refresh token in AuthResponse
+> > * AuthResponse DTO updated with refreshToken field alongside existing token field, loginUser() method returns both access token and refresh token in response body, refresh token persisted in database via saveRefreshToken() method, enables client-side token refresh capability.
+> 
+> ## Tests
 > * Befor startings this card , it needs to fixed the tests that coded befor for story `0003` and `0004`,
 > > * Severals thest does not work, It seems the the problem is mixing unit test and block tests, for example tests for Role entity tests also User and Permission!
 > > * Ok , it needs to underestand little bit more about differences between Junit and Spring Boot test
