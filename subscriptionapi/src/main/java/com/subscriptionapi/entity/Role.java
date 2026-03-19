@@ -1,5 +1,8 @@
 package com.subscriptionapi.entity;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.EnumType;
@@ -26,7 +29,7 @@ public class Role {
     private Long id;
     
     @Column(unique = true, nullable = false)
-    @NotBlank(message = "Role name cannot be blank")
+    @NotNull(message = "Role name cannot be null")
     @Enumerated(EnumType.STRING)
     private RoleType name;    
 
@@ -35,9 +38,11 @@ public class Role {
     private String description;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @Builder.Default
     private Set<User> users = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @Builder.Default
     @JoinTable(
         name = "role_permissions",
         joinColumns = @JoinColumn(name = "role_id"),
@@ -45,3 +50,4 @@ public class Role {
     )
     private Set<Permission> permissions = new HashSet<>();
 }
+

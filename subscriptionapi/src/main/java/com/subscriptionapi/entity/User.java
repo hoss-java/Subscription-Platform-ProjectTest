@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 import java.util.Set;
@@ -26,6 +27,7 @@ public class User {
     private Long id;
     
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "Email cannot be blank")
     @Email(message = "Email should be valid")
     private String email;
     
@@ -48,10 +50,12 @@ public class User {
     
     @Column(nullable = false, updatable = false)
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt = LocalDateTime.now();
     
     @Column(nullable = false)
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -60,5 +64,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 }
