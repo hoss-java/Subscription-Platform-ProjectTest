@@ -318,3 +318,155 @@ The goal of this card is to create a login endpoint that authenticates users and
 >>- **JUnit + Mockito** = Unit test (mocked objects, faster, tests single component in isolation)
 >>
 >>**Spring Boot tests are NOT unit tests** — they're integration tests. For true unit testing, use plain JUnit with mocks.
+>>
+>>## Quick Guide: Parametrized Tests in JUnit 5 & Spring Boot
+>>
+>>---
+>>
+>>## Basic Setup
+>>
+>>Add dependency to **pom.xml**:
+>>
+>>```xml
+>><dependency>
+>>    <groupId>org.junit.jupiter</groupId>
+>>    <artifactId>junit-jupiter-params</artifactId>
+>>    <scope>test</scope>
+>></dependency>
+>>```
+>>
+>>---
+>>
+>>## Parametrized Test Annotations
+>>
+>>| Annotation | Use Case | Example |
+>>|---|---|---|
+>>| **`@ValueSource`** | Single parameter values | `@ValueSource(strings = {"a", "b"})`>> |
+>>| **`@CsvSource`** | Multiple parameters (CSV format) | `@CsvSource({"1,2", "3,4"})` >>|
+>>| **`@MethodSource`** | Complex objects or streams | `@MethodSource("provideData")` |
+>>| **`@EnumSource`** | Enum values | `@EnumSource(RoleType.class)` |
+>>
+>>---
+>>
+>>## Examples
+>>
+>>### 1. Single Parameter (`@ValueSource`)
+>>
+>>```java
+>>@ParameterizedTest
+>>@ValueSource(strings = {"admin@test.com", "user@test.com"})
+>>void testEmails(String email) {
+>>    assertTrue(email.contains("@"));
+>>}
+>>```
+>>
+>>---
+>>
+>>### 2. Multiple Parameters (`@CsvSource`)
+>>
+>>```java
+>>@ParameterizedTest
+>>@CsvSource({
+>>    "john@example.com, password123, John",
+>>    "jane@example.com, securePass456, Jane"
+>>})
+>>void testUserCreation(String email, String password, String name) {
+>>    assertNotNull(email);
+>>    assertEquals(3, name.length());
+>>}
+>>```
+>>
+>>---
+>>
+>>### 3. Complex Objects (`@MethodSource`)
+>>
+>>```java
+>>@ParameterizedTest
+>>@MethodSource("provideUsers")
+>>void testUserValidation(User user) {
+>>    assertNotNull(user.getEmail());
+>>}
+>>
+>>private static Stream<Arguments> provideUsers() {
+>>    return Stream.of(
+>>        Arguments.of(new User("john@test.com", "password123")),
+>>        Arguments.of(new User("jane@test.com", "securePass456"))
+>>    );
+>>}
+>>```
+>>
+>>---
+>>
+>>## With `@DataJpaTest`
+>>
+>>```java
+>>@DataJpaTest
+>>@ActiveProfiles("test")
+>>class UserRepositoryTest {
+>>    
+>>    @Autowired
+>>    private TestEntityManager entityManager;
+>>    
+>>    @ParameterizedTest
+>>    @CsvSource({
+>>        "john@example.com, John, Doe",
+>>        "jane@example.com, Jane, Smith"
+>>    })
+>>    void testPersistUser(String email, String firstName, String lastName) {
+>>        User user = User.builder()
+>>            .email(email)
+>>            .firstName(firstName)
+>>            .lastName(lastName)
+>>            .build();
+>>        
+>>        User persisted = entityManager.persistAndFlush(user);
+>>        assertNotNull(persisted.getId());
+>>    }
+>>}
+>>```
+>>
+>>---
+>>
+>>## With `@SpringBootTest`
+>>
+>>```java
+>>@SpringBootTest
+>>class UserServiceTest {
+>>    
+>>    @Autowired
+>>    private UserService userService;
+>>    
+>>    @ParameterizedTest
+>>    @ValueSource(strings = {"user1@test.com", "user2@test.com"})
+>>    void testUserRegistration(String email) {
+>>        User user = userService.registerUser(email, "password123");
+>>        assertEquals(email, user.getEmail());
+>>    }
+>>}
+>>```
+>>
+>>---
+>>
+>>## Display Names
+>>
+>>```java
+>>@ParameterizedTest(name = "Email: {0}, Name: {1}")
+>>@CsvSource({
+>>    "john@test.com, John",
+>>    "jane@test.com, Jane"
+>>})
+>>void testWithCustomName(String email, String name) {
+>>    // test code
+>>}
+>>```
+>>
+>>---
+>>
+>>## Key Tips
+>>
+>>- **`@ValueSource`** → Use for single simple values
+>>- **`@CsvSource`** → Use for 2-5 parameters (quick & readable)
+>>- **`@MethodSource`** → Use for complex objects or many parameters
+>>- **`@DataJpaTest`** → Focuses on repository/database testing
+>>- **`@SpringBootTest`** → Full application context (slower, use for integration >>tests)
+>>- Always add **`@DisplayName`** for clarity in test reports
