@@ -479,5 +479,284 @@ gantt
 > - [ ] 12. Create integration tests for /api/auth/login endpoint
 > 
 > # Reports:
-> *
+> * Befor startings this card , it needs to fixed the tests that coded befor for story `0003` and `0004`,
+> > * Severals thest does not work, It seems the the problem is mixing unit test and block tests, for example tests for Role entity tests also User and Permission!
+> > * Ok , it needs to underestand little bit more about differences between Junit and Spring Boot test
+> >>## Key Differences Between JUnit Tests and Spring Boot Tests
+> >>
+> >>| Aspect | JUnit Test | Spring Boot Test |
+> >>|--------|-----------|-----------------|
+> >>| **Framework Focus** | Pure unit testing framework for Java | Full integration testing framework built on JUnit |
+> >>| **Spring Context** | No Spring context loaded by default | Loads and manages Spring application context |
+> >>| **Dependency Injection** | Manual setup required | Automatic @Autowired injection of beans |
+> >>| **Configuration** | Requires manual mocking/setup | Uses application properties and configurations |
+> >>| **Speed** | Faster (no context initialization) | Slower (loads full or partial Spring context) |
+> >>| **Use Case** | Unit tests for isolated components | Integration tests for Spring components together |
+> >>| **Annotations** | @Test, @Before, @After, @BeforeClass, @AfterClass | @SpringBootTest, @WebMvcTest, @DataJpaTest, etc. |
+> >>| **Test Scope** | Tests single class in isolation | Tests multiple beans and their interactions |
+> >>
+> >>---
+> >>
+> >>## Detailed Explanation
+> >>
+> >>### JUnit Tests
+> >>
+> >>**JUnit is a lightweight testing framework** that focuses on unit testing individual components in isolation. When you write a >>JUnit test, you're typically testing a single class or method without any external dependencies. You manually create objects, >>mock dependencies, and assert results.
+> >>
+> >>Example:
+> >>```java
+> >>public class CalculatorTest {
+> >>    private Calculator calculator;
+> >>    
+> >>    @Before
+> >>    public void setUp() {
+> >>        calculator = new Calculator();
+> >>    }
+> >>    
+> >>    @Test
+> >>    public void testAdd() {
+> >>        assertEquals(4, calculator.add(2, 2));
+> >>    }
+> >>}
+> >>```
+> >>
+> >>### Spring Boot Tests
+> >>
+> >>**Spring Boot tests extend JUnit** and add Spring-specific capabilities. They load the Spring application context, allowing you >>to test how your beans interact with each other, how dependency injection works, and how your application behaves as a whole. >>Spring Boot provides specialized annotations for different testing scenarios.
+> >>
+> >>Example:
+> >>```java
+> >>@SpringBootTest
+> >>public class UserServiceTest {
+> >>    @Autowired
+> >>    private UserService userService;
+> >>    
+> >>    @Autowired
+> >>    private UserRepository userRepository;
+> >>    
+> >>    @Test
+> >>    public void testUserCreation() {
+> >>        User user = userService.createUser("John");
+> >>        assertNotNull(user.getId());
+> >>    }
+> >>}
+> >>```
+> >>
+> >>---
+> >>
+> >>## When to Use Each
+> >>
+> >>**Use JUnit tests** when you want to test isolated business logic quickly without needing Spring's infrastructure. These are >>faster and ideal for unit testing service methods or utility classes.
+> >>
+> >>**Use Spring Boot tests** when you need to verify how your Spring beans work together, test repositories with actual databases, >>test REST controllers, or validate application configurations. These are integration tests that ensure your components function >>correctly within the Spring ecosystem.
+> > * Unit Test with Mocks (Using Mockito)
+> >>public class UserServiceTest {
+> >>    @Mock
+> >>    private UserRepository userRepository;
+> >>    
+> >>    @InjectMocks
+> >>    private UserService userService;
+> >>    
+> >>    @Before
+> >>    public void setUp() {
+> >>        MockitoAnnotations.openMocks(this);
+> >>    }
+> >>    
+> >>    @Test
+> >>    public void testUserCreation() {
+> >>        // Arrange: Define mock behavior
+> >>        User mockUser = new User();
+> >>        mockUser.setId(1L);
+> >>        mockUser.setName("John");
+> >>        
+> >>        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+> >>        
+> >>        // Act: Call the method
+> >>        User user = userService.createUser("John");
+> >>        
+> >>        // Assert: Verify the result
+> >>        assertNotNull(user.getId());
+> >>        assertEquals("John", user.getName());
+> >>        
+> >>        // Verify the mock was called
+> >>        verify(userRepository, times(1)).save(any(User.class));
+> >>    }
+> >>}
+> >>That example is an **integration test**, not a unit test, because it uses real objects. To convert it to a **unit test with >>mocks**, you need to use a mocking framework like **Mockito**. Here's how:
+> >>
+> >>## Unit Test with Mocks (Using Mockito)
+> >>
+> >>```java
+> >>public class UserServiceTest {
+> >>    @Mock
+> >>    private UserRepository userRepository;
+> >>    
+> >>    @InjectMocks
+> >>    private UserService userService;
+> >>    
+> >>    @Before
+> >>    public void setUp() {
+> >>        MockitoAnnotations.openMocks(this);
+> >>    }
+> >>    
+> >>    @Test
+> >>    public void testUserCreation() {
+> >>        // Arrange: Define mock behavior
+> >>        User mockUser = new User();
+> >>        mockUser.setId(1L);
+> >>        mockUser.setName("John");
+> >>        
+> >>        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+> >>        
+> >>        // Act: Call the method
+> >>        User user = userService.createUser("John");
+> >>        
+> >>        // Assert: Verify the result
+> >>        assertNotNull(user.getId());
+> >>        assertEquals("John", user.getName());
+> >>        
+> >>        // Verify the mock was called
+> >>        verify(userRepository, times(1)).save(any(User.class));
+> >>    }
+> >>}
+> >>```
+> >>
+> >>---
+> >>
+> >>## Key Differences Explained
+> >>
+> >>| Aspect | Integration Test (Real Objects) | Unit Test (Mocked Objects) |
+> >>|--------|--------------------------------|---------------------------|
+> >>| **Dependencies** | Real @Autowired beans | @Mock objects |
+> >>| **Speed** | Slower (loads context) | Faster (no context) |
+> >>| **Isolation** | Tests multiple components together | Tests single component in isolation |
+> >>| **Annotation** | @SpringBootTest | No Spring annotations needed |
+> >>| **Mock Setup** | N/A | @Mock and @InjectMocks |
+> >>
+> >>---
+> >>
+> >>## What Each Annotation Does
+> >>
+> >>**@Mock** — Creates a fake/mock object of `UserRepository` that doesn't hit the database
+> >>
+> >>**@InjectMocks** — Injects the mocked `UserRepository` into `UserService` automatically
+> >>
+> >>**when()...thenReturn()** — Defines what the mock should return when a method is called
+> >>
+> >>**verify()** — Checks that the mock was called the expected number of times
+> >>
+> >>* The Testing Pyramid
+> >>
+> >>        /\
+> >>       /  \  Integration Tests (Spring Boot)
+> >>      /    \  - Real objects, @SpringBootTest
+> >>     /------\
+> >>    /        \  Unit Tests (JUnit + Mockito)
+> >>   /          \ - Mocked objects, no Spring context
+> >>  /____________\
+> >>
+> >>**When you use mocks, it becomes a pure JUnit test, not a Spring Boot test** — and that's actually the correct approach for >>unit testing.
+> >>
+> >>---
+> >>
+> >>## When to Use Each
+> >>
+> >>| Test Type | Framework | Use Case | Example |
+> >>|-----------|-----------|----------|---------|
+> >>| **Unit Test** | JUnit + Mockito | Test single class in isolation with mocks | Testing `UserService.createUser()` logic only |
+> >>| **Integration Test** | Spring Boot Test | Test multiple components working together | Testing `UserService` + `UserRepository>>` + database |
+> >>
+> >>---
+> >>
+> >>## The Correct Approach
+> >>
+> >>**For `UserService` class:**
+> >>
+> >>```java
+> >>// UNIT TEST - Pure JUnit with Mockito (no Spring)
+> >>public class UserServiceTest {
+> >>    @Mock
+> >>    private UserRepository userRepository;
+> >>    
+> >>    @InjectMocks
+> >>    private UserService userService;
+> >>    
+> >>    @Before
+> >>    public void setUp() {
+> >>        MockitoAnnotations.openMocks(this);
+> >>    }
+> >>    
+> >>    @Test
+> >>    public void testUserCreation() {
+> >>        User mockUser = new User();
+> >>        mockUser.setId(1L);
+> >>        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+> >>        
+> >>        User user = userService.createUser("John");
+> >>        assertNotNull(user.getId());
+> >>    }
+> >>}
+> >>```
+> >>
+> >>**For REST Controller (needs Spring context):**
+> >>
+> >>```java
+> >>// INTEGRATION TEST - Spring Boot Test
+> >>@SpringBootTest
+> >>@AutoConfigureMockMvc
+> >>public class UserControllerTest {
+> >>    @Autowired
+> >>    private MockMvc mockMvc;
+> >>    
+> >>    @Test
+> >>    public void testGetUser() throws Exception {
+> >>        mockMvc.perform(get("/users/1"))
+> >>            .andExpect(status().isOk());
+> >>    }
+> >>}
+> >>```
+> >>
+> >>---
+> >>
+> >>## Bottom Line
+> >>
+> >>**There is no need `@SpringBootTest` for unit tests.** Use plain **JUnit + Mockito** for testing individual classes. Only use >>**Spring Boot tests** when you actually need Spring's context, like testing controllers, repositories with real databases, or >>bean interactions.
+> >>
+> >>## Summary: JUnit Unit Tests vs Spring Boot Integration Tests
+> >>
+> >>The `@SpringBootTest` is **not a unit test, it's an integration test** because it uses real objects and loads the Spring >>context.
+> >>
+> >>### To Make It a True Unit Test
+> >>
+> >>Replace `@SpringBootTest` with **JUnit + Mockito**:
+> >>
+> >>```java
+> >>// UNIT TEST (Pure JUnit with Mocks)
+> >>public class UserServiceTest {
+> >>    @Mock
+> >>    private UserRepository userRepository;
+> >>    
+> >>    @InjectMocks
+> >>    private UserService userService;
+> >>    
+> >>    @Before
+> >>    public void setUp() {
+> >>        MockitoAnnotations.openMocks(this);
+> >>    }
+> >>    
+> >>    @Test
+> >>    public void testUserCreation() {
+> >>        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+> >>        User user = userService.createUser("John");
+> >>        assertNotNull(user.getId());
+> >>    }
+> >>}
+> >>```
+> >>
+> >>### The Key Difference
+> >>
+> >>- **@SpringBootTest** = Integration test (real objects, slower, tests multiple components)
+> >>- **JUnit + Mockito** = Unit test (mocked objects, faster, tests single component in isolation)
+> >>
+> >>**Spring Boot tests are NOT unit tests** — they're integration tests. For true unit testing, use plain JUnit with mocks.
 > </details>
