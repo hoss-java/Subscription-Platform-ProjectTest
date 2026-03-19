@@ -17,6 +17,9 @@ import java.util.Set;
 import com.subscriptionapi.util.PasswordValidator;
 import com.subscriptionapi.jwt.JwtTokenProvider;
 import com.subscriptionapi.dto.LoginRequest;
+import com.subscriptionapi.exception.UserInactiveException;
+import com.subscriptionapi.exception.InvalidCredentialsException;
+import com.subscriptionapi.exception.InvalidCredentialsException;
 
 @Service
 @RequiredArgsConstructor
@@ -84,16 +87,16 @@ public class UserService {
     public AuthResponse loginUser(LoginRequest loginRequest) {
         // Find user by email
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
         
         // Check if user is active
         if (!user.getIsActive()) {
-            throw new RuntimeException("User account is inactive");
+            throw new UserInactiveException("User account is inactive");
         }
         
         // Verify password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
         
         // Generate JWT token and refresh token

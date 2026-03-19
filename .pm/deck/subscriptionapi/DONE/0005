@@ -35,7 +35,7 @@ The goal of this card is to create a login endpoint that authenticates users and
 - [x] 9. Implement refresh token persistence and retrieval
 - [x] 10. Return JWT token and refresh token in AuthResponse
 - [x] 11. Create unit tests for JwtTokenProvider
-- [ ] 12. Create integration tests for /api/auth/login endpoint
+- [x] 12. Create integration tests for /api/auth/login endpoint
 
 # Reports:
 * Create LoginRequest DTO with email and password fields
