@@ -475,7 +475,7 @@ gantt
 > - [x] 8. Create RefreshToken entity for storing refresh tokens
 > - [x] 9. Implement refresh token persistence and retrieval
 > - [x] 10. Return JWT token and refresh token in AuthResponse
-> - [ ] 11. Create unit tests for JwtTokenProvider
+> - [x] 11. Create unit tests for JwtTokenProvider
 > - [ ] 12. Create integration tests for /api/auth/login endpoint
 > 
 > # Reports:
