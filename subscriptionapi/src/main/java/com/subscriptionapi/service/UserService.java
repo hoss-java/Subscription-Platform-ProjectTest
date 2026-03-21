@@ -7,6 +7,7 @@ import com.subscriptionapi.entity.Role;
 import com.subscriptionapi.entity.RoleType;
 import com.subscriptionapi.repository.UserRepository;
 import com.subscriptionapi.repository.RoleRepository;
+import com.subscriptionapi.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class UserService {
     
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordValidator passwordValidator;
     private final JwtTokenProvider jwtTokenProvider;
@@ -98,6 +100,9 @@ public class UserService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
+        
+        // ✅ DELETE OLD REFRESH TOKENS FIRST
+        refreshTokenRepository.deleteByUser(user);
         
         // Generate JWT token and refresh token
         String token = jwtTokenProvider.generateToken(user);

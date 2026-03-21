@@ -17,6 +17,7 @@ bin/
 pack/
 **/pack/
 target/
+.workingon/
 #**/target/
 
 # misc
