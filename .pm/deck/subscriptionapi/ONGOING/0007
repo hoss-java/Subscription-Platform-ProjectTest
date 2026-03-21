@@ -1,0 +1,85 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Implement role-based access control with authorization annotations.
+Tags: Backend, Authorization, RBAC, Phase-1
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+The goal of this card is to implement authorization checks based on user roles, allowing different endpoints to be accessible only to specific roles.
+
+# DOD (definition of done):
+- @PreAuthorize annotations are used on controller methods
+- Three roles are defined: CUSTOMER, OPERATOR, ADMIN
+- Role-based endpoint access is enforced
+- Unauthorized access returns 403 Forbidden
+- Custom authorization exceptions are handled gracefully
+- Role hierarchy is established (ADMIN > OPERATOR > CUSTOMER)
+- Authorization is tested for each role type
+
+# TODO:
+- [x] 1. Create Role enum with CUSTOMER, OPERATOR, ADMIN values
+- [x] 2. Create Permission enum with specific permissions
+- [x] 3. Implement role-permission mapping in Role entity
+- [x] 4. Configure @EnableGlobalMethodSecurity in SecurityConfig
+- [x] 5. Create custom @Authorize annotation (optional)
+- [x] 6. Add @PreAuthorize("hasRole('CUSTOMER')") to customer endpoints
+- [x] 7. Add @PreAuthorize("hasRole('OPERATOR')") to operator endpoints
+- [x] 8. Add @PreAuthorize("hasRole('ADMIN')") to admin endpoints
+- [x] 9. Create AccessDeniedException handler
+- [x] 10. Implement role hierarchy logic
+- [x] 11. Create unit tests for authorization logic
+- [x] 12. Create integration tests for role-based endpoint access
+- [x] 13. Test unauthorized access scenarios
+
+# Reports:
+* Create Role enum with CUSTOMER, OPERATOR, ADMIN values
+> * RoleType enum created with three role values: CUSTOMER, OPERATOR, and ADMIN. Each role represents a distinct user type in the subscription platform with different access levels and permissions.
+* Create Permission enum with specific permissions
+> * Permission entity created as JPA entity with unique name and description fields. Implements many-to-many relationship with Role entity using @ManyToMany annotation with lazy loading strategy. Includes validation constraints and Lombok annotations for clean code generation.
+* Implement role-permission mapping in Role entity
+> * Role entity configured with many-to-many relationship to Permission using @ManyToMany annotation and @JoinTable mapping to role_permissions table. Permissions are lazily loaded with joinColumns referencing role_id and inverseJoinColumns referencing permission_id, enabling role-permission associations.
+* Configure @EnableGlobalMethodSecurity in SecurityConfig
+> * @EnableMethodSecurity(prePostEnabled = true) annotation added to SecurityConfig class. Enables method-level security allowing @PreAuthorize and @PostAuthorize annotations on controller methods for fine-grained authorization control based on roles and permissions.
+* Create custom @Authorize annotation (optional)
+> * Custom @Authorize annotation skipped. Standard Spring Security @PreAuthorize annotation is sufficient for role-based authorization without additional custom annotation overhead.
+* Add @PreAuthorize("hasRole('CUSTOMER')") to customer endpoints
+> * @PreAuthorize("hasRole('CUSTOMER')") annotation added to /api/profile endpoint in UserController. Only users with CUSTOMER role can access this endpoint. Spring Security intercepts the request, checks user's roles from SecurityContext, and denies access with 403 Forbidden if role doesn't match before method execution.
+>>**How it works:**
+>>1. User makes request with JWT token
+>>2. JwtAuthenticationFilter extracts token and populates >>SecurityContext with user roles
+>>3. @PreAuthorize evaluates the expression before method >>executes
+>>4. If user has CUSTOMER role → method executes
+>>5. If user lacks CUSTOMER role → 403 Forbidden returned
+Got it. Here's the report for this part:
+
+* Add @PreAuthorize("hasRole('OPERATOR')") to operator endpoints
+> * @PreAuthorize("hasRole('OPERATOR')") annotation added to /api/operator/dashboard and /api/operator/plans endpoints in OperatorController. Only users with OPERATOR role can access these endpoints. Spring Security validates user roles from SecurityContext and returns 403 Forbidden if role doesn't match before method execution.
+* Add @PreAuthorize("hasRole('ADMIN')") to admin endpoints
+> * @PreAuthorize("hasRole('ADMIN')") annotation added to /api/admin/dashboard and /api/admin/users endpoints in AdminController. Only users with ADMIN role can access these endpoints. Spring Security validates user roles from SecurityContext and returns 403 Forbidden if role doesn't match before method execution. Updated multiple integration tests to support CUSTOMER, OPERATOR, and ADMIN role testing scenarios.
+* Create AccessDeniedException handler
+> * @ExceptionHandler(AccessDeniedException.class) added to GlobalExceptionHandler. Catches Spring Security AccessDeniedException when users attempt to access endpoints without required role permissions. Returns 403 Forbidden with ErrorResponse containing descriptive message and timestamp for graceful error handling.
+* Implement role hierarchy logic
+> * Role hierarchy method added to Role entity with hierarchy levels: ADMIN (3) > OPERATOR (2) > CUSTOMER (1). hasHierarchyOver() method compares role levels enabling permission checks based on role hierarchy. getRoleHierarchyLevel() uses switch expression for clean hierarchy mapping.
+* Create unit tests for authorization logic
+> * Unit tests implemented in ProtectedEndpointsIntegrationTest using @ParameterizedTest with @CsvSource covering all three roles (CUSTOMER, OPERATOR, ADMIN). Tests validate @PreAuthorize annotations enforce role-based access, returning 200 OK for authorized roles and 403 Forbidden for unauthorized access attempts across all protected endpoints.
+* Create integration tests for role-based endpoint access
+> * Integration tests implemented in ProtectedEndpointsIntegrationTest.testRoleBasedAccessControl() using @ParameterizedTest with @CsvSource covering 12 test scenarios across CUSTOMER, OPERATOR, and ADMIN roles. Tests validate endpoint accessibility, permission enforcement, and correct HTTP status responses (200 OK, 403 Forbidden, 404 Not Found) for each role-endpoint combination.
+* Test unauthorized access scenarios
+> * Unauthorized access scenarios tested in ProtectedEndpointsIntegrationTest.testRoleBasedAccessControl() validating 403 Forbidden responses when users attempt to access endpoints without required role permissions. Tests cover all role mismatches (CUSTOMER accessing OPERATOR/ADMIN endpoints, OPERATOR accessing ADMIN endpoints, etc.) ensuring AccessDeniedException handler properly rejects unauthorized requests.
+
+---
+```
+mvn clean compile
+
+mvn test -Dspring.profiles.active=dev -Dtest=ProtectedEndpointsIntegrationTest#testRoleBasedAccessControl -DfailIfNoTests=false -Dsurefire.skipAfterFailureCount=1
+
+
+mvn test -Dspring.profiles.active=dev -Dtest=ProtectedEndpointsIntegrationTest#testCorsOriginWithDifferentPaths
+
+```

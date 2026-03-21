@@ -42,6 +42,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import com.subscriptionapi.dto.LoginRequest;
+import com.subscriptionapi.dto.RegisterRequest;
 
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SpringBootTest
@@ -76,8 +77,15 @@ class ProtectedEndpointsIntegrationTest {
     private ObjectMapper objectMapper;
 
     private User testUser;
+    private User testCustomer;
+    private User testOperator;
+    private User testAdmin;
     private String validToken;
+    private String customerToken;
+    private String operatorToken;
+    private String adminToken;
     private Role customerRole;
+    private Role operatorRole;
     private Role adminRole;
 
     @BeforeEach
@@ -90,37 +98,60 @@ class ProtectedEndpointsIntegrationTest {
                 .description("Customer role")
                 .build();
 
+        operatorRole = Role.builder()
+                .name(RoleType.OPERATOR)
+                .description("Operator role")
+                .build();
+
         adminRole = Role.builder()
                 .name(RoleType.ADMIN)
                 .description("Admin role")
                 .build();
 
         roleRepository.save(customerRole);
+        roleRepository.save(operatorRole);
         roleRepository.save(adminRole);
 
-        testUser = User.builder()
-                .email("test@example.com")
+        testCustomer = User.builder()
+                .email("customer@example.com")
                 .password(passwordEncoder.encode("password123"))
-                .firstName("Test")
+                .firstName("Customer")
                 .lastName("User")
                 .isActive(true)
                 .roles(new HashSet<>(Set.of(customerRole)))
                 .build();
 
-        userRepository.save(testUser);
-
-        validToken = jwtTokenProvider.generateToken(testUser);
-        //jwtTokenProvider.saveRefreshToken(testUser, jwtTokenProvider.generateRefreshToken(testUser));
-        
-        // Mock UserDetailsService for authenticated tests
-        UserDetails mockUserDetails = org.springframework.security.core.userdetails.User.builder()
-                .username("test@example.com")
-                .password("password123")
-                .authorities(new SimpleGrantedAuthority("ROLE_CUSTOMER"))
+        testOperator = User.builder()
+                .email("operator@example.com")
+                .password(passwordEncoder.encode("password123"))
+                .firstName("Operator")
+                .lastName("User")
+                .isActive(true)
+                .roles(new HashSet<>(Set.of(operatorRole)))
                 .build();
+
+        testAdmin = User.builder()
+                .email("admin@example.com")
+                .password(passwordEncoder.encode("password123"))
+                .firstName("Admin")
+                .lastName("User")
+                .isActive(true)
+                .roles(new HashSet<>(Set.of(adminRole)))
+                .build();
+
+        userRepository.save(testCustomer);
+        userRepository.save(testOperator);
+        userRepository.save(testAdmin);
+
+        // Keep testUser as alias to testCustomer for backward compatibility
+        testUser = testCustomer;
         
-        when(userDetailsService.loadUserByUsername("test@example.com"))
-                .thenReturn(mockUserDetails);
+        customerToken = jwtTokenProvider.generateToken(testCustomer);
+        operatorToken = jwtTokenProvider.generateToken(testOperator);
+        adminToken = jwtTokenProvider.generateToken(testAdmin);
+        
+        // Keep validToken as alias to customerToken for backward compatibility
+        validToken = customerToken;
     }
 
     /**
@@ -376,34 +407,41 @@ class ProtectedEndpointsIntegrationTest {
     @ParameterizedTest(name = "Public endpoint {0} expects status {1}")
     @CsvSource({
         "/api/auth/login, 200",
-        "/api/auth/register, 400"
+        "/api/auth/register, 201"
     })
     @DisplayName("Public endpoints allow unauthenticated access")
     void testPublicEndpointsAllowUnauthenticatedAccess(String endpoint, int expectedStatus) throws Exception {
-        String uniqueEmail = endpoint.contains("register") 
-            ? "newuser" + System.currentTimeMillis() + "@example.com"
-            : "test@example.com";
+        System.out.println("=== Test Parameters ===");
+        System.out.println("Endpoint: " + endpoint);
+        System.out.println("Expected Status: " + expectedStatus);
+        System.out.println("=======================");
+
+        String uniqueEmail = "newuser" + System.currentTimeMillis() + "@example.com";
         
-        LoginRequest loginRequest = LoginRequest.builder()
-                .email(uniqueEmail)
-                .password("password123")
-                .build();
-        
-        var resultActions = mockMvc.perform(post(endpoint)
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().is(expectedStatus));
-        
-        // Only assert content type if the response has it
-        resultActions.andDo(result -> {
-            String contentType = result.getResponse().getContentType();
-            if (contentType != null) {
-                org.hamcrest.MatcherAssert.assertThat(
-                    contentType, 
-                    org.hamcrest.Matchers.containsString("application/json")
-                );
-            }
-        });
+        if (endpoint.contains("login")) {
+            LoginRequest loginRequest = LoginRequest.builder()
+                    .email("customer@example.com")
+                    .password("password123")
+                    .build();
+            
+            mockMvc.perform(post(endpoint)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(loginRequest)))
+                    .andExpect(status().is(expectedStatus));
+        } else {
+            RegisterRequest registerRequest = RegisterRequest.builder()
+                    .email(uniqueEmail)
+                    .password("Password123@")
+                    .passwordConfirm("Password123@")
+                    .firstName("Test")
+                    .lastName("User")
+                    .build();
+            
+            mockMvc.perform(post(endpoint)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(registerRequest)))
+                    .andExpect(status().is(expectedStatus));
+        }
     }
 
     /**
@@ -451,19 +489,33 @@ class ProtectedEndpointsIntegrationTest {
     @CsvSource({
             "http://localhost:3000, /api/profile, 200",
             "http://localhost:4200, /api/profile, 200",
-            "http://localhost:3000, /api/users, 200",
-            "http://localhost:4200, /api/users, 200",
+            "http://localhost:3000, /api/operator/dashboard, 403",
+            "http://localhost:4200, /api/operator/dashboard, 403",
             "http://localhost:3000, /api/nonexistent, 404",
             "http://localhost:4200, /api/nonexistent, 404"
     })
     @DisplayName("CORS origins are properly configured for specific endpoints")
     void testCorsOriginWithDifferentPaths(String origin, String path, int expectedStatus) throws Exception {
+        UserDetails mockCustomerDetails = org.springframework.security.core.userdetails.User.builder()
+                .username("customer@example.com")
+                .password("password123")
+                .authorities(new SimpleGrantedAuthority("ROLE_CUSTOMER"))
+                .build();
+        
+        when(userDetailsService.loadUserByUsername("customer@example.com"))
+                .thenReturn(mockCustomerDetails);
+
+        System.out.println("=== Test Parameters ===");
+        System.out.println("Origin: " + origin);
+        System.out.println("Path: " + path);
+        System.out.println("Expected Status: " + expectedStatus);
+        System.out.println("=======================");
+
         var resultActions = mockMvc.perform(get(path)
-                .header("Authorization", "Bearer " + validToken)
+                .header("Authorization", "Bearer " + customerToken)
                 .header("Origin", origin))
                 .andExpect(status().is(expectedStatus));
         
-        // Verify CORS headers are present for allowed origins (regardless of path)
         resultActions.andExpect(header().exists("Access-Control-Allow-Origin"))
                 .andExpect(header().string("Access-Control-Allow-Origin", origin));
     }
@@ -495,16 +547,26 @@ class ProtectedEndpointsIntegrationTest {
     @ParameterizedTest(name = "User with role {0} accessing {1} expects {2}")
     @CsvSource({
             "CUSTOMER, /api/profile, 200",
-            "CUSTOMER, /api/users, 200",
+            "CUSTOMER, /api/operator/dashboard, 403",
             "CUSTOMER, /api/admin/dashboard, 403",
             "CUSTOMER, /api/nonexistent, 404",
-            "ADMIN, /api/profile, 200",
-            "ADMIN, /api/users, 200",
+            "OPERATOR, /api/profile, 403",
+            "OPERATOR, /api/operator/dashboard, 200",
+            "OPERATOR, /api/operator/plans, 200",
+            "OPERATOR, /api/admin/dashboard, 403",
+            "ADMIN, /api/profile, 403",
             "ADMIN, /api/admin/dashboard, 200",
+            "ADMIN, /api/admin/users, 200",
             "ADMIN, /api/nonexistent, 404"
     })
     @DisplayName("Role-based access control with specific endpoints")
     void testRoleBasedAccessControl(String role, String endpoint, int expectedStatus) throws Exception {
+        System.out.println("=== Test Parameters ===");
+        System.out.println("Role: " + role);
+        System.out.println("Endpoint: " + endpoint);
+        System.out.println("Expected Status: " + expectedStatus);
+        System.out.println("=======================");
+
         Role testRole = roleRepository.findByName(RoleType.valueOf(role)).orElseThrow();
         User roleSpecificUser = User.builder()
                 .email("roleuser" + System.currentTimeMillis() + "@example.com")
@@ -572,14 +634,17 @@ class ProtectedEndpointsIntegrationTest {
     @ValueSource(strings = {"first", "second"})
     @DisplayName("Token extraction from various header positions")
     void testTokenExtractionFromHeaders(String position) throws Exception {
-        if ("first".equals(position)) {
-            mockMvc.perform(get("/api/users")
-                    .header("Authorization", "Bearer " + validToken))
-                    .andExpect(status().isOk());
-        } else {
-            mockMvc.perform(get("/api/users")
-                    .header("Authorization", "Bearer " + validToken))
-                    .andExpect(status().isOk());
-        }
+        UserDetails mockAdminDetails = org.springframework.security.core.userdetails.User.builder()
+                .username("admin@example.com")
+                .password("password123")
+                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                .build();
+        
+        when(userDetailsService.loadUserByUsername("admin@example.com"))
+                .thenReturn(mockAdminDetails);
+        
+        mockMvc.perform(get("/api/admin/users")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
     }
 }

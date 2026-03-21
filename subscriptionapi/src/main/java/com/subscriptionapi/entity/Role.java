@@ -49,5 +49,25 @@ public class Role {
         inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions = new HashSet<>();
+
+    /**
+     * Checks if this role has equal or higher hierarchy than the provided role.
+     * Hierarchy: ADMIN > OPERATOR > CUSTOMER
+     */
+    public boolean hasHierarchyOver(RoleType otherRole) {
+        return this.getHierarchyLevel() >= getRoleHierarchyLevel(otherRole);
+    }
+
+    public int getHierarchyLevel() {
+        return getRoleHierarchyLevel(this.name);
+    }
+
+    private static int getRoleHierarchyLevel(RoleType roleType) {
+        return switch (roleType) {
+            case ADMIN -> 3;
+            case OPERATOR -> 2;
+            case CUSTOMER -> 1;
+        };
+    }
 }
 
