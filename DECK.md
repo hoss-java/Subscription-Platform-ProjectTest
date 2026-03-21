@@ -916,21 +916,588 @@ gantt
 > - Filter is tested with valid, expired, and invalid tokens
 > 
 > # TODO:
-> - [ ] 1. Create JwtAuthenticationFilter extending OncePerRequestFilter
-> - [ ] 2. Implement token extraction from Authorization header (Bearer scheme)
-> - [ ] 3. Implement token validation (signature, expiration, format)
-> - [ ] 4. Create custom exception for invalid tokens (JwtAuthenticationException)
-> - [ ] 5. Implement UserDetailsService to load user from database
-> - [ ] 6. Populate SecurityContext with authenticated user on valid token
-> - [ ] 7. Create SecurityConfig class with @EnableWebSecurity
-> - [ ] 8. Configure filter chain in SecurityConfig
-> - [ ] 9. Define public endpoints (/api/auth/login, /api/auth/register)
-> - [ ] 10. Define protected endpoints (require authentication)
-> - [ ] 11. Configure CORS settings for frontend origin
-> - [ ] 12. Configure exception handling for authentication failures
-> - [ ] 13. Create unit tests for JwtAuthenticationFilter
-> - [ ] 14. Create integration tests for protected endpoints
+> - [x] 1. Create JwtAuthenticationFilter extending OncePerRequestFilter
+> - [x] 2. Implement token extraction from Authorization header (Bearer scheme)
+> - [x] 3. Implement token validation (signature, expiration, format)
+> - [x] 4. Create custom exception for invalid tokens (JwtAuthenticationException)
+> - [x] 5. Implement UserDetailsService to load user from database
+> - [x] 6. Populate SecurityContext with authenticated user on valid token
+> - [x] 7. Create SecurityConfig class with @EnableWebSecurity
+> - [x] 8. Configure filter chain in SecurityConfig
+> - [x] 9. Define public endpoints (/api/auth/login, /api/auth/register)
+> - [x] 10. Define protected endpoints (require authentication)
+> - [x] 11. Configure CORS settings for frontend origin
+> - [x] 12. Configure exception handling for authentication failures
+> - [x] 13. Create unit tests for JwtAuthenticationFilter
+> - [x] 14. Create integration tests for protected endpoints
 > 
 > # Reports:
-> *
+> * Create JwtAuthenticationFilter extending OncePerRequestFilter
+> > * JwtAuthenticationFilter created extending OncePerRequestFilter to intercept all HTTP requests. Implements doFilterInternal() method to extract JWT token from Authorization header using Bearer scheme, validate token signature and expiration via JwtTokenProvider, and populate SecurityContext with authenticated user details on valid tokens.
+> * Implement token extraction from Authorization header (Bearer scheme)
+> > * Token extraction implemented in JwtAuthenticationFilter via extractTokenFromRequest() method. Extracts Authorization header, validates Bearer prefix, and returns token substring after "Bearer " prefix. Returns null if header is missing or doesn't follow Bearer scheme format.
+> * Implement token validation (signature, expiration, format)
+> > * Token validation implemented via JwtTokenProvider.isTokenValid() method. Validates token signature using HS256 algorithm with secret key, checks expiration date, and verifies token format by parsing with Jwts.parserBuilder(). Returns false for invalid, expired, or malformed tokens. Integration in JwtAuthenticationFilter checks validity before populating SecurityContext.
+> * Create custom exception for invalid tokens (JwtAuthenticationException)
+> > * JwtAuthenticationException created in exception package extending RuntimeException. Provides constructors for message-only and message-with-cause scenarios. Used in JwtAuthenticationFilter to handle JWT validation failures and logged for debugging purposes.
+> * Implement UserDetailsService to load user from database
+> > * UserDetailsService integrated in JwtAuthenticationFilter to load user details by email from database. Calls loadUserByUsername(email) on valid token to retrieve UserDetails object containing user authorities and credentials for SecurityContext population.
+> * Populate SecurityContext with authenticated user on valid token
+> > * SecurityContext populated in JwtAuthenticationFilter by creating UsernamePasswordAuthenticationToken with UserDetails and authorities, then setting it via SecurityContextHolder.getContext().setAuthentication(). Enables Spring Security to recognize authenticated user for subsequent request processing and authorization checks.
+> * Create SecurityConfig class with @EnableWebSecurity
+> > * SecurityConfig class created with @EnableWebSecurity annotation. Configured with PasswordEncoder bean using BCryptPasswordEncoder for password hashing, and SecurityFilterChain bean defining HTTP security rules with CSRF disabled, public endpoints for /api/auth/login and /api/auth/register, and all other requests requiring authentication.
+> * Configure filter chain in SecurityConfig
+> > * JwtAuthenticationFilter added to SecurityFilterChain via addFilterBefore() method, positioned before UsernamePasswordAuthenticationFilter. Ensures JWT token validation occurs on every request before standard Spring Security authentication filters.
+> * Define public endpoints (/api/auth/login, /api/auth/register)
+> > * Public endpoints configured in SecurityFilterChain using requestMatchers("/api/auth/login", "/api/auth/register").permitAll(). Allows unauthenticated access to login and registration endpoints while all other requests require authentication.
+> * Define protected endpoints (require authentication)
+> > * Protected endpoints configured in SecurityFilterChain using anyRequest().authenticated(). All endpoints except /api/auth/login and /api/auth/register require valid JWT token authentication for access.
+> * Configure CORS settings for frontend origin
+> > * CORS configuration implemented via CorsConfigurationSource bean in SecurityConfig. Reads allowed origins from application.properties (cors.allowed-origins) supporting multiple comma-separated origins. Configures allowed methods (GET, POST, PUT, DELETE, OPTIONS), allows all headers, and enables credentials. Integrated into SecurityFilterChain via .cors().and().
+> * Configure exception handling for authentication failures
+> > * Exception handling configured in SecurityFilterChain via exceptionHandling().authenticationEntryPoint(). Custom entry point returns 401 Unauthorized response with JSON error message when authentication fails. Handles invalid or missing JWT tokens before requests reach protected endpoints.
+> * Create unit tests for JwtAuthenticationFilter
+> > * JwtAuthenticationFilterUnitTest created with parametrized tests using @ParameterizedTest and @ValueSource. Tests cover valid token extraction with SecurityContext population, invalid/missing Authorization headers, and token validation scenarios. Run tests via `mvn test -Dspring.profiles.active=dev -Dtest=JwtAuthenticationFilterUnitTest` for all tests or `mvn test -Dspring.profiles.active=dev -Dtest=JwtAuthenticationFilterUnitTest#testMissingOrInvalidAuthHeader` for specific test.
+> * Create integration tests for protected endpoints
+> > * Created integration test (`ProtectedEndpointsIntegrationTest`) to validate JWT authentication and authorization for protected endpoints. Implemented temporary stub controllers (`TestAuthController` and `TestProtectedController`) to mock public and protected endpoints while actual service implementations are in development. Test validates token validation, unauthorized access handling, and public endpoint accessibility using `@SpringBootTest` and `MockMvc`.
+> 
+> * Fix intigrated tests
+> ># Summary: Fixed Circular Dependency in Spring Security >Tests
+> >
+> >## What We Did
+> >
+> >**Problem:** Tests failed with circular dependency error >between `SecurityConfig` → `JwtAuthenticationFilter` → `>UserDetailsService` → back to `SecurityConfig`.
+> >
+> >**Solution:** Added `>spring.main.allow-circular-references=true` to `>application-dev.properties`.
+> >
+> >---
+> >
+> >## What is This Flag?
+> >
+> >**`spring.main.allow-circular-references=true`**
+> >
+> >By default, Spring **rejects** beans that depend on each >other in a circle (to enforce good design).
+> >
+> >This flag tells Spring: **"Allow circular dependencies >instead of throwing an error."**
+> >
+> >---
+> >
+> >## How It Fixed the Issue
+> >
+> >Spring couldn't create the application context because >beans were stuck in a dependency loop:
+> >
+> >```
+> >SecurityConfig needs JwtAuthenticationFilter
+> >         ↓
+> >JwtAuthenticationFilter needs UserDetailsService
+> >         ↓
+> >UserDetailsService needs SecurityConfig
+> >         ↑ (back to start = LOOP!)
+> >```
+> >
+> >Setting the flag to `true` allows Spring to **bypass >this validation** and create all beans anyway.
+> >
+> >---
+> >
+> >## Why Tests Worked Before, Now Need This Flag
+> >
+> >**Before:** Your code didn't have this circular >dependency.
+> >
+> >**After:** When you updated `PasswordValidator` and `>JwtTokenProvider`, the dependency structure changed and >created the circular reference.
+> >
+> >**Solution:** Either:
+> >1. **Keep the flag** (quick fix - only in dev/test)
+> >2. **Refactor code** (proper fix - remove the circular >dependency)
+> >
+> >---
+> >
+> >## Profile Configuration
+> >
+> >Add to `application-dev.properties`:
+> >```properties
+> >spring.main.allow-circular-references=true
+> >```
+> >
+> >Run tests with:
+> >```bash
+> >mvn test -Dspring.profiles.active=dev
+> >```
+> >
+> >Or use `@ActiveProfiles("dev")` in test class.
+> ## How it works
+> ## Complete Security Architecture Diagram
+> 
+> ```
+> ┌─────────────────────────────────────────────────────────────────────────────┐
+> │                           CLIENT APPLICATION                                │
+> │                      (Web/Mobile with JWT Token)                            │
+> └────────────────────────────────┬────────────────────────────────────────────┘
+>                                  │
+>                     ┌────────────┴────────────┐
+>                     │                         │
+>             ┌───────▼────────┐      ┌────────▼──────────┐
+>             │  POST /login   │      │ POST /register    │
+>             │ POST /refresh  │      │                   │
+>             └───────┬────────┘      └────────┬──────────┘
+>                     │                         │
+>                     └────────────┬────────────┘
+>                                  │
+>                     ┌────────────▼────────────┐
+>                     │   INCOMING REQUEST      │
+>                     │  (with/without token)   │
+>                     └────────────┬────────────┘
+>                                  │
+>         ┌────────────────────────▼────────────────────────┐
+>         │                                                  │
+>         │          SPRING SECURITY FILTER CHAIN            │
+>         │                                                  │
+>         └────────────────────────┬────────────────────────┘
+>                                  │
+>                 ┌────────────────┴────────────────┐
+>                 │                                 │
+>         ┌───────▼──────────────┐    ┌────────────▼──────────┐
+>         │ CORS Configuration   │    │  CSRF Disabled        │
+>         │ (Allow Origins)      │    │  (Stateless JWT)      │
+>         └───────┬──────────────┘    └────────────┬──────────┘
+>                 │                                 │
+>                 └────────────────┬────────────────┘
+>                                  │
+>         ┌────────────────────────▼────────────────────────┐
+>         │                                                  │
+>         │    JwtAuthenticationFilter (CUSTOM FILTER)       │
+>         │                                                  │
+>         │  1. Extract "Authorization: Bearer <token>"     │
+>         │  2. Validate token signature & expiration       │
+>         │  3. Extract claims (email, id, roles)           │
+>         │  4. Load UserDetails from database              │
+>         │  5. Set SecurityContext authentication          │
+>         │                                                  │
+>         └────────────────────────┬────────────────────────┘
+>                                  │
+>                 ┌────────────────┴────────────────┐
+>                 │                                 │
+>         ┌───────▼──────────────┐    ┌────────────▼──────────┐
+>         │  Token Valid?        │    │  Token Invalid/       │
+>         │  Not Expired?        │    │  Expired?             │
+>         │  Signature OK?       │    │  Missing?             │
+>         └───────┬──────────────┘    └────────────┬──────────┘
+>                 │ YES                            │ NO
+>                 │                                │
+>         ┌───────▼──────────────┐    ┌────────────▼──────────┐
+>         │ Set Authentication   │    │ Continue without      │
+>         │ in SecurityContext   │    │ authentication        │
+>         │ (Ready for @Secured) │    │ (Request proceeds)    │
+>         └───────┬──────────────┘    └────────────┬──────────┘
+>                 │                                 │
+>                 └────────────────┬────────────────┘
+>                                  │
+>         ┌────────────────────────▼────────────────────────┐
+>         │                                                  │
+>         │   Authorization Check (anyRequest().authenticated)
+>         │                                                  │
+>         │   - All endpoints require authentication        │
+>         │   - If not authenticated → 401 Unauthorized     │
+>         │                                                  │
+>         └────────────────────────┬────────────────────────┘
+>                                  │
+>                 ┌────────────────┴────────────────┐
+>                 │                                 │
+>         ┌───────▼──────────────┐    ┌────────────▼──────────┐
+>         │  AUTHENTICATED       │    │  NOT AUTHENTICATED    │
+>         │  Request reaches     │    │                       │
+>         │  Controller          │    │  Return 401 Error     │
+>         │                      │    │  {message,status}     │
+>         └───────┬──────────────┘    └──────────────────────┘
+>                 │
+>         ┌───────▼──────────────────────────┐
+>         │      AuthController / Routes     │
+>         │                                  │
+>         │  • POST /login                   │
+>         │  • POST /register                │
+>         │  • POST /refresh                 │
+>         │  • (Other protected endpoints)   │
+>         └───────┬──────────────────────────┘
+>                 │
+>         ┌───────▼──────────────────────────┐
+>         │      AuthService/UserService     │
+>         │                                  │
+>         │  Business Logic:                 │
+>         │  • Validate credentials          │
+>         │  • Hash passwords                │
+>         │  • Assign default roles          │
+>         │  • Generate tokens               │
+>         │  • Validate refresh tokens       │
+>         └───────┬──────────────────────────┘
+>                 │
+>         ┌───────▼──────────────────────────┐
+>         │      JwtTokenProvider            │
+>         │                                  │
+>         │  • generateToken(user)           │
+>         │    └─> Creates JWT with:         │
+>         │        - User ID, Email, Roles   │
+>         │        - Expiration (15min)      │
+>         │        - HMAC-SHA256 signature   │
+>         │                                  │
+>         │  • generateRefreshToken(user)    │
+>         │    └─> Creates JWT with:         │
+>         │        - User ID                 │
+>         │        - Longer expiration (7d)  │
+>         │                                  │
+>         │  • isTokenValid(token)           │
+>         │    └─> Verify signature & exp    │
+>         │                                  │
+>         │  • saveRefreshToken(user, token) │
+>         │    └─> Store in DB               │
+>         │                                  │
+>         │  • isRefreshTokenValid(token)    │
+>         │    └─> Check DB + expiration     │
+>         │                                  │
+>         │  • revokeRefreshToken(token)     │
+>         │    └─> Mark as revoked in DB     │
+>         └───────┬──────────────────────────┘
+>                 │
+>         ┌───────▼──────────────────────────┐
+>         │      Database Layer              │
+>         │                                  │
+>         │  ┌─────────────────────────────┐ │
+>         │  │ User Table                  │ │
+>         │  │ - id, email, password       │ │
+>         │  │ - firstName, lastName       │ │
+>         │  │ - isActive, createdAt, etc  │ │
+>         │  └──────────┬────────────────┘ │
+>         │             │ (Many-to-Many)   │
+>         │  ┌──────────▼────────────────┐ │
+>         │  │ UserRoles (Join Table)    │ │
+>         │  │ - user_id, role_id        │ │
+>         │  └──────────┬────────────────┘ │
+>         │             │                  │
+>         │  ┌──────────▼────────────────┐ │
+>         │  │ Role Table                │ │
+>         │  │ - id, name (ADMIN, USER)  │ │
+>         │  │ - permissions (via join)  │ │
+>         │  └─────────────────────────┘ │
+>         │                              │
+>         │  ┌─────────────────────────┐ │
+>         │  │ RefreshToken Table      │ │
+>         │  │ - token, user_id        │ │
+>         │  │ - expiryDate, isRevoked │ │
+>         │  └─────────────────────────┘ │
+>         │                              │
+>         └──────────────────────────────┘
+> ```
+> 
+> 
+> ## How Each Component Works
+> 
+> ### **1. SecurityConfig.java** — The Security Blueprint
+> 
+> **Purpose**: Configures the entire Spring Security filter chain and CORS settings.
+> 
+> **Key Responsibilities**:
+> - **PasswordEncoder**: Uses **BCryptPasswordEncoder** to hash passwords securely (never store plain text)
+> - **CORS Configuration**: Allows cross-origin requests from specified domains with specific HTTP methods
+> - **Filter Chain**:
+>   - Disables CSRF (not needed for stateless JWT)
+>   - Adds your custom **JwtAuthenticationFilter** before Spring's default UsernamePasswordAuthenticationFilter
+>   - Requires **all requests to be authenticated** (`anyRequest().authenticated()`)
+>   - Returns **401 Unauthorized** for unauthenticated requests
+> 
+> ```
+> Request → CORS Check → CSRF (disabled) → JwtAuthenticationFilter → Authorization Check → Controller
+> ```
+> 
+> 
+> ### **2. JwtAuthenticationFilter.java** — The Gatekeeper
+> 
+> **Purpose**: Intercepts every incoming request and validates JWT tokens.
+> 
+> **Flow**:
+> 1. **Extract Token**: Looks for `Authorization: Bearer <token>` header
+> 2. **Validate Token**: Calls `jwtTokenProvider.isTokenValid(token)`
+> 3. **Extract Claims**: Gets email, user ID, and roles from token
+> 4. **Load User Details**: Queries database for user info via `UserDetailsService`
+> 5. **Set Authentication**: Creates `UsernamePasswordAuthenticationToken` and stores in **SecurityContext**
+> 
+> **Result**: If valid, the request is authenticated. If invalid/missing, the request continues unauthenticated and gets rejected at the authorization check.
+> 
+> 
+> ### **3. JwtTokenProvider.java** — The Token Factory
+> 
+> **Purpose**: Creates, validates, and manages JWT tokens.
+> 
+> | Method | Purpose |
+> |--------|---------|
+> | **generateToken(user)** | Creates short-lived access token (15 min) with user ID, email, and roles |
+> | **generateRefreshToken(user)** | Creates long-lived refresh token (7 days) with minimal claims |
+> | **isTokenValid(token)** | Verifies HMAC-SHA256 signature and checks expiration |
+> | **saveRefreshToken(user, token)** | Stores refresh token in DB (allows token revocation) |
+> | **isRefreshTokenValid(token)** | Checks if token exists in DB, not revoked, and not expired |
+> | **revokeRefreshToken(token)** | Marks token as revoked (logout functionality) |
+> 
+> **Token Structure** (JWT has 3 parts separated by `.`):
+> ```
+> Header.Payload.Signature
+> 
+> Example:
+> eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNjI2NjkwMDAwLCJleHAiOjE2MjY2OTkwMDB9.signature
+> ```
+> 
+> 
+> ### **4. AuthService & AuthServiceImpl.java** — The Business Logic
+> 
+> **Purpose**: Handles registration and login logic.
+> 
+> **Registration Flow**:
+> 1. Validate input (email format, password strength)
+> 2. Check if email already exists
+> 3. Hash password with BCryptPasswordEncoder
+> 4. Create new User with default role (e.g., USER)
+> 5. Save to database
+> 6. Generate access + refresh tokens
+> 7. Return **AuthResponse** with tokens
+> 
+> **Login Flow**:
+> 1. Find user by email
+> 2. Compare provided password with stored hashed password (BCrypt handles this)
+> 3. If valid, generate access + refresh tokens
+> 4. Save refresh token to database
+> 5. Return **AuthResponse** with tokens
+> 6. If invalid, throw **InvalidCredentialsException**
+> 
+> 
+> ### **5. User & Role Entities** — The Data Model
+> 
+> **User Table**:
+> ```
+> id (PK) | email (unique) | password (hashed) | firstName | lastName | isActive | createdAt | updatedAt
+> ```
+> 
+> **Relationships**:
+> ```
+> User ──(Many-to-Many)──> Role ──(Many-to-Many)──> Permission
+> ```
+> 
+> **User can have multiple roles** (e.g., ADMIN, USER, MODERATOR), and each role can have multiple permissions.
+> 
+> 
+> ## Complete Authentication Flow
+> 
+> ### **Registration Flow**
+> ```
+> 1. Client sends: POST /register
+>    {
+>      "email": "user@example.com",
+>      "password": "SecurePass123",
+>      "firstName": "John",
+>      "lastName": "Doe"
+>    }
+> 
+> 2. AuthController → AuthService → UserService
+>    - Validate input
+>    - Hash password (BCrypt)
+>    - Check email uniqueness
+>    - Create User entity with default role
+> 
+> 3. JwtTokenProvider generates:
+>    - Access Token (15 min expiration)
+>    - Refresh Token (7 days expiration)
+> 
+> 4. Save refresh token to RefreshToken table
+> 
+> 5. Return to client:
+>    {
+>      "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+>      "refreshToken": "eyJhbGciOiJIUzI1NiJ9...",
+>      "tokenType": "Bearer",
+>      "expiresIn": 900  // seconds
+>    }
+> ```
+> 
+> ### **Login Flow**
+> ```
+> 1. Client sends: POST /login
+>    {
+>      "email": "user@example.com",
+>      "password": "SecurePass123"
+>    }
+> 
+> 2. AuthController → AuthService → UserService
+>    - Find user by email
+>    - BCrypt compares passwords
+>    - If invalid → throw InvalidCredentialsException (401)
+> 
+> 3. If valid:
+>    - JwtTokenProvider generates tokens
+>    - Save refresh token to DB
+>    - Return AuthResponse with tokens
+> ```
+> 
+> ### **Authenticated Request Flow**
+> ```
+> 1. Client sends: GET /protected-endpoint
+>    Headers: {
+>      "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9..."
+>    }
+> 
+> 2. JwtAuthenticationFilter:
+>    - Extract token from header
+>    - Validate signature & expiration
+>    - Extract email from token
+>    - Load UserDetails from DB
+>    - Set authentication in SecurityContext
+> 
+> 3. SecurityConfig authorization check:
+>    - anyRequest().authenticated() → passes ✓
+> 
+> 4. Request reaches Controller
+>    - SecurityContextHolder.getContext().getAuthentication() has user info
+>    - Can use @PreAuthorize, @Secured for role-based access
+> 
+> 5. Return response (200 OK)
+> ```
+> 
+> ### **Token Refresh Flow**
+> ```
+> 1. Client sends: POST /refresh
+>    {
+>      "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
+>    }
+> 
+> 2. AuthService:
+>    - Validate refresh token (JwtTokenProvider.isRefreshTokenValid)
+>    - Check if exists in DB
+>    - Check if not revoked
+>    - Check if not expired
+> 
+> 3. If valid:
+>    - Generate new access token
+>    - Return new token (refresh token stays same or rotated)
+> 
+> 4. If invalid:
+>    - Throw JwtAuthenticationException (401)
+>    - User must login again
+> ```
+> 
+> ### **Logout/Revocation Flow**
+> ```
+> 1. Client sends: POST /logout
+>    {
+>      "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
+>    }
+> 
+> 2. JwtTokenProvider.revokeRefreshToken(token):
+>    - Find token in RefreshToken table
+>    - Set isRevoked = true
+>    - Save to DB
+> 
+> 3. Next time client tries to refresh:
+>    - isRefreshTokenValid() returns false
+>    - User must login again
+> ```
+> 
+> 
+> ## Security Features Summary
+> 
+> | Feature | Implementation |
+> |---------|-----------------|
+> | **Password Hashing** | BCryptPasswordEncoder (adaptive, salted hashing) |
+> | **Token Signing** | HMAC-SHA256 (prevents tampering) |
+> | **Token Expiration** | Access: 15 min, Refresh: 7 days |
+> | **Token Revocation** | RefreshToken table with isRevoked flag |
+> | **CORS Protection** | Whitelist allowed origins |
+> | **CSRF Protection** | Disabled (not needed for stateless JWT) |
+> | **Stateless Auth** | No server-side sessions, tokens are self-contained |
+> | **Role-Based Access** | User → Roles → Permissions (Many-to-Many) |
+> | **Exception Handling** | GlobalExceptionHandler catches custom exceptions |
+> 
+> 
+> ## Potential Improvements & Considerations
+> 
+> 1. **Refresh Token Rotation**: Generate a new refresh token each time it's used (more secure)
+> 2. **Token Blacklist**: Instead of revoke flag, maintain a blacklist for faster logout
+> 3. **Rate Limiting**: Add rate limiting to login/register endpoints to prevent brute force
+> 4. **Audit Logging**: Log all authentication events (login, logout, failed attempts)
+> 5. **2FA/MFA**: Add two-factor authentication for sensitive accounts
+> 6. **HTTPS Only**: Ensure tokens are only sent over HTTPS
+> 7. **HttpOnly Cookies**: Consider storing refresh tokens in HttpOnly cookies instead of localStorage
+> 8. **Token Introsp
+> 
+> ## Complete HTTP Status Code Reference
+> 
+> | **Code** | **Name** | **Category** | **Meaning** |
+> |----------|----------|----------|----------|
+> | **100** | Continue | Informational | The client should continue sending the request; initial part has been received. |
+> | **101** | Switching Protocols | Informational | Server is switching to a different protocol as requested by the client. |
+> | **102** | Processing | Informational | Server has received the request and is processing it (WebDAV). |
+> | **103** | Early Hints | Informational | Server is preloading resources while preparing the response. |
+> | **200** | OK | Success | Request succeeded; server returned the requested data. |
+> | **201** | Created | Success | Request succeeded; a new resource was created as a result. |
+> | **202** | Accepted | Success | Request accepted for processing but not yet completed. |
+> | **203** | Non-Authoritative Information | Success | Request succeeded but returned information from a third party. |
+> | **204** | No Content | Success | Request succeeded but there is no content to return. |
+> | **205** | Reset Content | Success | Request succeeded; client should reset the document view. |
+> | **206** | Partial Content | Success | Server is delivering only part of the resource (range request). |
+> | **207** | Multi-Status | Success | Message body contains multiple status codes for different parts of a request (WebDAV). |
+> | **208** | Already Reported | Success | Members of a DAV binding have already been enumerated. |
+> | **226** | IM Used | Success | Server fulfilled a request using instance manipulation. |
+> | **300** | Multiple Choices | Redirection | Multiple options available for the requested resource. |
+> | **301** | Moved Permanently | Redirection | Resource has permanently moved to a new URI. |
+> | **302** | Found | Redirection | Resource has temporarily moved to a different URI. |
+> | **303** | See Other | Redirection | Client should redirect to a different URI to get the response. |
+> | **304** | Not Modified | Redirection | Resource hasn't changed since the last request (cached version still valid). |
+> | **305** | Use Proxy | Redirection | Requested resource must be accessed through a proxy. |
+> | **306** | Switch Proxy | Redirection | Subsequent requests should use the specified proxy (deprecated). |
+> | **307** | Temporary Redirect | Redirection | Resource temporarily moved; client should retry with the same method. |
+> | **308** | Permanent Redirect | Redirection | Resource permanently moved; client should retry with the same method. |
+> | **400** | Bad Request | Client Error | **The server cannot process the request due to client error (malformed syntax, invalid parameters, etc.).** |
+> | **401** | Unauthorized | Client Error | Client must authenticate to access the resource; credentials are missing or invalid. |
+> | **402** | Payment Required | Client Error | Payment is required to access the resource (reserved for future use). |
+> | **403** | Forbidden | Client Error | Client is authenticated but lacks permission to access the resource. |
+> | **404** | Not Found | Client Error | The requested resource does not exist on the server. |
+> | **405** | Method Not Allowed | Client Error | The HTTP method used is not supported for this resource. |
+> | **406** | Not Acceptable | Client Error | Server cannot produce a response matching the client's Accept header. |
+> | **407** | Proxy Authentication Required | Client Error | Client must authenticate with the proxy before accessing the resource. |
+> | **408** | Request Timeout | Client Error | Server did not receive a complete request within the timeout period. |
+> | **409** | Conflict | Client Error | Request conflicts with the current state of the resource (e.g., concurrent updates). |
+> | **410** | Gone | Client Error | Resource no longer exists and will not exist again. |
+> | **411** | Length Required | Client Error | Server requires the Content-Length header to process the request. |
+> | **412** | Precondition Failed | Client Error | A condition specified in the request headers was not met. |
+> | **413** | Payload Too Large | Client Error | Request body is larger than the server is willing to process. |
+> | **414** | URI Too Long | Client Error | The URI is longer than the server is willing to process. |
+> | **415** | Unsupported Media Type | Client Error | Server does not support the media type in the request. |
+> | **416** | Range Not Satisfiable | Client Error | The requested range of the resource cannot be satisfied. |
+> | **417** | Expectation Failed | Client Error | The server cannot fulfill the expectation specified in the Expect header. |
+> | **418** | I'm a Teapot | Client Error | The server refuses to brew coffee (joke status code from RFC 2324). |
+> | **421** | Misdirected Request | Client Error | Request was directed at a server that cannot produce a response. |
+> | **422** | Unprocessable Entity | Client Error | Request is well-formed but contains semantic errors (WebDAV/API validation). |
+> | **423** | Locked | Client Error | The requested resource is locked and cannot be accessed. |
+> | **424** | Failed Dependency | Client Error | Request failed because it depends on another request that also failed. |
+> | **425** | Too Early | Client Error | Server is unwilling to process a request that might be replayed. |
+> | **426** | Upgrade Required | Client Error | Client must upgrade to a different protocol to access the resource. |
+> | **428** | Precondition Required | Client Error | Server requires conditional request headers to be present. |
+> | **429** | Too Many Requests | Client Error | Client has sent too many requests within a specified time period (rate limiting). |
+> | **431** | Request Header Fields Too Large | Client Error | Request header fields are too large for the server to process. |
+> | **451** | Unavailable For Legal Reasons | Client Error | Server cannot provide the resource due to legal restrictions or censorship. |
+> | **500** | Internal Server Error | Server Error | **Server encountered an unexpected condition and cannot fulfill the request.** |
+> | **501** | Not Implemented | Server Error | Server does not support the functionality required to fulfill the request. |
+> | **502** | Bad Gateway | Server Error | Server received an invalid response from an upstream server (acting as gateway/proxy). |
+> | **503** | Service Unavailable | Server Error | Server is temporarily unable to handle the request (maintenance, overload). |
+> | **504** | Gateway Timeout | Server Error | Server did not receive a timely response from an upstream server. |
+> | **505** | HTTP Version Not Supported | Server Error | Server does not support the HTTP version used in the request. |
+> | **506** | Variant Also Negotiates | Server Error | Server has an internal configuration error (circular content negotiation). |
+> | **507** | Insufficient Storage | Server Error | Server cannot store the data needed to complete the request (WebDAV). |
+> | **508** | Loop Detected | Server Error | Server detected an infinite loop while processing the request (WebDAV). |
+> | **510** | Not Extended | Server Error | Server requires further extensions to the request to fulfill it. |
+> | **511** | Network Authentication Required | Server Error | Client must authenticate to gain network access (captive portal). |
+> 
+> ```
+> mvn test -Dspring.profiles.active=dev -Dtest=JwtAuthenticationFilterUnitTest
+> 
+> mvn test -Dspring.profiles.active=dev -Dtest=JwtAuthenticationFilterUnitTest#testMissingOrInvalidAuthHeade
+> 
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerLoginIntegrationTest
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerLoginIntegrationTest#testLoginReturnsValidToken
+> 
+> mvn test -Dspring.profiles.active=dev -DfailIfNoTests=false
+> ````
 > </details>
