@@ -6,6 +6,7 @@ import com.subscriptionapi.dto.ForgotPasswordRequest;
 import com.subscriptionapi.dto.ResetPasswordRequest;
 import com.subscriptionapi.dto.AuthResponse;
 import com.subscriptionapi.dto.LoginRequest;
+import com.subscriptionapi.dto.RefreshTokenRequest;
 
 public interface AuthService {
     AuthResponse registerUser(RegisterRequest registerRequest);
@@ -14,5 +15,7 @@ public interface AuthService {
     void changePassword(Long userId, ChangePasswordRequest changePasswordRequest);
     void forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
     void resetPassword(ResetPasswordRequest resetPasswordRequest);
+    AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+
 }
 

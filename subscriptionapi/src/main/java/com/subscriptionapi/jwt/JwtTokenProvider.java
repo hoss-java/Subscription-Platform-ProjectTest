@@ -58,6 +58,7 @@ public class JwtTokenProvider {
     public String generateRefreshToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
+        claims.put("jti", UUID.randomUUID().toString());
         return createToken(claims, user.getEmail(), refreshTokenExpirationMs);
     }
 
@@ -111,8 +112,7 @@ public class JwtTokenProvider {
                 .expiryDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationMs / 1000))
                 .isRevoked(false)
                 .build();
-        
-        refreshTokenRepository.save(token);
+        refreshTokenRepository.save(token); 
     }
     
     public boolean isRefreshTokenValid(String token) {

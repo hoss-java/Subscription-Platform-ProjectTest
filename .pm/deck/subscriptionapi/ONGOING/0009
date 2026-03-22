@@ -23,21 +23,80 @@ The goal of this card is to create integration tests that verify the entire auth
 - All tests pass consistently
 
 # TODO:
-- [ ] 1. Create AuthenticationIntegrationTest class
-- [ ] 2. Configure test database and test properties
-- [ ] 3. Create test for successful user registration
-- [ ] 4. Create test for duplicate email registration (409 Conflict)
-- [ ] 5. Create test for invalid email format (400 Bad Request)
-- [ ] 6. Create test for successful login
-- [ ] 7. Create test for login with invalid credentials (401 Unauthorized)
-- [ ] 8. Create test for accessing protected endpoint with valid token
-- [ ] 9. Create test for accessing protected endpoint without token (401 Unauthorized)
-- [ ] 10. Create test for accessing protected endpoint with expired token
-- [ ] 11. Create test for token refresh
-- [ ] 12. Create test for role-based access control
-- [ ] 13. Create test for password change
-- [ ] 14. Create test for password reset flow
-- [ ] 15. Run tests and verify coverage
+- [x] 1. Create AuthenticationIntegrationTest class
+- [x] 2. Configure test database and test properties
+- [x] 3. Create test for successful user registration
+- [x] 4. Create test for duplicate email registration (409 Conflict)
+- [x] 5. Create test for invalid email format (400 Bad Request)
+- [x] 6. Create test for successful login
+- [x] 7. Create test for login with invalid credentials (401 Unauthorized)
+- [x] 8. Create test for accessing protected endpoint with valid token
+- [x] 9. Create test for accessing protected endpoint without token (401 Unauthorized)
+- [x] 10. Create test for accessing protected endpoint with expired token
+- [x] 11. Create test for token refresh
+- [x] 12. Create test for role-based access control
+- [x] 13. Create test for password change
+- [x] 14. Create test for password reset flow
+- [-] 15. Run tests and verify coverage
 
 # Reports:
-*
+* Configure test database and test properties
+> * Test database configuration verified using application-dev.properties with H2 in-memory database. @ActiveProfiles("dev") annotation activates dev profile for all test classes. Database is configured with spring.jpa.hibernate.ddl-auto=create-drop strategy ensuring fresh schema creation before each test and automatic cleanup after. Production profile (application-prod.properties) updated by removing DEBUG logging levels and sensitive SQL output settings. Logging configured to WARN level for root and INFO for application code in production, with spring.jpa.show-sql disabled for performance.
+* Create test for successful user registration
+> * Test for successful user registration already exists in AuthenticationIntegrationTest class under RegistrationTests nested class. The testRegistrationSuccess() method verifies that a user can register with valid data (email, password, passwordConfirm, firstName, lastName). Test expects HTTP 201 Created status and validates that a success message is returned in the response. Test uses MockMvc to perform POST request to /api/auth/register endpoint with properly formatted RegisterRequest DTO.
+* Create test for duplicate email registration (409 Conflict)
+> * Test for duplicate email registration already exists in AuthenticationIntegrationTest class under RegistrationTests nested class. The testRegistrationWithDuplicateEmail() method verifies that registration fails when attempting to register with an email that already exists (TEST_EMAIL is pre-created in setUp()). Test expects HTTP 409 Conflict status and validates that an error message is returned in the response. Test uses MockMvc to perform POST request to /api/auth/register endpoint with RegisterRequest DTO containing duplicate email address.
+* Create test for invalid email format (400 Bad Request)
+> * Test for invalid email format already exists in AuthenticationIntegrationTest class under RegistrationTests nested class. The testRegistrationWithInvalidEmailFormat() method uses @ParameterizedTest with @ValueSource annotation to test multiple invalid email formats (invalid-email, user@, @example.com, user @example.com). Test verifies that HTTP 400 Bad Request status is returned for each invalid email format. Test uses MockMvc to perform POST request to /api/auth/register endpoint with RegisterRequest DTO containing invalid email addresses.
+* Create test for successful login
+> * Test for successful login already exists in AuthenticationIntegrationTest class under LoginTests nested class. The testLoginSuccess() method verifies that a user can login with valid credentials (TEST_EMAIL and TEST_PASSWORD). Test expects HTTP 200 OK status and validates that a JWT token and success message are returned in the response. Test uses MockMvc to perform POST request to /api/auth/login endpoint with properly formatted LoginRequest DTO.
+* Create test for login with invalid credentials (401 Unauthorized)
+> * Test for login with invalid credentials already exists in AuthenticationIntegrationTest class under LoginTests nested class. The testLoginWithInvalidCredentials() method uses @ParameterizedTest with @CsvSource annotation to test multiple invalid credential scenarios (nonexistent email, wrong password, wrong case password). Test verifies that HTTP 401 Unauthorized status is returned for each invalid credential combination. Test uses MockMvc to perform POST request to /api/auth/login endpoint with LoginRequest DTO containing invalid credentials.
+* Create test for accessing protected endpoint with valid token
+> * Test for accessing protected endpoint with valid token already exists in AuthenticationIntegrationTest class under ProtectedEndpointsTests nested class. The testAccessProtectedEndpointWithValidToken() method verifies that a user can access protected endpoint (/api/auth/validate) when providing a valid JWT token in Authorization header with Bearer scheme. Test expects HTTP 200 OK status. Test uses MockMvc to perform GET request to protected endpoint with valid token generated during setUp().
+* Create test for accessing protected endpoint without token (401 Unauthorized)
+> * Test for accessing protected endpoint without token already exists in AuthenticationIntegrationTest class under ProtectedEndpointsTests nested class. The testAccessProtectedEndpointWithoutToken() method verifies that access to protected endpoint (/api/auth/validate) is denied when no Authorization header is provided. Test expects HTTP 401 Unauthorized status. Test uses MockMvc to perform GET request to protected endpoint without token.
+* Create test for accessing protected endpoint with expired token
+> * Test for accessing protected endpoint with expired token already exists in AuthenticationIntegrationTest class under ProtectedEndpointsTests nested class. The testAccessProtectedEndpointWithExpiredToken() method verifies that access to protected endpoint (/api/auth/validate) is denied when an expired JWT token is provided in Authorization header with Bearer scheme. Test expects HTTP 401 Unauthorized status. Test uses MockMvc to perform GET request to protected endpoint with hardcoded expired token.
+* Create test for role-based access control
+> * Role-based access control testing already implemented in ProtectedEndpointsIntegrationTest.java with testRoleBasedAccessControl() parameterized test method. Test covers three roles (CUSTOMER, OPERATOR, ADMIN) with 12 test cases validating endpoint access permissions. CUSTOMER role verified to access /api/profile (200) while being denied access to /api/operator/dashboard and /api/admin/dashboard (403). OPERATOR role verified to access /api/operator/dashboard and /api/operator/plans (200) while being denied /api/profile and /api/admin/dashboard (403). ADMIN role verified to access /api/admin/dashboard and /api/admin/users (200). All invalid endpoints return 404 across all roles. Test uses @CsvSource parameterization for comprehensive coverage of role-endpoint combinations ensuring RBAC enforcement is working correctly across the authentication system.
+* Create test for password change
+> * Password change testing fully implemented in AuthControllerPasswordIntegrationTest.java covering three nested test classes: ChangePasswordTests, ForgotPasswordTests, and ResetPasswordTests. ChangePasswordTests validates successful password change with correct old password returning HTTP 200, rejects incorrect old password with HTTP 401, requires authentication token with HTTP 401 for unauthenticated requests, validates invalid JWT tokens with HTTP 400, and tests blank password fields using parametrized testing. ForgotPasswordTests verifies password reset initiation with valid email returning HTTP 200, rejects non-existent emails with HTTP 404, validates email format with parametrized testing for blank/invalid formats returning HTTP 400, and prevents inactive users from initiating resets with HTTP 403. ResetPasswordTests confirms successful password reset with valid non-expired tokens returning HTTP 200, rejects invalid tokens with HTTP 404, expires tokens after configured time period returning HTTP 400, prevents token reuse with HTTP 400, and validates blank input fields with parametrized testing. Helper methods createValidResetToken(), createExpiredResetToken(), and createUsedResetToken() support comprehensive token lifecycle testing.
+* Create test for password reset flow
+> * Password reset flow testing fully implemented in AuthControllerPasswordIntegrationTest.java within ResetPasswordTests nested class covering complete token lifecycle. Test validates successful password reset with valid non-expired tokens returning HTTP 200 with password updated in database and token marked as used. Invalid token scenario rejects requests with HTTP 404 preventing unauthorized password resets. Expired token scenario validates token expiration mechanism returning HTTP 400 with user notification of expired token. Token reuse prevention tested by marking tokens as used after first reset and rejecting subsequent reset attempts with HTTP 400. Blank input validation uses parametrized testing covering three scenarios: blank token with valid password, valid token with blank password, and both fields blank, all returning HTTP 400. Helper method createValidResetToken() generates non-expired unused tokens, createExpiredResetToken() generates tokens with expiration time in past, and createUsedResetToken() marks tokens as already used. Complete flow ensures password reset tokens are single-use, time-limited, and properly validated before allowing password changes.
+
+---
+``` 
+mvn clean compile
+
+mvn test -Dspring.profiles.active=dev
+
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest
+
+# runing nested tests
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$RegistrationTests
+
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$RegistrationTests -Dtest.method=testRegistrationSuccess
+
+# runing nested tests
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$LoginTests
+
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$LoginTests -Dtest.method=testLoginSuccess
+
+
+# runing nested tests
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$TokenValidationTests
+
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$TokenValidationTests -Dtest.method=testValidateTokenSuccess
+
+# runing nested tests
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$ProtectedEndpointsTests
+
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$ProtectedEndpointsTests -Dtest.method=testAccessProtectedEndpointWithValidToken
+
+# runing nested tests
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$TokenRefreshTests
+
+mvn test -Dspring.profiles.active=dev -Dtest=AuthenticationIntegrationTest$TokenRefreshTests -Dtest.method=testRefreshTokenSuccess
+
+```

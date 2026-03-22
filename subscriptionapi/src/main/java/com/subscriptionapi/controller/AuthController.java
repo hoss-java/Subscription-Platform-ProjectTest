@@ -5,6 +5,7 @@ import com.subscriptionapi.dto.AuthResponse;
 import com.subscriptionapi.dto.ChangePasswordRequest;
 import com.subscriptionapi.dto.ForgotPasswordRequest;
 import com.subscriptionapi.dto.ResetPasswordRequest;
+import com.subscriptionapi.dto.RefreshTokenRequest;
 import com.subscriptionapi.entity.User;
 import com.subscriptionapi.exception.UserNotFoundException;
 import com.subscriptionapi.exception.UserInactiveException;
@@ -88,5 +89,12 @@ public class AuthController {
                 .message("Password has been reset successfully")
                 .token(null)
                 .build());
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        AuthResponse response = authService.refreshToken(refreshTokenRequest);
+        return ResponseEntity.ok(response);
     }
 }

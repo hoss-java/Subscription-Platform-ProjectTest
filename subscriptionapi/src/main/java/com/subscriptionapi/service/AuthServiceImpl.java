@@ -6,6 +6,7 @@ import com.subscriptionapi.dto.AuthResponse;
 import com.subscriptionapi.dto.ChangePasswordRequest;
 import com.subscriptionapi.dto.ForgotPasswordRequest;
 import com.subscriptionapi.dto.ResetPasswordRequest;
+import com.subscriptionapi.dto.RefreshTokenRequest;
 
 import com.subscriptionapi.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
         userService.resetPassword(resetPasswordRequest); // throws ResourceNotFoundException
+    }
+
+    @Override
+    public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        return userService.refreshToken(refreshTokenRequest);
     }
 }
 
