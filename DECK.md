@@ -1525,22 +1525,69 @@ gantt
 > - Both endpoints are tested with valid and invalid inputs
 > 
 > # TODO:
-> - [ ] 1. Create ChangePasswordRequest DTO with oldPassword and newPassword
-> - [ ] 2. Create ForgotPasswordRequest DTO with email
-> - [ ] 3. Create ResetPasswordRequest DTO with token and newPassword
-> - [ ] 4. Create PasswordResetToken entity with token, user, expiration
-> - [ ] 5. Create PasswordResetTokenRepository
-> - [ ] 6. Implement changePassword method in UserService
-> - [ ] 7. Implement forgotPassword method in UserService
-> - [ ] 8. Implement resetPassword method in UserService
-> - [ ] 9. Implement password reset token generation and validation
-> - [ ] 10. Create email service for sending reset links (mock or real)
-> - [ ] 11. Add change-password endpoint to AuthController
-> - [ ] 12. Add forgot-password endpoint to AuthController
-> - [ ] 13. Add reset-password endpoint to AuthController
-> - [ ] 14. Create unit tests for password change/reset logic
-> - [ ] 15. Create integration tests for password endpoints
+> - [x] 1. Create ChangePasswordRequest DTO with oldPassword and newPassword
+> - [x] 2. Create ForgotPasswordRequest DTO with email
+> - [x] 3. Create ResetPasswordRequest DTO with token and newPassword
+> - [x] 4. Create PasswordResetToken entity with token, user, expiration
+> - [x] 5. Create PasswordResetTokenRepository
+> - [x] 6. Implement changePassword method in UserService
+> - [x] 7. Implement forgotPassword method in UserService
+> - [x] 8. Implement resetPassword method in UserService
+> - [x] 9. Implement password reset token generation and validation
+> - [x] 10. Create email service for sending reset links (mock or real)
+> - [x] 11. Add change-password endpoint to AuthController
+> - [x] 12. Add forgot-password endpoint to AuthController
+> - [x] 13. Add reset-password endpoint to AuthController
+> - [x] 14. Create unit tests for password change/reset logic
+> - [x] 15. Create integration tests for password endpoints
 > 
 > # Reports:
-> *
+> Here's the report for the ChangePasswordRequest DTO:
+> 
+> * Create ChangePasswordRequest DTO with oldPassword and newPassword
+> > * ChangePasswordRequest DTO created with two fields: oldPassword and newPassword. Both fields are validated with @NotBlank annotations to ensure users provide non-empty values. This DTO will be used to capture password change requests from authenticated users and validate input before processing.
+> * Create ForgotPasswordRequest DTO with email
+> > * ForgotPasswordRequest DTO created with a single email field. The field is validated with @NotBlank and @Email annotations to ensure users provide a valid email address. This DTO will be used to initiate the password reset process by accepting the user's email.
+> * Create ResetPasswordRequest DTO with token and newPassword
+> > * ResetPasswordRequest DTO created with two fields: token and newPassword. Both fields are validated with @NotBlank annotations to ensure users provide non-empty values. This DTO will be used to complete the password reset process by validating the reset token and applying the new password.
+> * Create PasswordResetToken entity with token, user, expiration
+> > * PasswordResetToken entity created with fields: token (unique identifier), user (ManyToOne relationship with User entity), expirationTime (LocalDateTime for token validity), createdAt (timestamp of token creation), and isUsed (boolean flag to ensure single-use tokens). This entity stores password reset tokens and tracks their expiration and usage status.
+> * Create PasswordResetTokenRepository
+> > * PasswordResetTokenRepository interface created extending JpaRepository. It provides three methods: findByToken() to retrieve a token by its value, findByUserAndIsUsedFalse() to find unused reset tokens for a user, and deleteByExpirationTimeBefore() to clean up expired tokens. These methods enable token validation, single-use enforcement, and automatic cleanup of stale tokens.
+> * Implement changePassword method in UserService
+> > * changePassword method implemented in UserService to allow authenticated users to change their password. The method verifies the old password, validates new password strength, ensures the new password differs from the old one, hashes the new password, and updates the user record. It throws InvalidPasswordException if the old password is incorrect and RuntimeException for validation failures.
+> * Implement forgotPassword method in UserService
+> > * forgotPassword method implemented to initiate password reset process. The method finds the user by email, verifies the account is active, generates a unique reset token using UUID, creates a PasswordResetToken entity with 24-hour expiration, saves it to the database, and triggers email notification (placeholder for email service implementation). It throws appropriate exceptions if user is not found or account is inactive.
+> * Implement resetPassword method in UserService
+> > * resetPassword method implemented to complete the password reset process. The method validates the reset token exists, ensures it hasn't been used before, checks if the token hasn't expired, validates new password strength, hashes and updates the user's password, and marks the token as used. It throws appropriate exceptions for invalid, expired, or already-used tokens to enforce single-use and time-limited token constraints.
+> * Create email service for sending reset links (mock or real)
+> > * EmailService created with mock implementation for sending password reset emails. The service logs password reset emails and generates reset links containing the reset token that directs users to the frontend reset page. Email configuration properties are added to application.properties with placeholders for SMTP credentials. The service is designed to support both mock logging and future real email implementation using JavaMailSender.
+> * Add change-password endpoint to AuthController
+> > * change-password endpoint added to AuthController as a POST endpoint at /api/auth/change-password. The endpoint accepts a ChangePasswordRequest DTO and extracts the authenticated user's ID from the JWT token in the Authorization header. It calls the authService.changePassword method to process the password change and returns a success response. The endpoint requires valid authentication and input validation.
+> * Add forgot-password endpoint to AuthController
+> > * forgot-password endpoint added to AuthController as a POST endpoint at /api/auth/forgot-password. The endpoint accepts a ForgotPasswordRequest DTO containing the user's email and initiates the password reset process. It calls authService.forgotPassword which triggers email notification with a password reset link. The endpoint returns a success message without requiring authentication and validates input before processing.
+> * Add reset-password endpoint to AuthController
+> > * reset-password endpoint added to AuthController as a POST endpoint at /api/auth/reset-password. The endpoint accepts a ResetPasswordRequest DTO containing the reset token and new password. It calls authService.resetPassword which validates the token expiration and single-use constraint, then updates the user's password and marks the token as used. The endpoint returns a success message without requiring authentication and validates input before processing.
+> 
+> ```
+> mvn test -Dspring.profiles.active=dev
+> 
+> mvn test -Dspring.profiles.active=dev -Dtest=UserServicePasswordUnitTest
+> 
+> # runing nested tests
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ChangePasswordTests
+> 
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ChangePasswordTests -Dtest.method=testChangePasswordSuccess
+> 
+> #---
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ForgotPasswordTests -Dtest.method=testForgotPasswordSuccess
+> 
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ForgotPasswordTests 
+> 
+> #---
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ResetPasswordTests -Dtest.method=testResetPasswordSuccess
+> 
+> mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ResetPasswordTests
+> 
+> ```
 > </details>
