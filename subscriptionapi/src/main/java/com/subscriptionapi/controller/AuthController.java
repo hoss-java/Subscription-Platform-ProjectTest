@@ -2,6 +2,14 @@ package com.subscriptionapi.controller;
 
 import com.subscriptionapi.dto.RegisterRequest;
 import com.subscriptionapi.dto.AuthResponse;
+import com.subscriptionapi.dto.ChangePasswordRequest;
+import com.subscriptionapi.dto.ForgotPasswordRequest;
+import com.subscriptionapi.dto.ResetPasswordRequest;
+import com.subscriptionapi.entity.User;
+import com.subscriptionapi.exception.UserNotFoundException;
+import com.subscriptionapi.exception.UserInactiveException;
+
+
 import com.subscriptionapi.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +52,41 @@ public class AuthController {
                 .message("Token is valid")
                 .build());
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<AuthResponse> changePassword(
+            @Valid @RequestBody ChangePasswordRequest changePasswordRequest,
+            @RequestHeader("Authorization") String token) {
+        
+        Long userId = authService.getUserIdFromToken(token);
+        authService.changePassword(userId, changePasswordRequest);
+        
+        return ResponseEntity.ok(AuthResponse.builder()
+                .message("Password changed successfully")
+                .token(null)
+                .build());
+    }
+
+    @PostMapping("/forgot-password")  // Should be exactly this
+    public ResponseEntity<AuthResponse> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        authService.forgotPassword(forgotPasswordRequest);
+        return ResponseEntity.ok(AuthResponse.builder()
+                .message("Password reset link has been sent to your email")
+                .token(null)
+                .build());
+    }
+
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<AuthResponse> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        
+        authService.resetPassword(resetPasswordRequest);
+        
+        return ResponseEntity.ok(AuthResponse.builder()
+                .message("Password has been reset successfully")
+                .token(null)
+                .build());
+    }
 }
-
-

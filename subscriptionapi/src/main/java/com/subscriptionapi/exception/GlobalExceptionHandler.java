@@ -21,9 +21,13 @@ import java.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.subscriptionapi.dto.ErrorResponse;
+import com.subscriptionapi.dto.AuthResponse;
+
 
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import java.nio.charset.StandardCharsets;
+
+import com.subscriptionapi.exception.ResourceNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,16 +41,25 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
-
+    
     @ExceptionHandler(UserInactiveException.class)
-    public ResponseEntity<ErrorResponse> handleUserInactive(UserInactiveException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    public ResponseEntity<AuthResponse> handleUserInactive(UserInactiveException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(AuthResponse.builder()
                 .message(ex.getMessage())
-                .status(HttpStatus.FORBIDDEN.value())
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+                .token(null)
+                .build());
     }
+    
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<AuthResponse> handleUserNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(AuthResponse.builder()
+                .message(ex.getMessage())
+                .token(null)
+                .build());
+    }
+
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
@@ -88,7 +101,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<AuthResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(AuthResponse.builder()
+                        .message(ex.getMessage())
+                        .token(null)
+                        .build());
+    }
 }
-
 
 

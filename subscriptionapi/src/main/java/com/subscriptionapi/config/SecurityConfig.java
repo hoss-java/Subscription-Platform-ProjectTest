@@ -68,6 +68,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/forgot-password").permitAll()
 
                 // Allow CORS preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()                

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 public class JwtTokenProvider {
@@ -131,5 +132,9 @@ public class JwtTokenProvider {
             rt.setIsRevoked(true);
             refreshTokenRepository.save(rt);
         });
+    }
+
+    public String generatePasswordResetToken() {
+        return UUID.randomUUID().toString();
     }
 }

@@ -1,13 +1,18 @@
 package com.subscriptionapi.service;
 
 import com.subscriptionapi.dto.RegisterRequest;
+import com.subscriptionapi.dto.ChangePasswordRequest;
+import com.subscriptionapi.dto.ForgotPasswordRequest;
+import com.subscriptionapi.dto.ResetPasswordRequest;
 import com.subscriptionapi.dto.AuthResponse;
 import com.subscriptionapi.entity.User;
 import com.subscriptionapi.entity.Role;
 import com.subscriptionapi.entity.RoleType;
+import com.subscriptionapi.entity.PasswordResetToken;
 import com.subscriptionapi.repository.UserRepository;
 import com.subscriptionapi.repository.RoleRepository;
 import com.subscriptionapi.repository.RefreshTokenRepository;
+import com.subscriptionapi.repository.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +25,9 @@ import com.subscriptionapi.jwt.JwtTokenProvider;
 import com.subscriptionapi.dto.LoginRequest;
 import com.subscriptionapi.exception.UserInactiveException;
 import com.subscriptionapi.exception.InvalidCredentialsException;
-import com.subscriptionapi.exception.InvalidCredentialsException;
+import com.subscriptionapi.exception.InvalidPasswordException;
+import com.subscriptionapi.exception.ResourceNotFoundException;
+import com.subscriptionapi.exception.InvalidResetTokenException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +39,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordValidator passwordValidator;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         // Add this to the registerUser method after password confirmation check
@@ -124,5 +132,98 @@ public class UserService {
                         .isActive(user.getIsActive())
                         .build())
                 .build();
+    }
+
+    public void changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
+        // Find user by ID
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidPasswordException("User not found"));
+
+        // Verify old password
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw new InvalidPasswordException("Old password is incorrect");
+        }
+        
+        // Validate new password strength
+        if (!passwordValidator.isValidPassword(changePasswordRequest.getNewPassword())) {
+            throw new InvalidPasswordException("New password does not meet strength requirements: " + 
+                passwordValidator.getPasswordRequirements());
+        }
+        
+        // Ensure old and new passwords are different
+        if (changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())) {
+            throw new RuntimeException("New password must be different from old password");
+        }
+        
+        // Hash and update password
+        String hashedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        user.setPassword(hashedPassword);
+        user.setUpdatedAt(LocalDateTime.now());
+        
+        userRepository.save(user);
+    }
+
+    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        // Find user by email
+        User user = userRepository.findByEmail(forgotPasswordRequest.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User with this email not found"));
+        
+        // Check if user is active
+        if (!user.getIsActive()) {
+            throw new UserInactiveException("User account is inactive");
+        }
+        
+        // Generate reset token
+        String resetToken = jwtTokenProvider.generatePasswordResetToken();
+        
+        // Create password reset token entity
+        PasswordResetToken passwordResetToken = PasswordResetToken.builder()
+                .token(resetToken)
+                .user(user)
+                .expirationTime(LocalDateTime.now().plusHours(24))
+                .isUsed(false)
+                .build();
+        
+        // Save reset token
+        passwordResetTokenRepository.save(passwordResetToken);
+        
+        // Send reset email (implement email service)
+        // emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
+    }
+
+    public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        // Find reset token
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(resetPasswordRequest.getToken())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid reset token"));
+        
+        // Check if token is already used
+        if (passwordResetToken.getIsUsed()) {
+            throw new InvalidResetTokenException("Reset token has already been used");
+        }
+        
+        // Check if token is expired
+        if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationTime())) {
+            throw new InvalidResetTokenException("Reset token has expired");
+        }
+        
+        // Get user from token
+        User user = passwordResetToken.getUser();
+        
+        // Validate new password strength
+        if (!passwordValidator.isValidPassword(resetPasswordRequest.getNewPassword())) {
+            throw new InvalidResetTokenException("New password does not meet strength requirements: " + 
+                passwordValidator.getPasswordRequirements());
+        }
+        
+        // Hash and update password
+        String hashedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
+        user.setPassword(hashedPassword);
+        user.setUpdatedAt(LocalDateTime.now());
+        
+        userRepository.save(user);
+        
+        // Mark token as used
+        passwordResetToken.setIsUsed(true);
+        passwordResetTokenRepository.save(passwordResetToken);
     }
 }
