@@ -734,42 +734,6 @@ gantt
 > >>- Always add **`@DisplayName`** for clarity in test reports
 > </details>
 
-## 001-0009
-> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to create integration tests that verify the entire authentication flow works correctly end-to-end.
-> 
-> # DOD (definition of done):
-> - Integration tests cover registration, login, token validation, and logout
-> - Tests use TestRestTemplate or MockMvc for HTTP testing
-> - Database is properly set up and torn down for each test
-> - All success and failure scenarios are tested
-> - Test coverage for authentication is above 80%
-> - Tests are documented and easy to understand
-> - All tests pass consistently
-> 
-> # TODO:
-> - [ ] 1. Create AuthenticationIntegrationTest class
-> - [ ] 2. Configure test database and test properties
-> - [ ] 3. Create test for successful user registration
-> - [ ] 4. Create test for duplicate email registration (409 Conflict)
-> - [ ] 5. Create test for invalid email format (400 Bad Request)
-> - [ ] 6. Create test for successful login
-> - [ ] 7. Create test for login with invalid credentials (401 Unauthorized)
-> - [ ] 8. Create test for accessing protected endpoint with valid token
-> - [ ] 9. Create test for accessing protected endpoint without token (401 Unauthorized)
-> - [ ] 10. Create test for accessing protected endpoint with expired token
-> - [ ] 11. Create test for token refresh
-> - [ ] 12. Create test for role-based access control
-> - [ ] 13. Create test for password change
-> - [ ] 14. Create test for password reset flow
-> - [ ] 15. Run tests and verify coverage
-> 
-> # Reports:
-> *
-> </details>
-
 ## 001-0010
 > **Create frontend authentication service and global state management.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -1590,4 +1554,40 @@ gantt
 > mvn test -Dspring.profiles.active=dev -Dtest=AuthControllerPasswordIntegrationTest$ResetPasswordTests
 > 
 > ```
+> </details>
+
+## 001-0009
+> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> The goal of this card is to create integration tests that verify the entire authentication flow works correctly end-to-end.
+> 
+> # DOD (definition of done):
+> - Integration tests cover registration, login, token validation, and logout
+> - Tests use TestRestTemplate or MockMvc for HTTP testing
+> - Database is properly set up and torn down for each test
+> - All success and failure scenarios are tested
+> - Test coverage for authentication is above 80%
+> - Tests are documented and easy to understand
+> - All tests pass consistently
+> 
+> # TODO:
+> - [ ] 1. Create AuthenticationIntegrationTest class
+> - [ ] 2. Configure test database and test properties
+> - [ ] 3. Create test for successful user registration
+> - [ ] 4. Create test for duplicate email registration (409 Conflict)
+> - [ ] 5. Create test for invalid email format (400 Bad Request)
+> - [ ] 6. Create test for successful login
+> - [ ] 7. Create test for login with invalid credentials (401 Unauthorized)
+> - [ ] 8. Create test for accessing protected endpoint with valid token
+> - [ ] 9. Create test for accessing protected endpoint without token (401 Unauthorized)
+> - [ ] 10. Create test for accessing protected endpoint with expired token
+> - [ ] 11. Create test for token refresh
+> - [ ] 12. Create test for role-based access control
+> - [ ] 13. Create test for password change
+> - [ ] 14. Create test for password reset flow
+> - [ ] 15. Run tests and verify coverage
+> 
+> # Reports:
+> *
 > </details>
