@@ -734,42 +734,6 @@ gantt
 > >>- Always add **`@DisplayName`** for clarity in test reports
 > </details>
 
-## 001-0008
-> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to provide users with the ability to change their password when authenticated and to reset their password if forgotten.
-> 
-> # DOD (definition of done):
-> - POST /api/auth/change-password endpoint allows authenticated users to change password
-> - POST /api/auth/forgot-password endpoint initiates password reset
-> - POST /api/auth/reset-password endpoint completes password reset with token
-> - Old password verification is required for password change
-> - Reset tokens are time-limited and single-use
-> - Passwords are hashed before storage
-> - Both endpoints are tested with valid and invalid inputs
-> 
-> # TODO:
-> - [ ] 1. Create ChangePasswordRequest DTO with oldPassword and newPassword
-> - [ ] 2. Create ForgotPasswordRequest DTO with email
-> - [ ] 3. Create ResetPasswordRequest DTO with token and newPassword
-> - [ ] 4. Create PasswordResetToken entity with token, user, expiration
-> - [ ] 5. Create PasswordResetTokenRepository
-> - [ ] 6. Implement changePassword method in UserService
-> - [ ] 7. Implement forgotPassword method in UserService
-> - [ ] 8. Implement resetPassword method in UserService
-> - [ ] 9. Implement password reset token generation and validation
-> - [ ] 10. Create email service for sending reset links (mock or real)
-> - [ ] 11. Add change-password endpoint to AuthController
-> - [ ] 12. Add forgot-password endpoint to AuthController
-> - [ ] 13. Add reset-password endpoint to AuthController
-> - [ ] 14. Create unit tests for password change/reset logic
-> - [ ] 15. Create integration tests for password endpoints
-> 
-> # Reports:
-> *
-> </details>
-
 ## 001-0009
 > **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -1543,4 +1507,40 @@ gantt
 > mvn test -Dspring.profiles.active=dev -Dtest=ProtectedEndpointsIntegrationTest#testCorsOriginWithDifferentPaths
 > 
 > ```
+> </details>
+
+## 001-0008
+> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> The goal of this card is to provide users with the ability to change their password when authenticated and to reset their password if forgotten.
+> 
+> # DOD (definition of done):
+> - POST /api/auth/change-password endpoint allows authenticated users to change password
+> - POST /api/auth/forgot-password endpoint initiates password reset
+> - POST /api/auth/reset-password endpoint completes password reset with token
+> - Old password verification is required for password change
+> - Reset tokens are time-limited and single-use
+> - Passwords are hashed before storage
+> - Both endpoints are tested with valid and invalid inputs
+> 
+> # TODO:
+> - [ ] 1. Create ChangePasswordRequest DTO with oldPassword and newPassword
+> - [ ] 2. Create ForgotPasswordRequest DTO with email
+> - [ ] 3. Create ResetPasswordRequest DTO with token and newPassword
+> - [ ] 4. Create PasswordResetToken entity with token, user, expiration
+> - [ ] 5. Create PasswordResetTokenRepository
+> - [ ] 6. Implement changePassword method in UserService
+> - [ ] 7. Implement forgotPassword method in UserService
+> - [ ] 8. Implement resetPassword method in UserService
+> - [ ] 9. Implement password reset token generation and validation
+> - [ ] 10. Create email service for sending reset links (mock or real)
+> - [ ] 11. Add change-password endpoint to AuthController
+> - [ ] 12. Add forgot-password endpoint to AuthController
+> - [ ] 13. Add reset-password endpoint to AuthController
+> - [ ] 14. Create unit tests for password change/reset logic
+> - [ ] 15. Create integration tests for password endpoints
+> 
+> # Reports:
+> *
 > </details>
