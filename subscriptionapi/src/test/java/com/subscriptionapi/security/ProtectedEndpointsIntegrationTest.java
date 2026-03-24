@@ -91,26 +91,15 @@ class ProtectedEndpointsIntegrationTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        roleRepository.deleteAll();
 
-        customerRole = Role.builder()
-                .name(RoleType.CUSTOMER)
-                .description("Customer role")
-                .build();
+        Role customerRole = roleRepository.findByName(RoleType.CUSTOMER)
+            .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
 
-        operatorRole = Role.builder()
-                .name(RoleType.OPERATOR)
-                .description("Operator role")
-                .build();
+        Role operatorRole = roleRepository.findByName(RoleType.OPERATOR)
+            .orElseThrow(() -> new RuntimeException("OPERATOR role not found"));
 
-        adminRole = Role.builder()
-                .name(RoleType.ADMIN)
-                .description("Admin role")
-                .build();
-
-        roleRepository.save(customerRole);
-        roleRepository.save(operatorRole);
-        roleRepository.save(adminRole);
+        Role adminRole = roleRepository.findByName(RoleType.ADMIN)
+            .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
 
         testCustomer = User.builder()
                 .email("customer@example.com")

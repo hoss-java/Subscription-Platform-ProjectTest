@@ -70,12 +70,9 @@ class AuthenticationIntegrationTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        roleRepository.deleteAll();
 
-        customerRole = new Role();
-        customerRole.setName(RoleType.CUSTOMER);
-        customerRole.setDescription("Customer role");
-        roleRepository.save(customerRole);
+        customerRole = roleRepository.findByName(RoleType.CUSTOMER)
+                .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
 
         testUser = new User();
         testUser.setEmail(TEST_EMAIL);

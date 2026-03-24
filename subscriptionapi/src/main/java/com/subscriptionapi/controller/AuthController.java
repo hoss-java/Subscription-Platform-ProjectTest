@@ -28,13 +28,26 @@ public class AuthController {
     
     private final AuthService authService;
     
-    @PostMapping(value = "/register", 
-                 produces = {"application/json", "text/plain"})
-    public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest registerRequest) {
+@PostMapping(value = "/register", 
+             produces = {"application/json", "text/plain"})
+public ResponseEntity<AuthResponse> register(
+        @Valid @RequestBody RegisterRequest registerRequest) {
+    
+    System.out.println("🔵 REGISTER ENDPOINT CALLED");
+    System.out.println("Request email: " + registerRequest.getEmail());
+    System.out.println("Request body: " + registerRequest);
+    
+    try {
         AuthResponse response = authService.registerUser(registerRequest);
+        System.out.println("✅ Registration successful for: " + registerRequest.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception ex) {
+        System.out.println("❌ Registration failed: " + ex.getMessage());
+        ex.printStackTrace();
+        throw ex;
     }
+}
+
 
     @PostMapping(value = "/login", 
                  produces = {"application/json", "text/plain"})

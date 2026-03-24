@@ -88,10 +88,8 @@ class AuthControllerLoginIntegrationTest {
     @BeforeEach
     void setUp() {
         // Create CUSTOMER role
-        Role customerRole = new Role();
-        customerRole.setName(RoleType.CUSTOMER);
-        customerRole.setDescription("Customer role");
-        roleRepository.save(customerRole);
+        Role customerRole = roleRepository.findByName(RoleType.CUSTOMER)
+            .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
 
         // Create test users with encoded passwords (matching UserService.loginUser() logic)
         createTestUser("user1@example.com", "password123", "John", "Doe", customerRole);

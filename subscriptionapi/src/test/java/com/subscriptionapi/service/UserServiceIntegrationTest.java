@@ -67,15 +67,9 @@ public class UserServiceIntegrationTest {
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
-        roleRepository.deleteAll();
         
-        customerRole = Role.builder()
-                .name(RoleType.CUSTOMER)
-                .description("Customer role")
-                .permissions(new HashSet<>())
-                .users(new HashSet<>())
-                .build();
-        roleRepository.save(customerRole);
+        customerRole = roleRepository.findByName(RoleType.CUSTOMER)
+                .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
     }
 
     // ============================================================================
