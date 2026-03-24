@@ -43,7 +43,7 @@ public class Role {
     @EqualsAndHashCode.Exclude
     private Set<User> users = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @Builder.Default
     @EqualsAndHashCode.Exclude
     @JoinTable(

@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @DisplayName("Authentication Integration Tests")
 class AuthenticationIntegrationTest {

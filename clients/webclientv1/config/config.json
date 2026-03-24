@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "Web Client",
+    "header": {
+      "h1": "Subscription System",
+      "p": "Web Client for Spring API"
+    }
+  },
+  "pages": [
+    {
+      "name": "login",
+      "path": "pages/login.html",
+      "title": "Login",
+      "script": "LoginPage"
+    },
+    {
+      "name": "register",
+      "path": "pages/register.html",
+      "title": "Register",
+      "script": "RegisterPage"
+    },
+    {
+      "name": "dashboard",
+      "path": "pages/dashboard.html",
+      "title": "Dashboard",
+      "script": "DashboardPage",
+      "isProtected": true
+    }
+  ],
+  "sections": [
+    {
+      "name": "profile",
+      "path": "pages/sections/profile.html",
+      "title": "Profile",
+      "script": "ProfileSection",
+      "icon": "user",
+      "roles": ["customer", "admin", "operator"]
+    },
+    {
+      "name": "admin",
+      "path": "pages/sections/admin.html",
+      "title": "User Management",
+      "script": "AdminSection",
+      "icon": "settings",
+      "roles": ["admin"]
+    },
+    {
+      "name": "settings",
+      "path": "pages/sections/settings.html",
+      "title": "Settings",
+      "script": "SettingsSection",
+      "icon": "gear",
+      "roles": ["customer", "admin", "operator"]
+    }
+  ]
+}

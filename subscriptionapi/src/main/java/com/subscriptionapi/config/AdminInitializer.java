@@ -20,7 +20,7 @@ import java.util.Set;
 @Component
 @Order(2)
 @RequiredArgsConstructor
-@Profile("!dev")
+@Profile("!test")
 public class AdminInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;

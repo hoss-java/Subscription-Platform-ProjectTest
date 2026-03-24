@@ -47,7 +47,7 @@ import static org.hamcrest.Matchers.not;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @DisplayName("AuthController Login Integration Tests")
 class AuthControllerLoginIntegrationTest {

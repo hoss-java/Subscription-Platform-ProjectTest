@@ -47,7 +47,7 @@ import com.subscriptionapi.dto.RegisterRequest;
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @DisplayName("Protected Endpoints Integration Tests")
 class ProtectedEndpointsIntegrationTest {

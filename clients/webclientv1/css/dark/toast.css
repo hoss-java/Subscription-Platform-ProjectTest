@@ -1,0 +1,58 @@
+/* ============================================
+   AppToast - Dark Mode Theme
+   ============================================ */
+
+.toast {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Success - Dark */
+.toast.success {
+  border-left-color: #66bb6a;
+  background-color: #1b5e20;
+}
+
+.toast.success .toast-icon::before {
+  color: #66bb6a;
+}
+
+/* Error - Dark */
+.toast.error {
+  border-left-color: #ef5350;
+  background-color: #b71c1c;
+}
+
+.toast.error .toast-icon::before {
+  color: #ef5350;
+}
+
+/* Info - Dark */
+.toast.info {
+  border-left-color: #42a5f5;
+  background-color: #0d47a1;
+}
+
+.toast.info .toast-icon::before {
+  color: #42a5f5;
+}
+
+/* Close Button - Dark */
+.toast-close {
+  color: #999999;
+}
+
+.toast-close:hover {
+  color: #e0e0e0;
+}
+
+.toast.success {
+  border-left: 4px solid #66bb6a;
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.toast.success .toast-icon::before {
+  color: #66bb6a;
+}

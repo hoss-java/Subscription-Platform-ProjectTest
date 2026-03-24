@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * ============================================================================
  */
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @DisplayName("User Service Password Integration Tests")
 public class UserServicePasswordIntegrationTest {

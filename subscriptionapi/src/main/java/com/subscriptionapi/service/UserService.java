@@ -14,6 +14,8 @@ import com.subscriptionapi.repository.UserRepository;
 import com.subscriptionapi.repository.RoleRepository;
 import com.subscriptionapi.repository.RefreshTokenRepository;
 import com.subscriptionapi.repository.PasswordResetTokenRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -98,32 +100,31 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
     public AuthResponse loginUser(LoginRequest loginRequest) {
-        // Find user by email
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
         
-        // Check if user is active
         if (!user.getIsActive()) {
             throw new UserInactiveException("User account is inactive");
         }
         
-        // Verify password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
         
-        // ✅ DELETE OLD REFRESH TOKENS FIRST
-        refreshTokenRepository.deleteByUser(user);
+        // ✅ DELETE OLD REFRESH TOKENS (handles re-login gracefully)
+        try {
+            refreshTokenRepository.deleteByUser(user);
+        } catch (Exception e) {
+            // Log but don't fail - user might not have previous tokens
+            System.out.println("No previous tokens to delete: " + e.getMessage());
+        }
         
-        // Generate JWT token and refresh token
         String token = jwtTokenProvider.generateToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
-        
-        // Save refresh token
         jwtTokenProvider.saveRefreshToken(user, refreshToken);
         
-        // Build response
         return AuthResponse.builder()
                 .message("Login successful")
                 .token(token)
@@ -231,23 +232,34 @@ public class UserService {
         passwordResetTokenRepository.save(passwordResetToken);
     }
 
+    @Transactional
     public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        if (!jwtTokenProvider.isRefreshTokenValid(refreshTokenRequest.getRefreshToken())) {
-            throw new JwtAuthenticationException("Invalid or expired refresh token");
+        try {
+            if (!jwtTokenProvider.isRefreshTokenValid(refreshTokenRequest.getRefreshToken())) {
+                throw new JwtAuthenticationException("Invalid or expired refresh token");
+            }
+            
+            Long userId = jwtTokenProvider.getUserIdFromToken(refreshTokenRequest.getRefreshToken());
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            
+            // ✅ DELETE OLD REFRESH TOKEN before creating new one
+            refreshTokenRepository.deleteByUser(user);
+            
+            String newAccessToken = jwtTokenProvider.generateToken(user);
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
+            jwtTokenProvider.saveRefreshToken(user, newRefreshToken);
+            
+            return AuthResponse.builder()
+                    .token(newAccessToken)
+                    .refreshToken(newRefreshToken)
+                    .message("Token refreshed successfully")
+                    .build();
+        } catch (JwtAuthenticationException e) {
+            throw e; // Re-throw auth exceptions
+        } catch (Exception e) {
+            throw new JwtAuthenticationException("Token refresh failed: " + e.getMessage());
         }
-        
-        Long userId = jwtTokenProvider.getUserIdFromToken(refreshTokenRequest.getRefreshToken());
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        
-        String newAccessToken = jwtTokenProvider.generateToken(user);
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
-        jwtTokenProvider.saveRefreshToken(user, newRefreshToken);
-        
-        return AuthResponse.builder()
-                .token(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .message("Token refreshed successfully")
-                .build();
     }
+
 }
