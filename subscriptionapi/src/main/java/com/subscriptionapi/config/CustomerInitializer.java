@@ -20,7 +20,8 @@ import java.util.Set;
 @Component
 @Order(3)
 @RequiredArgsConstructor
-@Profile("test | dev")
+//@Profile("test | dev")
+@Profile("dev")
 public class CustomerInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
