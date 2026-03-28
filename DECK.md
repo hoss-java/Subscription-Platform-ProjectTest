@@ -759,6 +759,36 @@ gantt
 > - [ ] 5. Add password strength validation
 > </details>
 
+## 001-0012
+> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - AuthService converted to TypeScript with proper interfaces
+> - All components have TypeScript types
+> - Redux/Zustand/Context store implemented for auth state management
+> - Auth state changes automatically trigger UI updates
+> - Type-safe selectors for user, token, isAuthenticated, userRole
+> - No `any` types used (strict mode)
+> - All API calls properly typed with request/response interfaces
+> 
+> # TODO:
+> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
+> - [ ] 2. Convert AuthService to TypeScript with proper typing
+> - [ ] 3. Convert AuthGuard to TypeScript
+> - [ ] 4. Convert ApiClient to TypeScript
+> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
+> - [ ] 6. Implement auth reducer/actions for login, logout, register
+> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
+> - [ ] 8. Integrate state management with existing components
+> - [ ] 9. Replace localStorage-only approach with state management
+> - [ ] 10. Test state persistence and retrieval after page refresh
+> 
+> # Reports:
+> * (to be filled during development)
+> </details>
+
 ## 001-0006
 > **Implement JWT token validation filter and Spring Security configuration.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
@@ -1632,19 +1662,23 @@ gantt
 > - Authentication state changes trigger UI updates
 > 
 > # TODO:
-> - [ ] 1. Create AuthService with register, login, logout methods
-> - [ ] 2. Create HTTP interceptor to add Authorization header to requests
-> - [ ] 3. Create HTTP interceptor to handle 401 responses and refresh tokens
-> - [ ] 4. Implement token storage in localStorage
-> - [ ] 5. Implement token retrieval from localStorage on app startup
-> - [ ] 6. Create Redux/Zustand/Context store for auth state
-> - [ ] 7. Create auth reducer/actions for login, logout, register
-> - [ ] 8. Create selectors for user, token, isAuthenticated, userRole
-> - [ ] 9. Implement automatic token refresh logic
-> - [ ] 10. Create TypeScript interfaces for User, AuthResponse, LoginRequest
-> - [ ] 11. Create unit tests for AuthService
-> - [ ] 12. Create unit tests for state management
-> - [ ] 13. Test token persistence and retrieval
+> # TODO:
+> - [x] 1. Create AuthService with register, login, logout methods
+> - [x] 2. Create HTTP interceptor to add Authorization header to requests
+> - [x] 3. Create HTTP interceptor to handle 401 responses and refresh tokens
+> - [x] 4. Implement token storage in localStorage
+> - [x] 5. Implement token retrieval from localStorage on app startup
+> - [x] 6. Implement automatic token refresh logic
+> - [x] 7. Test token persistence and retrieval
+> - [x] 8. Get register flow fully working (test with backend)
+> - [x] 9. Create role-based dashboard views (admin vs user/customer)
+> - [x] 10. Create admin panel page with user management (view, enable/disable users)
+> - [x] 11. Create user profile edit page (update email, name, etc.)
+> - [x] 12. Add role-based route guards (redirect non-admin users from admin panel)
+> - [x] 13. Test complete authentication flow (register → login → dashboard → logout)
+> - [x] 14. Test admin panel functionality (list users, enable/disable)
+> - [x] 15. Test user profile editing
+> 
 > 
 > # Reports:
 > * Create AuthService with register, login, logout methods
@@ -1716,29 +1750,264 @@ gantt
 > >>- Backend API base: `http://172.32.0.11:8080/api`
 > >>- Token storage: `localStorage`
 > 
-> * `http://localhost:3280/sites/subscription/webclientv1/index.html`
+> ## New plan to create frontend
 > ```
-> mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev"
+> webclient/
+> ├── index.html
+> ├── css/
+> │   └── styles.css
+> ├── js/
+> │   ├── app.js
+> │   ├── router.js
+> │   └── pages/
+> │       ├── login.js
+> │       ├── register.js
+> │       └── dashboard.js
+> └── pages/
+>     ├── login.html
+>     ├── register.html
+>     └── dashboard.html
 > ```
 > 
 > ```
-> curl -X POST http://172.32.0.11:8080/api/auth/register \
->   -H "Content-Type: application/json" \
->   -d '{"email":"test@test.com","password":"Test123!@"}'
+> mkdir -p webclientv1/{css,js/pages,pages,config}
+> ```
+> ## Steps to Add a New Page
 > 
-> curl -X POST http://172.32.0.11:8080/api/auth/login \
->   -H "Content-Type: application/json" \
->   -d '{"email":"test@test.com","password":"Test123!@"}'
+> 1. **Create HTML file** in `pages/` folder (e.g., `pages/newpage.html`)
+> 2. **Create JS file** in `js/pages/` folder (e.g., `js/pages/newpage.js`) with `init()` method
+> 3. **Register in app.js**: `router.register('newpage', 'pages/newpage.html', NewPageName);`
+> 4. **Link to it**: Use `<a href="#newpage">` in HTML or `window.location.hash = '#newpage'` in JS
 > 
-> curl -X POST http://172.32.0.11:8080/api/auth/register \
->   -H "Content-Type: application/json" \
->   -d '{
->     "email": "test@example.com",
->     "password": "Test123!",
->     "passwordConfirm": "Test123!",
->     "firstName": "John",
->     "lastName": "Doe"
->   }'
+> That's it. Router automatically loads the HTML and runs the JS `init()` function.
+> 
+> # Update remove hardcodes
+> 
+> ## Folder Structure Update
 > 
 > ```
+> webclientv1/
+> ├── config/
+> │   └── config.json
+> ├── index.html
+> ├── css/
+> │   ├── style.css
+> │   ├── base.css
+> │   ├── toast-base.css
+> │   ├── default/
+> │   │   ├── header.css
+> │   │   ├── layout.css
+> │   │   ├── tabs.css
+> │   │   ├── forms.css
+> │   │   ├── buttons.css
+> │   │   ├── tables.css
+> │   │   ├── messages.css
+> │   │   ├── utilities.css
+> │   │   ├── responsive.css
+> │   │   ├── console.css
+> │   │   ├── toast.css
+> │   │   └── list.css
+> │   └── dark/
+> │       ├── header.css
+> │       ├── layout.css
+> │       ├── tabs.css
+> │       ├── forms.css
+> │       ├── buttons.css
+> │       ├── tables.css
+> │       ├── messages.css
+> │       ├── utilities.css
+> │       ├── responsive.css
+> │       ├── console.css
+> │       ├── toast.css
+> │       └── list.css
+> ├── js/
+> │   ├── app.js
+> │   ├── router.js
+> │   ├── console.js
+> │   ├── console-logger.js
+> │   ├── theme-manager.js
+> │   ├── ui-controller.js
+> │   └── pages/
+> │       ├── login.js
+> │       └── register.js
+> └── pages/
+>     ├── login.html
+>     └── register.html
+> 
+> ```
+> 
+> ```
+> mkdir -p webclientv1/{css,js/pages,pages,config}
+> ```
+> 
+> 
+> ## Plan
+> 
+> 1. Create `config/config.json` with pages array (path, name, title, script)
+> 2. Load config in `app.js` before registering pages
+> 3. Loop through config and register dynamically
+> 
+> 
+> ## Summary
+> 
+> 1. **Created modular single-page app** with `index.html` as entry point
+> 2. **Built router system** to load pages dynamically into a container
+> 3. **Created page structure** with HTML files in `pages/` and JS logic in `js/pages/`
+> 4. **Implemented theme system** with base styles and multiple themes (default, dark)
+> 5. **Added config-driven approach** to store page routes and app settings in `config.json` instead of hard-coding
+> 
+> Everything is now **generic, modular, and reusable** across projects.
+> 
+> 
+> 
+> ## Fixing issues
+> ### Remaining Issues to Fix
+> 
+> 1. **Server issue when trying to login while already logged in**
+>    - User logs in, gets JWT token
+>    - User tries to login again with same credentials
+>    - Server should handle gracefully (delete old tokens, issue new ones)
+>    - Currently may throw errors or create duplicate tokens
+> 
+> 2. **Client infinite retry loop on server errors**
+>    - When server returns an error (500, 401, etc.), client keeps retrying endlessly
+>    - Should stop after N attempts or show error to user
+>    - Currently `apiClient.js` retries failed requests without limit
+> 
+> 3. **Client allows access to login/register pages when already logged in**
+>    - Logged-in users can still navigate to `/login` or `/register` pages
+>    - Should redirect authenticated users away from auth pages (to dashboard)
+>    - Router needs to check auth state before loading pages
+> 
+> 4. **Logout doesn't work**
+>    - Logout button may not clear tokens properly
+>    - User may not redirect to login page after logout
+>    - Session may not be invalidated on server side
+> 
+> #### Issue #1: LazyInitializationException in UserService During Login & Token Refresh
+> 
+> **What I Saw:**
+> - Login endpoint threw `LazyInitializationException` error
+> - Token refresh endpoint also failed with same error
+> - User roles couldn't be accessed during authentication
+> 
+> **Definition of Issue:**
+> Spring Hibernate closes the database session after query completes. When code tries to access lazy-loaded collections (like user roles) after the session closes, it fails. The `User` entity had roles set to `fetch = FetchType.LAZY`, meaning roles are only loaded when explicitly accessed—but the session was already closed by then.
+> 
+> **Solution:**
+> Added `@Transactional` annotation to keep the database session open during the entire method execution. This allows lazy-loaded data (roles) to be accessed safely within the transaction context.
+> 
+> **Code Changes:**
+> ```java
+> @Service
+> @Transactional  // ← Added to class level
+> public class UserService {
+>     
+>     @Transactional  // ← Also added to individual methods:
+>     public AuthResponse loginUser(LoginRequest loginRequest) { ... }
+>     
+>     @Transactional
+>     public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) { ... }
+>     
+>     @Transactional
+>     public void changePassword(Long userId, ChangePasswordRequest changePasswordRequest) { ... }
+>     
+>     @Transactional
+>     public void resetPassword(ResetPasswordRequest resetPasswordRequest) { ... }
+> }
+> ```
+> 
+> **Result:** Login and token refresh endpoints now work without errors. User roles load successfully within active transaction.
+> 
+> #### Issue #2 Report: Client Infinite Retry Loop on Server Errors
+> 
+> ##### Problem
+> When server returned errors (401, 500, etc.), the client kept retrying requests endlessly with no limit on retry attempts, causing infinite loops and freezing the UI.
+> 
+> ##### Root Cause
+> The `apiClient.js` `request()` method had a recursive retry mechanism for 401 responses that called itself without any counter or limit. If token refresh failed or server kept returning 401, the request would retry forever, exhausting resources.
+> 
+> ##### Solution
+> Added a **retry attempt counter** to track and limit retries:
+> - Added `maxRetries = 3` property to ApiClient class
+> - Added `retryAttempt` parameter to `request()` method to track current retry count
+> - Added check: if `retryAttempt >= maxRetries`, stop retrying and throw error with attempt info
+> - Each retry increments counter: `retryAttempt + 1`
+> - Error messages now show which attempt failed (e.g., "Session expired after 3 retry attempts")
+> 
+> ##### Code Changes
+> ```javascript
+> class ApiClient {
+>   constructor(config) {
+>     this.maxRetries = 3;  // ← Add retry limit
+>   }
+> 
+>   async request(method, endpoint, data = null, retryAttempt = 0) {  // ← Add counter parameter
+>     // ...
+>     if (response.status === 401 && this.authService) {
+>       if (retryAttempt >= this.maxRetries) {  // ← Check limit
+>         throw new Error(`Session expired after ${this.maxRetries} retry attempts. Please login again.`);
+>       }
+>       return this.request(method, endpoint, data, retryAttempt + 1);  // ← Increment counter
+>     }
+>   }
+> }
+> ```
+> 
+> ##### Result
+> Client now stops retrying after 3 failed attempts and shows user a clear error message with attempt count instead of looping infinitely.
+> 
+> 
+> #### Issue #3: Client Allows Access to Auth Pages When Already Logged In
+> 
+> **Problem:** Logged-in users could navigate to `/login` or `/register` pages instead of being redirected to the dashboard.
+> 
+> **Root Cause:** Router didn't check authentication status before loading pages.
+> 
+> **Solution:**
+> - Added `isProtected` parameter to `router.register()` method
+> - Updated `router.load()` to check `authService.isAuthenticated()` before loading a page
+> - If user is authenticated and tries to access login/register → redirect to dashboard
+> - If user is NOT authenticated and tries to access protected pages → redirect to login
+> - Updated `app.js` to call `router.setAuthService(authService)` so router can check auth status
+> 
+> **Files Modified:**
+> - `router.js` - Added auth checks in `load()` method
+> - `app.js` - Added `router.setAuthService()` call
+> - `config/config.json` - Added `isProtected: true/false` flags to page definitions
+> 
+> **Result:** ✅ Auth-protected pages now properly redirect based on login status
+> 
+> 
+> #### Issue #4: Logout Button Fires Twice (Double Execution)
+> 
+> **Problem:** Clicking the logout button triggered the logout flow twice, causing duplicate API calls and confusing logs.
+> 
+> **Root Cause:** Two hash change event listeners were attached in different places:
+> 1. One in `Router` constructor (intended)
+> 2. One in `app.js` at the bottom (duplicate)
+> 
+> When `window.location.href = '#login'` was set, the `hashchange` event fired and both listeners executed `router.load()`, causing the page's `init()` method to run twice. This attached duplicate event listeners to the logout button.
+> 
+> **Solution:**
+> - **Removed the duplicate hash change listener from `app.js`**
+> - Kept the single listener in `Router` constructor as the source of truth
+> - Changed `app.js` to manually call `router.load()` for the initial page instead of relying on the hashchange event
+> - Added listener deduplication to `header.js` using a `_listenerAttached` flag to prevent multiple attachments even if `init()` is called multiple times
+> 
+> **Files Modified:**
+> - `app.js` - Removed duplicate `window.addEventListener('hashchange', ...)` listener
+> - `header.js` - Added `_listenerAttached` flag check in `attachEventListeners()`
+> 
+> **Result:** ✅ Logout buttons now execute only once, no duplicate API calls
+> 
+> 
+> #### Summary
+> 
+> | Issue | Cause | Fix | Status |
+> |-------|-------|-----|--------|
+> | #3 | No auth checks in router | Added `isProtected` flag + auth validation in `router.load()` | ✅ Fixed |
+> | #4 | Duplicate hash change listeners | Removed duplicate listener from `app.js`, kept single source of truth in Router | ✅ Fixed |
+> 
+> Both issues are now resolved and the authentication flow works correctly without duplication or unwanted redirects.
 > </details>
