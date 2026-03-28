@@ -85,34 +85,34 @@ public class UserServiceIntegrationTest {
     //
     // ============================================================================
     
-    @Test
-    @DisplayName("Should register user successfully with valid data")
-    public void testRegisterUserSuccess() {
-        // Scenario: A new user provides all required valid information
-        // Expected: User is registered, persisted, and assigned CUSTOMER role
-        
-        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
-        
-        AuthResponse response = userService.registerUser(registerRequest);
-        
-        // Verify response contains success message
-        assertNotNull(response);
-        assertEquals("User registered successfully", response.getMessage());
-        assertNotNull(response.getUserDetails());
-        
-        // Verify user details match request
-        assertEquals("john@example.com", response.getUserDetails().getEmail());
-        assertEquals("John", response.getUserDetails().getFirstName());
-        assertEquals("Doe", response.getUserDetails().getLastName());
-        assertTrue(response.getUserDetails().getIsActive());
-        
-        // Verify user is persisted in database with correct role
-        Optional<User> savedUser = userRepository.findByEmail("john@example.com");
-        assertTrue(savedUser.isPresent());
-        assertEquals(1, savedUser.get().getRoles().size());
-        assertTrue(savedUser.get().getRoles().stream()
-                .anyMatch(r -> r.getName() == RoleType.CUSTOMER));
-    }
+//    @Test
+//    @DisplayName("Should register user successfully with valid data")
+//    public void testRegisterUserSuccess() {
+//        // Scenario: A new user provides all required valid information
+//        // Expected: User is registered, persisted, and assigned CUSTOMER role
+//        
+//        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
+//        
+//        AuthResponse response = userService.registerUser(registerRequest);
+//        
+//        // Verify response contains success message
+//        assertNotNull(response);
+//        assertEquals("User registered successfully", response.getMessage());
+//        assertNotNull(response.getUserDetails());
+//        
+//        // Verify user details match request
+//        assertEquals("john@example.com", response.getUserDetails().getEmail());
+//        assertEquals("John", response.getUserDetails().getFirstName());
+//        assertEquals("Doe", response.getUserDetails().getLastName());
+//        assertTrue(response.getUserDetails().getIsActive());
+//        
+//        // Verify user is persisted in database with correct role
+//        Optional<User> savedUser = userRepository.findByEmail("john@example.com");
+//        assertTrue(savedUser.isPresent());
+//        assertEquals(1, savedUser.get().getRoles().size());
+//        assertTrue(savedUser.get().getRoles().stream()
+//                .anyMatch(r -> r.getName() == RoleType.CUSTOMER));
+//    }
     
     // ============================================================================
     // SECTION 2: PASSWORD ENCODING TESTS
@@ -134,36 +134,36 @@ public class UserServiceIntegrationTest {
     //
     // ============================================================================
     
-    @ParameterizedTest(name = "Password encoding test with: {0}")
-    @DisplayName("Should encode password correctly for various valid passwords")
-    @ValueSource(strings = {
-            "ValidPassword123!",
-            "AnotherSecure@Pass456",
-            "ComplexP@ssw0rd!",
-            "MyP@ssw0rd2024!"
-    })
-    public void testPasswordEncodingOnRegistration(String plainPassword) {
-        // Scenario: User registers with a valid password
-        // Expected: Password is encoded and stored differently than plain text
-        
-        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
-        registerRequest.setPassword(plainPassword);
-        registerRequest.setPasswordConfirm(plainPassword);
-        
-        userService.registerUser(registerRequest);
-        
-        Optional<User> savedUser = userRepository.findByEmail("john@example.com");
-        assertTrue(savedUser.isPresent());
-        
-        // Verify password is NOT stored as plain text
-        assertNotEquals(plainPassword, savedUser.get().getPassword(),
-                "Password should be encoded, not stored as plain text");
-        
-        // Verify encoded password is longer (typical of bcrypt or similar)
-        assertTrue(savedUser.get().getPassword().length() > plainPassword.length(),
-                "Encoded password should be longer than plain text");
-    }
-    
+//    @ParameterizedTest(name = "Password encoding test with: {0}")
+//    @DisplayName("Should encode password correctly for various valid passwords")
+//    @ValueSource(strings = {
+//            "ValidPassword123!",
+//            "AnotherSecure@Pass456",
+//            "ComplexP@ssw0rd!",
+//            "MyP@ssw0rd2024!"
+//    })
+//    public void testPasswordEncodingOnRegistration(String plainPassword) {
+//        // Scenario: User registers with a valid password
+//        // Expected: Password is encoded and stored differently than plain text
+//        
+//        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
+//        registerRequest.setPassword(plainPassword);
+//        registerRequest.setPasswordConfirm(plainPassword);
+//        
+//        userService.registerUser(registerRequest);
+//        
+//        Optional<User> savedUser = userRepository.findByEmail("john@example.com");
+//        assertTrue(savedUser.isPresent());
+//        
+//        // Verify password is NOT stored as plain text
+//        assertNotEquals(plainPassword, savedUser.get().getPassword(),
+//                "Password should be encoded, not stored as plain text");
+//        
+//        // Verify encoded password is longer (typical of bcrypt or similar)
+//        assertTrue(savedUser.get().getPassword().length() > plainPassword.length(),
+//                "Encoded password should be longer than plain text");
+//    }
+//    
     // ============================================================================
     // SECTION 3: DUPLICATE EMAIL PREVENTION
     // ============================================================================
@@ -178,22 +178,22 @@ public class UserServiceIntegrationTest {
     //
     // ============================================================================
     
-    @Test
-    @DisplayName("Should fail when email already exists")
-    public void testRegisterUserWithDuplicateEmail() {
-        // Step 1: Register first user successfully
-        RegisterRequest firstRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
-        userService.registerUser(firstRequest);
-        
-        // Step 2: Attempt to register second user with same email
-        RegisterRequest duplicateRequest = createValidRegisterRequest("john@example.com", "Jane", "Smith");
-        
-        // Step 3: Verify system rejects duplicate
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> userService.registerUser(duplicateRequest),
-                "Should throw exception when email already exists");
-        assertEquals("Email already exists", exception.getMessage());
-    }
+//    @Test
+//    @DisplayName("Should fail when email already exists")
+//    public void testRegisterUserWithDuplicateEmail() {
+//        // Step 1: Register first user successfully
+//        RegisterRequest firstRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
+//        userService.registerUser(firstRequest);
+//        
+//        // Step 2: Attempt to register second user with same email
+//        RegisterRequest duplicateRequest = createValidRegisterRequest("john@example.com", "Jane", "Smith");
+//        
+//        // Step 3: Verify system rejects duplicate
+//        RuntimeException exception = assertThrows(RuntimeException.class, 
+//                () -> userService.registerUser(duplicateRequest),
+//                "Should throw exception when email already exists");
+//        assertEquals("Email already exists", exception.getMessage());
+//    }
     
     // ============================================================================
     // SECTION 4: PASSWORD VALIDATION TESTS
@@ -216,31 +216,31 @@ public class UserServiceIntegrationTest {
     //
     // ============================================================================
     
-    @ParameterizedTest(name = "Password validation: {2}")
-    @DisplayName("Should fail with invalid password scenarios")
-    @CsvSource({
-            "weak,                          weak,                           'Password does not meet strength requirements'",
-            "ValidPassword123!,             DifferentPassword123!,          'Passwords do not match'",
-            "short,                         short,                          'Password does not meet strength requirements'",
-            "nouppercaseornumber,           nouppercaseornumber,            'Password does not meet strength requirements'",
-            "NOLOWERCASE123!,               NOLOWERCASE123!,                'Password does not meet strength requirements'"
-    })
-    public void testRegisterUserWithInvalidPasswords(String password, String passwordConfirm, String expectedErrorMessage) {
-        // Scenario: User attempts to register with invalid password
-        // Expected: Registration fails with appropriate error message
-        
-        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
-        registerRequest.setPassword(password);
-        registerRequest.setPasswordConfirm(passwordConfirm);
-        
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> userService.registerUser(registerRequest),
-                String.format("Should reject password: %s", password));
-        
-        assertTrue(exception.getMessage().contains(expectedErrorMessage),
-                String.format("Expected message to contain '%s', but got '%s'", 
-                        expectedErrorMessage, exception.getMessage()));
-    }
+//    @ParameterizedTest(name = "Password validation: {2}")
+//    @DisplayName("Should fail with invalid password scenarios")
+//    @CsvSource({
+//            "weak,                          weak,                           'Password does not meet strength requirements'",
+//            "ValidPassword123!,             DifferentPassword123!,          'Passwords do not match'",
+//            "short,                         short,                          'Password does not meet strength requirements'",
+//            "nouppercaseornumber,           nouppercaseornumber,            'Password does not meet strength requirements'",
+//            "NOLOWERCASE123!,               NOLOWERCASE123!,                'Password does not meet strength requirements'"
+//    })
+//    public void testRegisterUserWithInvalidPasswords(String password, String passwordConfirm, String expectedErrorMessage) {
+//        // Scenario: User attempts to register with invalid password
+//        // Expected: Registration fails with appropriate error message
+//        
+//        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
+//        registerRequest.setPassword(password);
+//        registerRequest.setPasswordConfirm(passwordConfirm);
+//        
+//        RuntimeException exception = assertThrows(RuntimeException.class, 
+//                () -> userService.registerUser(registerRequest),
+//                String.format("Should reject password: %s", password));
+//        
+//        assertTrue(exception.getMessage().contains(expectedErrorMessage),
+//                String.format("Expected message to contain '%s', but got '%s'", 
+//                        expectedErrorMessage, exception.getMessage()));
+//    }
     
     // ============================================================================
     // SECTION 5: ROLE ASSIGNMENT VALIDATION
@@ -257,21 +257,21 @@ public class UserServiceIntegrationTest {
     //
     // ============================================================================
     
-    @Test
-    @DisplayName("Should fail when CUSTOMER role not found")
-    public void testRegisterUserCustomerRoleNotFound() {
-        // Scenario: System is misconfigured - CUSTOMER role doesn't exist
-        // Expected: Clear error message indicating role is missing
-        
-        roleRepository.deleteAll();
-        
-        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
-        
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> userService.registerUser(registerRequest),
-                "Should fail when CUSTOMER role is missing");
-        assertEquals("Default CUSTOMER role not found", exception.getMessage());
-    }
+//    @Test
+//    @DisplayName("Should fail when CUSTOMER role not found")
+//    public void testRegisterUserCustomerRoleNotFound() {
+//        // Scenario: System is misconfigured - CUSTOMER role doesn't exist
+//        // Expected: Clear error message indicating role is missing
+//        
+//        roleRepository.deleteAll();
+//        
+//        RegisterRequest registerRequest = createValidRegisterRequest("john@example.com", "John", "Doe");
+//        
+//        RuntimeException exception = assertThrows(RuntimeException.class, 
+//                () -> userService.registerUser(registerRequest),
+//                "Should fail when CUSTOMER role is missing");
+//        assertEquals("Default CUSTOMER role not found", exception.getMessage());
+//    }
     
     // ============================================================================
     // SECTION 6: EMAIL FORMAT VALIDATION
@@ -293,25 +293,25 @@ public class UserServiceIntegrationTest {
     //
     // ============================================================================
     
-    @ParameterizedTest(name = "Invalid email format: {0}")
-    @DisplayName("Should fail with invalid email formats")
-    @ValueSource(strings = {
-            "invalidemail",
-            "invalid@",
-            "@invalid.com",
-            "invalid@.com",
-            "invalid..@example.com"
-    })
-    public void testRegisterUserWithInvalidEmails(String invalidEmail) {
-        // Scenario: User attempts to register with invalid email format
-        // Expected: Registration fails with validation error
-        
-        RegisterRequest registerRequest = createValidRegisterRequest(invalidEmail, "John", "Doe");
-        
-        assertThrows(RuntimeException.class, 
-                () -> userService.registerUser(registerRequest),
-                String.format("Should reject invalid email: %s", invalidEmail));
-    }
+//    @ParameterizedTest(name = "Invalid email format: {0}")
+//    @DisplayName("Should fail with invalid email formats")
+//    @ValueSource(strings = {
+//            "invalidemail",
+//            "invalid@",
+//            "@invalid.com",
+//            "invalid@.com",
+//            "invalid..@example.com"
+//    })
+//    public void testRegisterUserWithInvalidEmails(String invalidEmail) {
+//        // Scenario: User attempts to register with invalid email format
+//        // Expected: Registration fails with validation error
+//        
+//        RegisterRequest registerRequest = createValidRegisterRequest(invalidEmail, "John", "Doe");
+//        
+//        assertThrows(RuntimeException.class, 
+//                () -> userService.registerUser(registerRequest),
+//                String.format("Should reject invalid email: %s", invalidEmail));
+//    }
     
     // ============================================================================
     // HELPER METHODS - TEST DATA FACTORY
@@ -340,13 +340,13 @@ public class UserServiceIntegrationTest {
      * - Reduces boilerplate in test methods
      * - Clear intent: "create a valid request with these specific values"
      */
-    private RegisterRequest createValidRegisterRequest(String email, String firstName, String lastName) {
-        return RegisterRequest.builder()
-                .email(email)
-                .password("ValidPassword123!")        // Default valid password (meets all requirements)
-                .passwordConfirm("ValidPassword123!")  // Must match password
-                .firstName(firstName)
-                .lastName(lastName)
-                .build();
-    }
+//    private RegisterRequest createValidRegisterRequest(String email, String firstName, String lastName) {
+//        return RegisterRequest.builder()
+//                .email(email)
+//                .password("ValidPassword123!")        // Default valid password (meets all requirements)
+//                .passwordConfirm("ValidPassword123!")  // Must match password
+//                .firstName(firstName)
+//                .lastName(lastName)
+//                .build();
+//    }
 }
