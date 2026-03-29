@@ -734,64 +734,9 @@ gantt
 > >>- Always add **`@DisplayName`** for clarity in test reports
 > </details>
 
-## 001-0011
-> **Create login and registration UI components with form validation.** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> The goal of this card is to build responsive login and registration pages with client-side validation and error handling.
-> 
-> # DOD (definition of done):
-> - Login component displays email and password fields
-> - Registration component displays email, password, confirm password, firstName, lastName fields
-> - Form validation provides real-time feedback
-> - Submit buttons are disabled during API requests
-> - Error messages are displayed for failed requests
-> - Success messages are displayed for successful registration
-> - User is redirected to dashboard after successful login
-> - Components are responsive and styled consistently
-> - Accessibility standards are met (ARIA labels, semantic HTML)
-> 
-> # TODO:
-> - [ ] 1. Create LoginForm component with email and password inputs
-> - [ ] 2. Create RegistrationForm component with all required fields
-> - [ ] 3. Implement form validation library (React Hook Form, Formik, etc.)
-> - [ ] 4. Add email format validation
-> - [ ] 5. Add password strength validation
-> </details>
-
-## 001-0012
-> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - AuthService converted to TypeScript with proper interfaces
-> - All components have TypeScript types
-> - Redux/Zustand/Context store implemented for auth state management
-> - Auth state changes automatically trigger UI updates
-> - Type-safe selectors for user, token, isAuthenticated, userRole
-> - No `any` types used (strict mode)
-> - All API calls properly typed with request/response interfaces
-> 
-> # TODO:
-> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
-> - [ ] 2. Convert AuthService to TypeScript with proper typing
-> - [ ] 3. Convert AuthGuard to TypeScript
-> - [ ] 4. Convert ApiClient to TypeScript
-> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
-> - [ ] 6. Implement auth reducer/actions for login, logout, register
-> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
-> - [ ] 8. Integrate state management with existing components
-> - [ ] 9. Replace localStorage-only approach with state management
-> - [ ] 10. Test state persistence and retrieval after page refresh
-> 
-> # Reports:
-> * (to be filled during development)
-> </details>
-
 ## 001-0006
-> **Implement JWT token validation filter and Spring Security configuration.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Implement JWT token validation filter and Spring Security configuration.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > The goal of this card is to create a security filter that validates JWT tokens on incoming requests and integrate it with Spring Security configuration.
 > 
@@ -1393,8 +1338,8 @@ gantt
 > </details>
 
 ## 001-0007
-> **Implement role-based access control with authorization annotations.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Implement role-based access control with authorization annotations.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > The goal of this card is to implement authorization checks based on user roles, allowing different endpoints to be accessible only to specific roles.
 > 
@@ -1470,8 +1415,8 @@ gantt
 > </details>
 
 ## 001-0008
-> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Implement password change and password reset functionality.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > The goal of this card is to provide users with the ability to change their password when authenticated and to reset their password if forgotten.
 > 
@@ -1553,8 +1498,8 @@ gantt
 > </details>
 
 ## 001-0009
-> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Create comprehensive integration tests for authentication system.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > The goal of this card is to create integration tests that verify the entire authentication flow works correctly end-to-end.
 > 
@@ -1647,8 +1592,8 @@ gantt
 > </details>
 
 ## 001-0010
-> **Create frontend authentication service and global state management.** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Create frontend authentication service and global state management.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > The goal of this card is to build the authentication service layer and state management (Redux/Zustand/Context) for managing user authentication state on the frontend.
 > 
@@ -2010,4 +1955,59 @@ gantt
 > | #4 | Duplicate hash change listeners | Removed duplicate listener from `app.js`, kept single source of truth in Router | ✅ Fixed |
 > 
 > Both issues are now resolved and the authentication flow works correctly without duplication or unwanted redirects.
+> </details>
+
+## 001-0011
+> **Create login and registration UI components with form validation.** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> The goal of this card is to build responsive login and registration pages with client-side validation and error handling.
+> 
+> # DOD (definition of done):
+> - Login component displays email and password fields
+> - Registration component displays email, password, confirm password, firstName, lastName fields
+> - Form validation provides real-time feedback
+> - Submit buttons are disabled during API requests
+> - Error messages are displayed for failed requests
+> - Success messages are displayed for successful registration
+> - User is redirected to dashboard after successful login
+> - Components are responsive and styled consistently
+> - Accessibility standards are met (ARIA labels, semantic HTML)
+> 
+> # TODO:
+> - [x] 1. Create LoginForm component with email and password inputs
+> - [x] 2. Create RegistrationForm component with all required fields
+> - [x] 3. Implement form validation library (React Hook Form, Formik, etc.)
+> - [x] 4. Add email format validation
+> - [x] 5. Add password strength validation
+> </details>
+
+## 001-0012
+> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - AuthService converted to TypeScript with proper interfaces
+> - All components have TypeScript types
+> - Redux/Zustand/Context store implemented for auth state management
+> - Auth state changes automatically trigger UI updates
+> - Type-safe selectors for user, token, isAuthenticated, userRole
+> - No `any` types used (strict mode)
+> - All API calls properly typed with request/response interfaces
+> 
+> # TODO:
+> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
+> - [ ] 2. Convert AuthService to TypeScript with proper typing
+> - [ ] 3. Convert AuthGuard to TypeScript
+> - [ ] 4. Convert ApiClient to TypeScript
+> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
+> - [ ] 6. Implement auth reducer/actions for login, logout, register
+> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
+> - [ ] 8. Integrate state management with existing components
+> - [ ] 9. Replace localStorage-only approach with state management
+> - [ ] 10. Test state persistence and retrieval after page refresh
+> 
+> # Reports:
+> * (to be filled during development)
 > </details>
