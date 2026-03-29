@@ -5,6 +5,7 @@ import com.subscriptionapi.dto.AuthResponse;
 import com.subscriptionapi.dto.ChangePasswordRequest;
 import com.subscriptionapi.dto.ForgotPasswordRequest;
 import com.subscriptionapi.dto.ResetPasswordRequest;
+import com.subscriptionapi.dto.RefreshTokenRequest;
 import com.subscriptionapi.entity.User;
 import com.subscriptionapi.exception.UserNotFoundException;
 import com.subscriptionapi.exception.UserInactiveException;
@@ -27,13 +28,26 @@ public class AuthController {
     
     private final AuthService authService;
     
-    @PostMapping(value = "/register", 
-                 produces = {"application/json", "text/plain"})
-    public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest registerRequest) {
+@PostMapping(value = "/register", 
+             produces = {"application/json", "text/plain"})
+public ResponseEntity<AuthResponse> register(
+        @Valid @RequestBody RegisterRequest registerRequest) {
+    
+    System.out.println("🔵 REGISTER ENDPOINT CALLED");
+    System.out.println("Request email: " + registerRequest.getEmail());
+    System.out.println("Request body: " + registerRequest);
+    
+    try {
         AuthResponse response = authService.registerUser(registerRequest);
+        System.out.println("✅ Registration successful for: " + registerRequest.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception ex) {
+        System.out.println("❌ Registration failed: " + ex.getMessage());
+        ex.printStackTrace();
+        throw ex;
     }
+}
+
 
     @PostMapping(value = "/login", 
                  produces = {"application/json", "text/plain"})
@@ -88,5 +102,12 @@ public class AuthController {
                 .message("Password has been reset successfully")
                 .token(null)
                 .build());
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        AuthResponse response = authService.refreshToken(refreshTokenRequest);
+        return ResponseEntity.ok(response);
     }
 }

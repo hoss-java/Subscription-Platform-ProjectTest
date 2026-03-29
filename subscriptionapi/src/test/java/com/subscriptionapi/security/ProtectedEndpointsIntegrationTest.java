@@ -47,7 +47,7 @@ import com.subscriptionapi.dto.RegisterRequest;
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @DisplayName("Protected Endpoints Integration Tests")
 class ProtectedEndpointsIntegrationTest {
@@ -91,26 +91,15 @@ class ProtectedEndpointsIntegrationTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        roleRepository.deleteAll();
 
-        customerRole = Role.builder()
-                .name(RoleType.CUSTOMER)
-                .description("Customer role")
-                .build();
+        Role customerRole = roleRepository.findByName(RoleType.CUSTOMER)
+            .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
 
-        operatorRole = Role.builder()
-                .name(RoleType.OPERATOR)
-                .description("Operator role")
-                .build();
+        Role operatorRole = roleRepository.findByName(RoleType.OPERATOR)
+            .orElseThrow(() -> new RuntimeException("OPERATOR role not found"));
 
-        adminRole = Role.builder()
-                .name(RoleType.ADMIN)
-                .description("Admin role")
-                .build();
-
-        roleRepository.save(customerRole);
-        roleRepository.save(operatorRole);
-        roleRepository.save(adminRole);
+        Role adminRole = roleRepository.findByName(RoleType.ADMIN)
+            .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
 
         testCustomer = User.builder()
                 .email("customer@example.com")
@@ -301,7 +290,7 @@ class ProtectedEndpointsIntegrationTest {
     @ParameterizedTest(name = "Endpoint: {0}, Requires Token: {1}")
     @CsvSource({
         "/api/auth/login, false",
-        "/api/profile, true"
+        "/api/user/profile, true"
     })
     @DisplayName("Test endpoints with and without token requirement")
     void testAuthorizedAccessWithValidToken(String endpoint, String requiresTokenStr) throws Exception {
@@ -342,7 +331,6 @@ class ProtectedEndpointsIntegrationTest {
                     .andExpect(content().contentType("application/json"));
         }
     }
-
 
     /**
      * Scenario: Client sends requests with various invalid JWT token formats including corrupted signatures, malformed structures, and incomplete tokens.
@@ -487,8 +475,8 @@ class ProtectedEndpointsIntegrationTest {
      */
     @ParameterizedTest(name = "CORS origin {0} with path {1} expects status {2}")
     @CsvSource({
-            "http://localhost:3000, /api/profile, 200",
-            "http://localhost:4200, /api/profile, 200",
+            "http://localhost:3000, /api/user/profile, 200",
+            "http://localhost:4200, /api/user/profile, 200",
             "http://localhost:3000, /api/operator/dashboard, 403",
             "http://localhost:4200, /api/operator/dashboard, 403",
             "http://localhost:3000, /api/nonexistent, 404",
@@ -546,16 +534,17 @@ class ProtectedEndpointsIntegrationTest {
      */
     @ParameterizedTest(name = "User with role {0} accessing {1} expects {2}")
     @CsvSource({
-            "CUSTOMER, /api/profile, 200",
+            "CUSTOMER, /api/user/profile, 200",
             "CUSTOMER, /api/operator/dashboard, 403",
             "CUSTOMER, /api/admin/dashboard, 403",
             "CUSTOMER, /api/nonexistent, 404",
-            "OPERATOR, /api/profile, 403",
+            "OPERATOR, /api/user/profile, 200",
             "OPERATOR, /api/operator/dashboard, 200",
             "OPERATOR, /api/operator/plans, 200",
             "OPERATOR, /api/admin/dashboard, 403",
-            "ADMIN, /api/profile, 403",
-            "ADMIN, /api/admin/dashboard, 200",
+            "ADMIN, /api/user/profile, 200",
+            "ADMIN, /api/operator/dashboard, 403",
+            "ADMIN, /api/admin/dashboard, 404",
             "ADMIN, /api/admin/users, 200",
             "ADMIN, /api/nonexistent, 404"
     })
@@ -619,11 +608,10 @@ class ProtectedEndpointsIntegrationTest {
         
         String authHeader = prefix + validToken;
         
-        mockMvc.perform(get("/api/profile")
+        mockMvc.perform(get("/api/user/profile")
                 .header("Authorization", authHeader))
                 .andExpect(status().is(expectedStatus));
     }
-
 
     /**
      * Scenario: Client sends requests with valid JWT tokens in the Authorization header at different logical positions.

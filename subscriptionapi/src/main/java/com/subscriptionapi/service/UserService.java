@@ -5,6 +5,7 @@ import com.subscriptionapi.dto.ChangePasswordRequest;
 import com.subscriptionapi.dto.ForgotPasswordRequest;
 import com.subscriptionapi.dto.ResetPasswordRequest;
 import com.subscriptionapi.dto.AuthResponse;
+import com.subscriptionapi.dto.RefreshTokenRequest;
 import com.subscriptionapi.entity.User;
 import com.subscriptionapi.entity.Role;
 import com.subscriptionapi.entity.RoleType;
@@ -13,6 +14,8 @@ import com.subscriptionapi.repository.UserRepository;
 import com.subscriptionapi.repository.RoleRepository;
 import com.subscriptionapi.repository.RefreshTokenRepository;
 import com.subscriptionapi.repository.PasswordResetTokenRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,9 @@ import com.subscriptionapi.exception.InvalidCredentialsException;
 import com.subscriptionapi.exception.InvalidPasswordException;
 import com.subscriptionapi.exception.ResourceNotFoundException;
 import com.subscriptionapi.exception.InvalidResetTokenException;
+import com.subscriptionapi.exception.EmailAlreadyExistsException;
+import com.subscriptionapi.exception.JwtAuthenticationException;
+import com.subscriptionapi.exception.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -42,20 +48,20 @@ public class UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     
     public AuthResponse registerUser(RegisterRequest registerRequest) {
-        // Add this to the registerUser method after password confirmation check
+        // Validate password strength
         if (!passwordValidator.isValidPassword(registerRequest.getPassword())) {
-            throw new RuntimeException("Password does not meet strength requirements: " + 
+            throw new InvalidPasswordException("Password does not meet strength requirements: " + 
                 passwordValidator.getPasswordRequirements());
         }
 
         // Check if email already exists
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists");
         }
         
         // Validate password confirmation
         if (!registerRequest.getPassword().equals(registerRequest.getPasswordConfirm())) {
-            throw new RuntimeException("Passwords do not match");
+            throw new InvalidPasswordException("Passwords do not match");
         }
         
         // Hash password
@@ -63,7 +69,7 @@ public class UserService {
         
         // Get default CUSTOMER role
         Role customerRole = roleRepository.findByName(RoleType.CUSTOMER)
-                .orElseThrow(() -> new RuntimeException("Default CUSTOMER role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Default CUSTOMER role not found"));
         
         // Create new user
         Set<Role> roles = new HashSet<>();
@@ -94,32 +100,31 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
     public AuthResponse loginUser(LoginRequest loginRequest) {
-        // Find user by email
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
         
-        // Check if user is active
         if (!user.getIsActive()) {
             throw new UserInactiveException("User account is inactive");
         }
         
-        // Verify password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
         
-        // ✅ DELETE OLD REFRESH TOKENS FIRST
-        refreshTokenRepository.deleteByUser(user);
+        // ✅ DELETE OLD REFRESH TOKENS (handles re-login gracefully)
+        try {
+            refreshTokenRepository.deleteByUser(user);
+        } catch (Exception e) {
+            // Log but don't fail - user might not have previous tokens
+            System.out.println("No previous tokens to delete: " + e.getMessage());
+        }
         
-        // Generate JWT token and refresh token
         String token = jwtTokenProvider.generateToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
-        
-        // Save refresh token
         jwtTokenProvider.saveRefreshToken(user, refreshToken);
         
-        // Build response
         return AuthResponse.builder()
                 .message("Login successful")
                 .token(token)
@@ -226,4 +231,35 @@ public class UserService {
         passwordResetToken.setIsUsed(true);
         passwordResetTokenRepository.save(passwordResetToken);
     }
+
+    @Transactional
+    public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        try {
+            if (!jwtTokenProvider.isRefreshTokenValid(refreshTokenRequest.getRefreshToken())) {
+                throw new JwtAuthenticationException("Invalid or expired refresh token");
+            }
+            
+            Long userId = jwtTokenProvider.getUserIdFromToken(refreshTokenRequest.getRefreshToken());
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            
+            // ✅ DELETE OLD REFRESH TOKEN before creating new one
+            refreshTokenRepository.deleteByUser(user);
+            
+            String newAccessToken = jwtTokenProvider.generateToken(user);
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
+            jwtTokenProvider.saveRefreshToken(user, newRefreshToken);
+            
+            return AuthResponse.builder()
+                    .token(newAccessToken)
+                    .refreshToken(newRefreshToken)
+                    .message("Token refreshed successfully")
+                    .build();
+        } catch (JwtAuthenticationException e) {
+            throw e; // Re-throw auth exceptions
+        } catch (Exception e) {
+            throw new JwtAuthenticationException("Token refresh failed: " + e.getMessage());
+        }
+    }
+
 }

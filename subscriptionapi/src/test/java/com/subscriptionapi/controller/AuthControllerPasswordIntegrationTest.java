@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @DisplayName("AuthController Password Endpoints Integration Tests")
 class AuthControllerPasswordIntegrationTest {
@@ -93,10 +93,8 @@ class AuthControllerPasswordIntegrationTest {
      */
     @BeforeEach
     void setUp() {
-        customerRole = new Role();
-        customerRole.setName(RoleType.CUSTOMER);
-        customerRole.setDescription("Customer role");
-        roleRepository.save(customerRole);
+        customerRole = roleRepository.findByName(RoleType.CUSTOMER)
+            .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
 
         testUser = new User();
         testUser.setEmail(TEST_EMAIL);
