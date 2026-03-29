@@ -1,0 +1,47 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Create Dashboard Statistics Endpoints
+Tags: Phase3, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- GET /dashboard/user-stats returns user statistics (total, active, new this month)
+- GET /dashboard/subscription-stats returns subscription statistics (active, pending, canceled)
+- GET /dashboard/revenue returns revenue data (total, by operator, monthly trends)
+- GET /dashboard/operator-performance returns operator metrics (popular plans, subscription rate)
+- All endpoints support date range filtering (last 7/30/90 days, custom)
+- Response structure consistent with project standards
+- Admin-only endpoints properly secured with RBAC
+- Input validation for date range parameters
+- Integration tests pass for all endpoints
+- Performance acceptable for large datasets
+
+# TODO:
+- [ ] Create DashboardController.java with @RestController annotation
+- [ ] Implement GET /dashboard/user-stats endpoint
+- [ ] Add user count aggregations (total, active, new this month)
+- [ ] Implement GET /dashboard/subscription-stats endpoint
+- [ ] Add subscription count aggregations (active, pending, canceled)
+- [ ] Implement GET /dashboard/revenue endpoint
+- [ ] Add revenue calculations (total, by operator, monthly trends)
+- [ ] Implement GET /dashboard/operator-performance endpoint
+- [ ] Add operator metrics (popular plans, subscription rate)
+- [ ] Create DashboardService layer with business logic
+- [ ] Add date range filtering logic (last 7/30/90 days, custom)
+- [ ] Add @RequestParam for dateRange and customStartDate/endDate
+- [ ] Create response DTOs (UserStatsDTO, SubscriptionStatsDTO, RevenueDTO, OperatorPerformanceDTO)
+- [ ] Add @PreAuthorize for admin-only access
+- [ ] Optimize database queries using aggregations (GROUP BY, COUNT, SUM)
+- [ ] Write integration tests for all endpoints
+- [ ] Test date range filtering accuracy
+- [ ] Test admin-only access control
+
+# Reports:
+*

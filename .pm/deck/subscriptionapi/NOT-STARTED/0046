@@ -1,0 +1,60 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Notification System
+Tags: Phase5, Backend, Notifications
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Notification entity created with all required fields (type, recipient, subject, body, status, sent_at)
+- NotificationRepository implemented with custom query methods
+- Email service integrated (SMTP configuration, template system)
+- SMS service integrated (third-party provider: Twilio/AWS SNS)
+- Notification trigger logic implemented for subscription events (subscribe, plan change, cancellation, renewal)
+- Notification status tracking (PENDING, SENT, FAILED, DELIVERED)
+- Retry mechanism for failed notifications (exponential backoff)
+- Notification templates created for each event type
+- Unit tests for notification service and triggers pass
+- Integration tests for end-to-end notification flow pass
+- Notification logging implemented for audit trail
+
+# TODO:
+- [ ] Create Notification.java entity with JPA annotations
+- [ ] Add fields: id (UUID), user_id (FK), type (ENUM), recipient (email/phone), subject, body, status (ENUM), sent_at, created_at, updated_at, retry_count, last_error
+- [ ] Create NotificationType enum (SUBSCRIPTION_CREATED, PLAN_CHANGED, SUBSCRIPTION_CANCELED, RENEWAL_REMINDER, PAYMENT_FAILED)
+- [ ] Create NotificationStatus enum (PENDING, SENT, FAILED, DELIVERED)
+- [ ] Add relationships: @ManyToOne to User
+- [ ] Create NotificationRepository interface with custom query methods
+- [ ] Add query methods: findByUserIdAndStatus(), findPendingNotifications(), findFailedNotifications(), findByType()
+- [ ] Configure SMTP settings in application.properties (email host, port, credentials)
+- [ ] Create EmailService class with sendEmail() method
+- [ ] Implement email template system (Thymeleaf or FreeMarker) for notification templates
+- [ ] Create email templates for each notification type (subscription_created.html, plan_changed.html, etc.)
+- [ ] Integrate third-party SMS service (Twilio/AWS SNS)
+- [ ] Create SmsService class with sendSms() method
+- [ ] Implement NotificationService orchestrating email/SMS sending
+- [ ] Create notification trigger listeners for subscription events (SubscriptionCreatedEvent, PlanChangedEvent, etc.)
+- [ ] Implement retry mechanism with exponential backoff (max 3 retries, delay: 1min, 5min, 15min)
+- [ ] Add notification status updates (PENDING → SENT → DELIVERED or FAILED)
+- [ ] Create scheduled task to retry failed notifications (@Scheduled)
+- [ ] Add logging for all notification events (sent, failed, retried)
+- [ ] Create NotificationDTO for API responses
+- [ ] Implement error handling and fallback mechanisms (email fails → log and retry)
+- [ ] Add rate limiting for notifications (prevent spam to same user)
+- [ ] Write unit tests for EmailService, SmsService, NotificationService
+- [ ] Write integration tests for notification triggers and event listeners
+- [ ] Test retry mechanism with simulated failures
+- [ ] Test notification templates render correctly
+- [ ] Test status transitions (PENDING → SENT → DELIVERED)
+- [ ] Verify notifications are created for each subscription event
+- [ ] Test with both email and SMS recipients
+- [ ] Verify audit trail logging is complete
+
+# Reports:
+*

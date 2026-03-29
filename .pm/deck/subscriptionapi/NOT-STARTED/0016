@@ -1,0 +1,40 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Plan Search & Details Endpoints
+Tags: Phase2, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- GET /plans/search?q={query} searches plans by name and description
+- Search returns paginated results with relevance ranking
+- GET /plans/{id} returns full plan details (description, features, pricing, terms)
+- Features returned as JSON array or list
+- Pricing tiers displayed with monthly/yearly options
+- Response structure consistent with project standards
+- Input validation for search query (min/max length, special characters)
+- Integration tests pass for both endpoints
+- Search performance acceptable (database query optimized)
+
+# TODO:
+- [ ] Implement GET /plans/search endpoint with @GetMapping
+- [ ] Add @RequestParam for query string and pagination (q, page, size)
+- [ ] Create search logic using SQL LIKE or full-text search
+- [ ] Implement relevance ranking for search results
+- [ ] Implement GET /plans/{id} endpoint for plan details
+- [ ] Create PlanDetailResponseDTO with all fields (features, pricing tiers, terms)
+- [ ] Parse features from JSON to list in response
+- [ ] Add pricing tier structure to response (monthly/yearly options)
+- [ ] Validate search query length and content
+- [ ] Write integration tests for search functionality
+- [ ] Test search accuracy and pagination
+- [ ] Optimize database query for search performance
+
+# Reports:
+*

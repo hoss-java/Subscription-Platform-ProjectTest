@@ -1,0 +1,92 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Notification System
+Tags: Phase5, Backend, Integration
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Notification entity created with message templates
+- Notification service implemented for email and SMS delivery
+- Event-driven notification triggers (subscription created, plan changed, renewal, cancellation)
+- Message templates created for each notification type
+- Email service integrated (SMTP configuration)
+- SMS service integrated (third-party provider: Twilio/AWS SNS)
+- Notification preferences stored per user (email/SMS opt-in)
+- Notification history tracked in database
+- Retry logic implemented for failed notifications
+- Error handling with logging for delivery failures
+- Unit and integration tests passing
+- Email and SMS templates tested with sample data
+
+# TODO:
+- [ ] Create Notification.java entity with JPA annotations
+- [ ] Add fields: id (UUID), user_id (FK), type (VARCHAR), subject, message, channel (EMAIL/SMS), status (ENUM), sent_at, created_at, retry_count
+- [ ] Create NotificationStatus enum (PENDING, SENT, FAILED, BOUNCED)
+- [ ] Create NotificationType enum (SUBSCRIPTION_CREATED, PLAN_CHANGED, RENEWAL_REMINDER, CANCELLATION, PAYMENT_RECEIVED, OVERDUE_PAYMENT)
+- [ ] Add relationships: @ManyToOne to User
+- [ ] Create NotificationRepository interface extending JpaRepository
+- [ ] Add custom query methods: findByUserId(), findByStatus(), findByType(), findByDateRange()
+- [ ] Create database migration for notifications table
+- [ ] Create NotificationPreference entity (user_id, email_enabled, sms_enabled, notification_types)
+- [ ] Create NotificationPreferenceRepository
+- [ ] Create NotificationTemplate entity (type, subject_template, message_template, channel)
+- [ ] Create NotificationService for orchestrating notifications
+- [ ] Implement sendEmail() method with SMTP configuration
+- [ ] Implement sendSMS() method with Twilio/AWS SNS integration
+- [ ] Create EmailService for email delivery
+- [ ] Create SMSService for SMS delivery
+- [ ] Implement template rendering (replace placeholders with actual data)
+- [ ] Add retry logic (exponential backoff, max 3 retries)
+- [ ] Create NotificationEventListener for subscription events
+- [ ] Implement listener for SUBSCRIPTION_CREATED event
+- [ ] Implement listener for PLAN_CHANGED event
+- [ ] Implement listener for RENEWAL_REMINDER event (scheduled job)
+- [ ] Implement listener for SUBSCRIPTION_CANCELED event
+- [ ] Implement listener for PAYMENT_RECEIVED event
+- [ ] Create NotificationController with REST endpoints
+- [ ] Implement GET /notifications (list user notifications with pagination)
+- [ ] Implement GET /notifications/preferences (get user notification preferences)
+- [ ] Implement PUT /notifications/preferences (update notification preferences)
+- [ ] Implement POST /notifications/{id}/mark-as-read (mark notification as read)
+- [ ] Add authorization checks (users only see own notifications)
+- [ ] Create email templates directory (HTML templates for each notification type)
+- [ ] Create SUBSCRIPTION_CREATED email template
+- [ ] Create PLAN_CHANGED email template
+- [ ] Create RENEWAL_REMINDER email template
+- [ ] Create CANCELLATION email template
+- [ ] Create PAYMENT_RECEIVED email template
+- [ ] Create OVERDUE_PAYMENT email template
+- [ ] Create SMS templates (shorter text versions)
+- [ ] Implement template variable replacement ({{user_name}}, {{plan_name}}, {{date}}, etc.)
+- [ ] Add SMTP configuration (mail.smtp.host, mail.smtp.port, credentials)
+- [ ] Add SMS provider configuration (API key, sender ID)
+- [ ] Implement logging for notification delivery (success/failure)
+- [ ] Add error handling (SMTP errors, SMS API errors, invalid phone numbers)
+- [ ] Create unit tests for NotificationService
+- [ ] Test template rendering with sample data
+- [ ] Test email sending (mock SMTP)
+- [ ] Test SMS sending (mock SMS provider)
+- [ ] Test retry logic (failed notification retried)
+- [ ] Create integration tests for notification endpoints
+- [ ] Test notification list endpoint with pagination
+- [ ] Test notification preferences get/update
+- [ ] Test event listeners trigger notifications
+- [ ] Test authorization (user only sees own notifications)
+- [ ] Test notification history is tracked
+- [ ] Test failed notifications are retried
+- [ ] Test notification preferences filter delivery
+- [ ] Create end-to-end test (subscription creation triggers email notification)
+- [ ] Test with sample user data and notification events
+- [ ] Verify email and SMS delivery (staging environment)
+
+# Reports:
+*
+
+---

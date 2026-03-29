@@ -1,0 +1,86 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Testing: Phase 5 Integration Tests
+Tags: Phase5, Testing, Integration
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Integration tests for notification system (email/SMS sending, retries, status tracking)
+- Integration tests for audit logging (all critical operations logged, data accuracy, immutability)
+- Integration tests for billing history endpoints (retrieval, filtering, pagination)
+- Integration tests for notification preferences (save, retrieve, update preferences)
+- End-to-end tests for subscription lifecycle with notifications and audit logs
+- Test data setup and teardown working correctly
+- All tests passing with >90% code coverage for Phase 5 components
+- Performance tests for audit log queries and notification processing
+- Tests for edge cases (concurrent operations, failed notifications, retries)
+- Test documentation and execution guide created
+
+# TODO:
+- [ ] Create NotificationServiceIntegrationTest class
+- [ ] Test email notification sending with mock SMTP server
+- [ ] Test SMS notification sending with mock SMS provider
+- [ ] Test notification retry mechanism (verify retries happen with exponential backoff)
+- [ ] Test notification status transitions (PENDING → SENT → DELIVERED)
+- [ ] Test failed notification handling and error logging
+- [ ] Test notification triggers for subscription events (create, change plan, cancel)
+- [ ] Test notification templates render correctly with user data
+- [ ] Test rate limiting (verify notifications not sent too frequently to same user)
+- [ ] Create AuditLogServiceIntegrationTest class
+- [ ] Test audit logging for subscription creation
+- [ ] Test audit logging for plan change operations
+- [ ] Test audit logging for subscription cancellation
+- [ ] Test audit logging for user profile updates
+- [ ] Test audit logging for authentication events (login, logout, password change)
+- [ ] Test audit logging for admin operations
+- [ ] Test data masking for sensitive fields (password, token, payment info)
+- [ ] Test IP address and user agent capture
+- [ ] Test audit log immutability (verify logs cannot be modified or deleted)
+- [ ] Test audit log queries with various filters (by user, date range, action type)
+- [ ] Create BillingHistoryIntegrationTest class
+- [ ] Test billing history retrieval for customer
+- [ ] Test billing history filtering by date range
+- [ ] Test billing history filtering by subscription
+- [ ] Test billing history filtering by operator
+- [ ] Test billing history search by invoice number
+- [ ] Test billing history pagination and sorting
+- [ ] Test PDF invoice generation and download
+- [ ] Test billing history with no records (empty state)
+- [ ] Create NotificationPreferencesIntegrationTest class
+- [ ] Test retrieving user notification preferences
+- [ ] Test updating notification preferences (email/SMS toggles)
+- [ ] Test updating notification types preferences
+- [ ] Test updating notification frequency preferences
+- [ ] Test email validation on save
+- [ ] Test phone number validation on save
+- [ ] Test preferences persistence across sessions
+- [ ] Test test notification sending
+- [ ] Create end-to-end subscription lifecycle test
+- [ ] Test subscription creation triggers notification and audit log
+- [ ] Test plan change triggers notification and audit log
+- [ ] Test subscription cancellation triggers notification and audit log
+- [ ] Test subscription renewal triggers notification
+- [ ] Verify complete audit trail for subscription lifecycle
+- [ ] Verify all notifications sent according to user preferences
+- [ ] Create test data fixtures for notifications, audit logs, billing records
+- [ ] Implement test setup (create test users, subscriptions, plans)
+- [ ] Implement test teardown (clean up test data)
+- [ ] Test concurrent operations (multiple subscriptions, notifications, audit logs)
+- [ ] Test performance of audit log queries with large datasets
+- [ ] Test performance of notification processing with high volume
+- [ ] Test error scenarios (API failures, database errors, external service failures)
+- [ ] Test retry mechanisms for failed operations
+- [ ] Create integration test execution guide
+- [ ] Document test data setup and teardown procedures
+- [ ] Document how to run tests locally and in CI/CD pipeline
+- [ ] Verify test coverage >90% for Phase 5 components
+
+# Reports:
+*

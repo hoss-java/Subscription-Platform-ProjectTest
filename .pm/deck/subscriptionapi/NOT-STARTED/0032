@@ -1,0 +1,42 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Create Subscription Entity & Schema
+Tags: Phase4, Backend, Database
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Subscription JPA entity created with all required fields
+- Database migration script created and tested
+- Subscription repository interface implemented with custom query methods
+- Entity validation annotations added (NotBlank, NotNull, etc.)
+- Subscription status enum implemented (ACTIVE, PENDING, CANCELED, SUSPENDED)
+- Soft delete mechanism implemented (status field)
+- Timestamps for creation, activation, cancellation tracked
+- Database schema verified in test environment
+- Unit tests for entity validation pass
+
+# TODO:
+- [ ] Create Subscription.java entity class with JPA annotations
+- [ ] Add fields: id (UUID), user_id (FK), plan_id (FK), operator_id (FK), status (ENUM), start_date, end_date, next_renewal_date, created_at, updated_at, canceled_at
+- [ ] Create SubscriptionStatus enum (ACTIVE, PENDING, CANCELED, SUSPENDED)
+- [ ] Add relationships: @ManyToOne to User, Plan, Operator
+- [ ] Create SubscriptionRepository interface extending JpaRepository
+- [ ] Add custom query methods: findByUserId(), findByUserIdAndStatus(), findActiveByUserId(), findByPlanId()
+- [ ] Create database migration (Flyway/Liquibase) for subscriptions table
+- [ ] Add validation constraints to entity fields
+- [ ] Add timestamps: created_at (auto-set on creation), updated_at (auto-set on update), canceled_at (set on cancellation)
+- [ ] Implement soft delete logic (use status instead of hard delete)
+- [ ] Write unit tests for entity and repository
+- [ ] Test subscription creation and status transitions
+- [ ] Test soft delete functionality (status = CANCELED)
+- [ ] Test queries for finding subscriptions by user and status
+
+# Reports:
+*

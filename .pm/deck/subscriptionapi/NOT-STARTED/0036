@@ -1,0 +1,34 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Subscription Dashboard Section
+Tags: Phase4, Frontend, UI
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+
+# TODO:
+- [ ] Create section file: pages/sections/subscriptions.js
+- [ ] Create section HTML template: pages/sections/subscriptions.html
+- [ ] Create section styles: css/default/subscriptions.css and css/dark/subscriptions.css
+- [ ] Register section in config.json with customer role access
+- [ ] Implement init() method to fetch user subscriptions
+- [ ] Display active subscriptions in card/list layout
+- [ ] Show subscription details (plan name, operator, price, status, renewal date)
+- [ ] Add "Manage" button for each subscription (links to plan change)
+- [ ] Add "Cancel" button for each subscription (opens confirmation dialog)
+- [ ] Implement loading state while fetching subscriptions
+- [ ] Handle empty state (no active subscriptions)
+- [ ] Handle error state with retry option
+- [ ] Add responsive layout for mobile/tablet
+- [ ] Test with different screen sizes
+- [ ] Add to styles.json for both themes
+
+# Reports:
+*

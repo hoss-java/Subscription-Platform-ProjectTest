@@ -1,0 +1,55 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Subscription Dashboard Section
+Tags: Phase4, Frontend, Dashboard
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Subscription dashboard section created and registered in config.json
+- Active subscriptions list displays with operator name, plan name, price, renewal date
+- Subscription cards show status indicator (active/pending/canceled)
+- Loading states implemented during data fetch
+- Error handling with toast notifications for failed API calls
+- Empty state displayed when no subscriptions exist
+- Responsive layout works on mobile, tablet, desktop
+- Quick action buttons (Change Plan, Cancel, View Details) implemented
+- Section follows modular pattern (init() and cleanup() methods)
+- CSS created in both default/ and dark/ theme directories
+- Manual testing completed on multiple screen sizes
+
+# TODO:
+- [ ] Create `pages/sections/subscriptions.html` with section structure
+- [ ] Create `pages/sections/subscriptions.js` with SubscriptionSection class
+- [ ] Implement init() method to fetch active subscriptions via apiClient
+- [ ] Design subscription card component (operator, plan, price, renewal date, status badge)
+- [ ] Add loading skeleton loader while fetching subscriptions
+- [ ] Implement empty state message ("No active subscriptions")
+- [ ] Add error handling with toast notifications for API failures
+- [ ] Create "Change Plan" button linking to plan change modal (Phase 4 card 26)
+- [ ] Create "Cancel Subscription" button with confirmation dialog
+- [ ] Create "View Details" button showing full subscription info
+- [ ] Implement responsive grid layout (1 column mobile, 2-3 columns desktop)
+- [ ] Add status badge styling (ACTIVE=green, PENDING=yellow, CANCELED=red, SUSPENDED=orange)
+- [ ] Create `css/default/subscriptions.css` with card styles, buttons, badges
+- [ ] Create `css/dark/subscriptions.css` with dark theme variants
+- [ ] Add styles to `config/styles.json` for both theme directories
+- [ ] Add section to `config.json` with role: ["CUSTOMER"] (customer-only access)
+- [ ] Test API calls with apiClient (no /api prefix)
+- [ ] Test 401 error handling (token refresh auto-retry)
+- [ ] Test loading states and error messages
+- [ ] Test responsive layout on mobile (375px), tablet (768px), desktop (1920px)
+- [ ] Test both default and dark themes
+- [ ] Verify section loads only for CUSTOMER role
+- [ ] Manual testing with sample subscription data
+
+# Reports:
+*
+
+---

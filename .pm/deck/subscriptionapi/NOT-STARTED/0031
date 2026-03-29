@@ -1,0 +1,51 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Testing: Phase 3 Integration Tests
+Tags: Phase3, Backend, Testing
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Integration tests for all dashboard statistics endpoints pass
+- Integration tests for activity timeline endpoint pass
+- Test coverage minimum 80% for Phase 3 backend code
+- User statistics aggregation tests verify correct counts
+- Subscription statistics aggregation tests verify correct counts
+- Revenue calculation tests verify correct totals and trends
+- Operator performance metrics tests verify accuracy
+- Activity timeline filtering tests verify correct results
+- Date range filtering tests verify accurate date handling
+- Role-based access control tests verify admin-only endpoints
+- Cache behavior tests verify metrics cached and invalidated correctly
+- All tests run successfully in CI/CD pipeline
+
+# TODO:
+- [ ] Create DashboardControllerIntegrationTest class
+- [ ] Test GET /dashboard/user-stats returns correct user counts
+- [ ] Test user-stats with date range filtering (last 7/30/90 days)
+- [ ] Test GET /dashboard/subscription-stats returns correct subscription counts
+- [ ] Test subscription-stats with status filtering (active, pending, canceled)
+- [ ] Test GET /dashboard/revenue returns correct revenue totals
+- [ ] Test revenue with operator filtering
+- [ ] Test revenue with date range filtering
+- [ ] Test GET /dashboard/operator-performance returns operator metrics
+- [ ] Test operator-performance with popularity ranking
+- [ ] Create ActivityControllerIntegrationTest class
+- [ ] Test GET /dashboard/activity-timeline returns paginated activities
+- [ ] Test activity-timeline pagination (page, size)
+- [ ] Test activity-timeline filtering by activity type
+- [ ] Test activity-timeline filtering by date range
+- [ ] Test role-based access (admin sees all, customer sees own)
+- [ ] Test cache behavior (metrics cached and invalidated on updates)
+- [ ] Test error handling (invalid date ranges, missing parameters)
+- [ ] Test performance with large datasets
+- [ ] Run all tests and verify 80%+ code coverage
+
+# Reports:
+*

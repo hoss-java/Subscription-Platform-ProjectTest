@@ -1,0 +1,49 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Plan Detail Modal
+Tags: Phase2, Frontend, UI
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Plan detail modal displays full plan information
+- Plan name, description, all features shown
+- Pricing details (monthly/yearly options) displayed
+- Terms and conditions section included
+- Subscribe Now button present and functional
+- Related plans from same operator shown
+- Modal closes on background click or close button
+- Loading state displayed during data fetch
+- Error handling with toast notifications
+- Responsive design (mobile, tablet, desktop)
+- Accessibility features implemented (focus management, keyboard navigation)
+- CSS added to both default/ and dark/ theme directories
+
+# TODO:
+- [ ] Create plan-detail-modal.html component
+- [ ] Create plan-detail-modal.js with show(), hide(), init() methods
+- [ ] Implement API call using apiClient to GET /plans/{id}
+- [ ] Display plan full description and all features
+- [ ] Display pricing tiers (monthly/yearly with prices)
+- [ ] Display terms and conditions section
+- [ ] Add Subscribe Now button (link to Phase 4 subscription flow)
+- [ ] Implement related plans section (fetch from same operator)
+- [ ] Add modal open/close functionality
+- [ ] Implement background click to close
+- [ ] Add close button (X icon)
+- [ ] Implement loading state (skeleton loaders)
+- [ ] Implement error handling with toast notifications
+- [ ] Create modal-specific CSS in css/default/ and css/dark/
+- [ ] Add responsive modal sizing for mobile/tablet/desktop
+- [ ] Implement keyboard navigation (Escape to close)
+- [ ] Test modal opening/closing behavior
+- [ ] Test on multiple screen sizes
+
+# Reports:
+*

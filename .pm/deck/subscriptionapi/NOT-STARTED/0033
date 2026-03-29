@@ -1,0 +1,48 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Subscription CRUD Endpoints
+Tags: Phase4, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- POST /subscriptions creates new subscription for customer
+- GET /subscriptions returns paginated list of user's subscriptions
+- GET /subscriptions/{id} returns subscription details
+- GET /subscriptions?status=ACTIVE filters subscriptions by status
+- Response structure consistent with project standards
+- Input validation for all request parameters
+- User isolation enforced (customers only see own subscriptions)
+- Subscription creation triggers activity logging
+- Integration tests pass for all endpoints
+- Business rule validation (plan availability, duplicate subscriptions)
+
+# TODO:
+- [ ] Create SubscriptionController.java with @RestController annotation
+- [ ] Implement POST /subscriptions endpoint with @PostMapping
+- [ ] Add @RequestBody with CreateSubscriptionRequest DTO (user_id, plan_id)
+- [ ] Create SubscriptionService layer with business logic
+- [ ] Implement subscription creation logic (validate plan, check duplicates, set dates)
+- [ ] Implement GET /subscriptions with pagination support
+- [ ] Add @RequestParam for filtering (status, page, size)
+- [ ] Implement user isolation (customers only see own subscriptions)
+- [ ] Implement GET /subscriptions/{id} endpoint
+- [ ] Add user ownership validation (customer can only access own subscription)
+- [ ] Create SubscriptionResponseDTO with all subscription details
+- [ ] Add subscription creation validation (plan exists, is ACTIVE, user doesn't already have it)
+- [ ] Implement activity logging on subscription creation
+- [ ] Add input validation using @Valid and custom validators
+- [ ] Write integration tests for all endpoints
+- [ ] Test subscription creation with valid/invalid data
+- [ ] Test user isolation (customer cannot access other user's subscriptions)
+- [ ] Test filtering by status
+- [ ] Test pagination
+
+# Reports:
+*

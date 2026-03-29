@@ -1,0 +1,96 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Add Audit Logging
+Tags: Phase5, Backend, Security
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- AuditLog entity created with comprehensive field tracking
+- Database migration script created and tested
+- AuditLog repository implemented with query methods
+- Aspect-oriented programming (AOP) configured for automatic audit logging
+- All user-modifying endpoints logged (create, update, delete operations)
+- Audit log captures: user ID, action, entity type, old values, new values, timestamp, IP address
+- Authorization checks ensure users only see own audit logs (admins see all)
+- Audit log retrieval endpoints implemented with filtering and pagination
+- Sensitive data masked in audit logs (passwords, tokens, payment info)
+- Retention policy implemented (logs retained for compliance period)
+- Unit and integration tests passing
+- Audit trail verified for all Phase 4 and Phase 5 operations
+
+# TODO:
+- [ ] Create AuditLog.java entity with JPA annotations
+- [ ] Add fields: id (UUID), user_id (FK), action (VARCHAR), entity_type (VARCHAR), entity_id (UUID), old_values (JSON/TEXT), new_values (JSON/TEXT), ip_address (VARCHAR), user_agent (VARCHAR), timestamp (DATETIME), status (VARCHAR)
+- [ ] Create AuditAction enum (CREATE, UPDATE, DELETE, LOGIN, LOGOUT, SUBSCRIBE, PLAN_CHANGE, CANCEL_SUBSCRIPTION, PAYMENT, etc.)
+- [ ] Create AuditEntityType enum (USER, SUBSCRIPTION, PLAN, OPERATOR, BILLING, NOTIFICATION, etc.)
+- [ ] Add relationships: @ManyToOne to User
+- [ ] Create AuditLogRepository interface extending JpaRepository
+- [ ] Add custom query methods: findByUserId(), findByUserIdAndDateRange(), findByAction(), findByEntityType(), findByEntityId()
+- [ ] Create database migration for audit_logs table
+- [ ] Create AuditLogDTO for API responses
+- [ ] Create AuditLogService for logging operations
+- [ ] Implement logAction() method to create audit log entries
+- [ ] Implement method to capture old and new values (before/after comparison)
+- [ ] Create AuditLogAspect for AOP-based automatic logging
+- [ ] Configure @Aspect on AuditLogAspect class
+- [ ] Implement @Around advice for controller methods
+- [ ] Capture method parameters (new values)
+- [ ] Capture return values (created/updated entity)
+- [ ] Extract user ID from SecurityContext
+- [ ] Extract IP address from HttpServletRequest
+- [ ] Extract user agent from request headers
+- [ ] Annotate endpoints to be audited with @Auditable annotation (optional, or audit all)
+- [ ] Create AuditLogController with REST endpoints
+- [ ] Implement GET /audit-logs (list audit logs with pagination)
+- [ ] Implement GET /audit-logs/user/{userId} (list logs for specific user)
+- [ ] Implement GET /audit-logs/{id} (get specific audit log entry)
+- [ ] Add filtering by action (CREATE, UPDATE, DELETE, etc.)
+- [ ] Add filtering by entity type (USER, SUBSCRIPTION, PLAN, etc.)
+- [ ] Add filtering by entity ID
+- [ ] Add filtering by date range (start_date, end_date)
+- [ ] Implement sorting (by timestamp, by action, by user)
+- [ ] Add pagination parameters (page, size, sort)
+- [ ] Create sensitive data masking utility
+- [ ] Mask passwords in old_values and new_values
+- [ ] Mask payment information (credit card numbers, CVV)
+- [ ] Mask API tokens and secrets
+- [ ] Mask email addresses (optional, based on privacy policy)
+- [ ] Add authorization checks (@PreAuthorize)
+- [ ] Ensure users only see own audit logs
+- [ ] Ensure admins can see all audit logs
+- [ ] Implement audit log retention policy
+- [ ] Create scheduled job to delete logs older than retention period (e.g., 90 days)
+- [ ] Add configuration for retention period (application.properties)
+- [ ] Add error handling for logging failures (should not break main operation)
+- [ ] Implement logging for audit log creation failures
+- [ ] Create unit tests for AuditLogService
+- [ ] Test logAction() method with sample data
+- [ ] Test old/new value capture
+- [ ] Test sensitive data masking
+- [ ] Create unit tests for AuditLogAspect
+- [ ] Test @Around advice captures method parameters and return values
+- [ ] Test IP address and user agent extraction
+- [ ] Create integration tests for audit endpoints
+- [ ] Test list endpoint with pagination
+- [ ] Test filtering by action, entity type, date range
+- [ ] Test authorization (user sees only own, admin sees all)
+- [ ] Test sensitive data is masked in responses
+- [ ] Create end-to-end test for subscription creation audit trail
+- [ ] Create end-to-end test for plan change audit trail
+- [ ] Create end-to-end test for subscription cancellation audit trail
+- [ ] Test audit logs capture all required information
+- [ ] Test retention policy (old logs deleted)
+- [ ] Test concurrent audit log creation
+- [ ] Verify database schema and indexes on frequently queried columns
+
+# Reports:
+*
+
+---

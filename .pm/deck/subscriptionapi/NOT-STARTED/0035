@@ -1,0 +1,32 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Subscription Cancellation
+Tags: Phase4, Backend, Core
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+
+# TODO:
+- [ ] Create subscription cancellation endpoint (DELETE /subscriptions/{id})
+- [ ] Implement immediate cancellation logic
+- [ ] Implement end-of-period cancellation option
+- [ ] Update subscription status to CANCELED
+- [ ] Record cancellation timestamp and reason
+- [ ] Validate user owns subscription before cancellation
+- [ ] Prevent cancellation of already canceled subscriptions
+- [ ] Add audit log entry for cancellation
+- [ ] Return success response with cancellation details
+- [ ] Handle edge cases (pending subscriptions, suspended subscriptions)
+- [ ] Write unit tests for cancellation logic
+- [ ] Write integration tests for cancellation endpoint
+- [ ] Test with Postman (immediate and end-of-period scenarios)
+
+# Reports:
+*

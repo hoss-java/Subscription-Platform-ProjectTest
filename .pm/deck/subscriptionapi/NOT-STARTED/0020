@@ -1,0 +1,45 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Implement Plan Filtering & Search
+Tags: Phase2, Frontend, UI
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Filter by service type (Internet, Mobile, Bundle) implemented
+- Search plans by name/description implemented
+- Sort by price (low-to-high, high-to-low) implemented
+- Sort by newest first implemented
+- Filters applied in real-time with loading state
+- Search query validated (min/max length)
+- Filter state persisted in URL hash parameters
+- Results update dynamically without page reload
+- Error handling for failed searches
+- Responsive filter UI (mobile-friendly)
+- CSS added to both default/ and dark/ theme directories
+
+# TODO:
+- [ ] Create filter UI component (dropdowns, search input, sort buttons)
+- [ ] Implement service_type filter dropdown (Internet, Mobile, Bundle)
+- [ ] Implement search input field with debouncing
+- [ ] Implement sort dropdown (price ASC/DESC, newest first)
+- [ ] Add API call parameters for filtering (serviceType, q, sortBy, page, size)
+- [ ] Implement real-time filtering with loading state
+- [ ] Add filter state to URL hash parameters for bookmarking
+- [ ] Validate search query length (min 2, max 100 characters)
+- [ ] Update plan list on filter/search change
+- [ ] Implement clear filters button
+- [ ] Add error handling for failed searches
+- [ ] Create filter-specific CSS in css/default/ and css/dark/
+- [ ] Test filtering accuracy with multiple filter combinations
+- [ ] Test search with special characters and edge cases
+- [ ] Test on mobile screens (filter UI responsive)
+
+# Reports:
+*

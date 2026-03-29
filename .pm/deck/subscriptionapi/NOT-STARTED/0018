@@ -1,0 +1,43 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Operator Listing Section
+Tags: Phase2, Frontend, UI
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Operator listing section created in pages/sections/
+- All active operators displayed in card/grid layout
+- Operator name, description, service types shown
+- Click operator card navigates to plan catalog
+- Loading state displayed during data fetch
+- Error handling with toast notifications
+- Responsive layout (mobile, tablet, desktop)
+- Section registered in config.json with role-based access
+- CSS added to both default/ and dark/ theme directories
+- Manual testing on multiple screen sizes passes
+
+# TODO:
+- [ ] Create operators.html in pages/sections/
+- [ ] Create operators.js with init() and cleanup() methods
+- [ ] Implement API call using apiClient to GET /operators
+- [ ] Add pagination support (page, size parameters)
+- [ ] Create HTML structure for operator cards (name, description, service_types, status badge)
+- [ ] Implement loading state (skeleton loaders or spinner)
+- [ ] Implement error handling with toast notifications
+- [ ] Add click handler to navigate to plan catalog (hash routing)
+- [ ] Create operators.css in css/default/ directory
+- [ ] Create operators.css in css/dark/ directory
+- [ ] Add responsive grid layout (mobile-first approach)
+- [ ] Register section in config.json with role-based access
+- [ ] Test on mobile, tablet, and desktop screens
+- [ ] Test error scenarios (API failure, empty list)
+
+# Reports:
+*

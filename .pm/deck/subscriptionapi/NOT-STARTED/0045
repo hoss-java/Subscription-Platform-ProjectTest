@@ -1,0 +1,79 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Billing History Section
+Tags: Phase5, Frontend, Dashboard
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Billing history section created and registered in config.json
+- Billing records displayed in table/list format with all relevant details
+- Date range filtering implemented (last 30 days, 90 days, 1 year, custom)
+- Filtering by status (PENDING, PAID, OVERDUE, REFUNDED)
+- Filtering by operator (dropdown)
+- Sorting by date, amount, status
+- Pagination implemented for large billing lists
+- Invoice download functionality (PDF export)
+- Billing summary widget (total spent, monthly breakdown)
+- Loading states during data fetch
+- Error handling with toast notifications
+- Empty state displayed when no billing records exist
+- Responsive layout works on mobile, tablet, desktop
+- Section follows modular pattern (init() and cleanup() methods)
+- CSS created in both default/ and dark/ theme directories
+- Manual testing completed with various filters and exports
+
+# TODO:
+- [ ] Create `pages/sections/billing-history.html` with section structure
+- [ ] Create `pages/sections/billing-history.js` with BillingHistorySection class
+- [ ] Implement init() method to fetch billing records via apiClient
+- [ ] Design billing records table (date, amount, operator, plan, status, actions)
+- [ ] Create billing record row component with clickable details
+- [ ] Add date range filter (last 30/90 days, 1 year, custom date picker)
+- [ ] Add status filter dropdown (PENDING, PAID, OVERDUE, REFUNDED)
+- [ ] Add operator filter dropdown (populated from billing data)
+- [ ] Implement sorting (by date ascending/descending, by amount, by status)
+- [ ] Add loading skeleton loader while fetching billing records
+- [ ] Implement empty state message ("No billing records found")
+- [ ] Add pagination controls (prev/next buttons or load more)
+- [ ] Create billing summary widget (total spent this month, this year)
+- [ ] Add monthly breakdown chart (bar chart or table)
+- [ ] Implement invoice download button (PDF export per record)
+- [ ] Create billing detail modal (full invoice information)
+- [ ] Add status badge styling (PENDING=yellow, PAID=green, OVERDUE=red, REFUNDED=blue)
+- [ ] Show payment date for paid records
+- [ ] Show due date for pending/overdue records
+- [ ] Add error handling with toast notifications for API failures
+- [ ] Implement responsive table layout (horizontal scroll on mobile)
+- [ ] Create `css/default/billing-history.css` with table, filter, and summary styles
+- [ ] Create `css/dark/billing-history.css` with dark theme variants
+- [ ] Add styles to `config/styles.json` for both theme directories
+- [ ] Add section to `config.json` with role: ["CUSTOMER"] (customer-only access)
+- [ ] Test API calls with apiClient (no /api prefix)
+- [ ] Test 401 error handling (token refresh auto-retry)
+- [ ] Test date range filtering (predefined and custom ranges)
+- [ ] Test status filtering
+- [ ] Test operator filtering
+- [ ] Test sorting (all sortable columns)
+- [ ] Test pagination (load more records, navigate pages)
+- [ ] Test billing summary calculations (total spent, monthly breakdown)
+- [ ] Test invoice download (PDF generated correctly)
+- [ ] Test loading states and error messages
+- [ ] Test empty state when no records exist
+- [ ] Test responsive layout on mobile (375px), tablet (768px), desktop (1920px)
+- [ ] Test both default and dark themes
+- [ ] Test billing detail modal opens and displays correctly
+- [ ] Verify section loads only for CUSTOMER role
+- [ ] Manual testing with multiple billing records and various filters
+- [ ] Test with different currencies (if applicable)
+
+# Reports:
+*
+
+---

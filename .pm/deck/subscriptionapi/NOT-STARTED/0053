@@ -1,0 +1,45 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Security Hardening
+Tags: Phase6, Backend, Security
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+
+# DOD (definition of done):
+- HTTPS enforced in production
+- CORS policies properly configured
+- SQL injection vulnerabilities eliminated
+- XSS protection enabled
+- CSRF tokens implemented
+- Rate limiting configured on all endpoints
+- Input validation on all endpoints
+- Sensitive data not logged
+- Security headers added (HSTS, X-Frame-Options, etc.)
+- Dependencies scanned for vulnerabilities
+
+# TODO:
+- [] Enable HTTPS/TLS in production configuration
+- [] Configure CORS to allow only trusted origins
+- [] Add input validation to all endpoint parameters
+- [] Implement parameterized queries to prevent SQL injection
+- [] Add XSS protection filters
+- [] Implement CSRF token generation and validation
+- [] Configure rate limiting on auth endpoints
+- [] Add rate limiting to API endpoints
+- [] Remove sensitive data from logs
+- [] Add security headers (HSTS, X-Frame-Options, X-Content-Type-Options)
+- [] Implement request/response encryption where needed
+- [] Scan dependencies with OWASP Dependency-Check
+- [] Update all vulnerable dependencies
+- [] Add security testing to CI/CD pipeline
+- [] Document security best practices
+- [] Perform security audit
+
+# Reports:
+*

@@ -1,0 +1,61 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Subscribe Flow
+Tags: Phase4, Frontend, UserFlow
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Subscribe flow modal created and integrated with plan detail modal
+- Plan selection confirmation with pricing preview
+- Customer information pre-filled from user profile
+- Terms and conditions checkbox required before subscription
+- Loading state during subscription creation
+- Success message with subscription confirmation details
+- Error handling with specific error messages
+- Cancel button to exit flow without subscribing
+- Responsive modal layout on all screen sizes
+- Integration with apiClient for subscription creation endpoint
+- Manual testing completed with success and error scenarios
+
+# TODO:
+- [ ] Create `pages/sections/subscribe-modal.html` with modal structure
+- [ ] Create `pages/sections/subscribe-modal.js` with SubscribeFlow class
+- [ ] Design modal with plan summary section (name, description, price, billing period)
+- [ ] Add customer information display (pre-filled from profile)
+- [ ] Implement terms and conditions checkbox with link to full terms
+- [ ] Add pricing breakdown (base price, taxes if applicable, total)
+- [ ] Create "Confirm Subscribe" button (disabled until T&C checked)
+- [ ] Create "Cancel" button to close modal without action
+- [ ] Implement init() method to populate plan details from selected plan
+- [ ] Add loading spinner during subscription creation API call
+- [ ] Implement success state with confirmation message and subscription ID
+- [ ] Add error handling with toast notifications for API failures
+- [ ] Show specific error messages (plan unavailable, user already subscribed, etc.)
+- [ ] Implement cleanup() method to reset modal state
+- [ ] Create form validation (ensure all required fields present)
+- [ ] Add confirmation dialog before final subscription (optional but recommended)
+- [ ] Create `css/default/subscribe-modal.css` with modal styles
+- [ ] Create `css/dark/subscribe-modal.css` with dark theme variants
+- [ ] Add styles to `config/styles.json`
+- [ ] Test modal opens from plan detail card
+- [ ] Test plan information displays correctly
+- [ ] Test T&C checkbox validation
+- [ ] Test API call via apiClient with correct endpoint
+- [ ] Test success flow with confirmation message
+- [ ] Test error scenarios (network error, plan unavailable, duplicate subscription)
+- [ ] Test modal closes on success
+- [ ] Test responsive layout on mobile, tablet, desktop
+- [ ] Test both default and dark themes
+- [ ] Manual testing with different plan types (Internet, Mobile, Bundle)
+
+# Reports:
+*
+
+---

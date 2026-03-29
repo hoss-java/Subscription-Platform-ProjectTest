@@ -1,0 +1,72 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Plan Change Modal
+Tags: Phase4, Frontend, UserFlow
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Plan change modal created and accessible from subscription dashboard
+- Current plan details displayed with pricing and features
+- Available plans from same operator listed with comparison
+- Price difference calculation (upgrade/downgrade cost)
+- Proration details shown if applicable
+- Effective date selection (immediate or end-of-billing-period)
+- Confirmation with new plan summary
+- Loading state during plan change API call
+- Success message with change confirmation
+- Error handling with specific error messages
+- Cancel button to exit without making changes
+- Responsive modal layout on all screen sizes
+- Manual testing completed with upgrade and downgrade scenarios
+
+# TODO:
+- [ ] Create `pages/sections/plan-change-modal.html` with modal structure
+- [ ] Create `pages/sections/plan-change-modal.js` with PlanChangeFlow class
+- [ ] Design current plan section (name, price, features, renewal date)
+- [ ] Design available plans list (filter by same operator)
+- [ ] Add plan comparison cards (current vs new plan side-by-side)
+- [ ] Implement price difference calculation (upgrade/downgrade amount)
+- [ ] Add proration details section (if applicable)
+- [ ] Create effective date selector (immediate or end-of-period options)
+- [ ] Implement init() method to fetch current subscription and available plans
+- [ ] Add loading spinner while fetching plan options
+- [ ] Show "No other plans available" message if only one plan exists
+- [ ] Implement plan selection with visual highlight
+- [ ] Create pricing preview section (current price, new price, difference, total)
+- [ ] Add terms for plan change (cancellation policy, effective date)
+- [ ] Create "Confirm Plan Change" button (enabled only when new plan selected)
+- [ ] Create "Cancel" button to close modal without action
+- [ ] Implement loading spinner during plan change API call
+- [ ] Add success state with confirmation message and effective date
+- [ ] Implement error handling with toast notifications
+- [ ] Show specific error messages (plan unavailable, no changes made, etc.)
+- [ ] Implement cleanup() method to reset modal state
+- [ ] Create form validation (ensure valid plan selected)
+- [ ] Create `css/default/plan-change-modal.css` with modal and comparison styles
+- [ ] Create `css/dark/plan-change-modal.css` with dark theme variants
+- [ ] Add styles to `config/styles.json`
+- [ ] Test modal opens from subscription card
+- [ ] Test current plan displays correctly
+- [ ] Test available plans load and filter by operator
+- [ ] Test price difference calculation (upgrade and downgrade)
+- [ ] Test proration display when applicable
+- [ ] Test effective date selector options
+- [ ] Test API call via apiClient with correct endpoint
+- [ ] Test success flow with confirmation message
+- [ ] Test error scenarios (network error, plan unavailable, invalid selection)
+- [ ] Test modal closes on success
+- [ ] Test responsive layout on mobile, tablet, desktop
+- [ ] Test both default and dark themes
+- [ ] Manual testing with different plan combinations (upgrade, downgrade, same tier)
+
+# Reports:
+*
+
+---

@@ -1,0 +1,50 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Activity Timeline Section
+Tags: Phase3, Frontend, UI
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Activity timeline section created in pages/sections/
+- Activity feed displays user/system actions with timestamps
+- Timeline items show action type, resource, user, timestamp, details
+- Pagination working (load more or infinite scroll)
+- Filtering by activity type implemented (subscription, plan_change, cancellation, etc.)
+- Date range filtering works (last 7/30/90 days, custom)
+- Admin sees all activities, customers see only their own
+- Loading state displayed during data fetch
+- Error handling with toast notifications
+- Responsive design (mobile, tablet, desktop)
+- Section registered in config.json with role-based access
+- CSS added to both default/ and dark/ theme directories
+
+# TODO:
+- [ ] Create activity-timeline.html in pages/sections/
+- [ ] Create activity-timeline.js with init() and cleanup() methods
+- [ ] Implement API call using apiClient to GET /dashboard/activity-timeline
+- [ ] Add pagination support (page, size parameters or infinite scroll)
+- [ ] Add date range filter UI (dropdown for 7/30/90 days, custom date picker)
+- [ ] Add activity type filter dropdown (subscription, plan_change, cancellation, etc.)
+- [ ] Create timeline item component (action type badge, user, timestamp, description)
+- [ ] Display activity details (from, to, timestamp, user information)
+- [ ] Implement loading state (skeleton loaders for timeline items)
+- [ ] Implement error handling with toast notifications
+- [ ] Add role-based filtering (admin sees all, customers see own activities)
+- [ ] Create activity-timeline.css in css/default/ directory
+- [ ] Create activity-timeline.css in css/dark/ directory
+- [ ] Add responsive timeline layout (mobile-friendly)
+- [ ] Add load more button or infinite scroll pagination
+- [ ] Register section in config.json with role-based access
+- [ ] Test pagination and filtering accuracy
+- [ ] Test on mobile, tablet, and desktop screens
+- [ ] Test error scenarios (API failure, no activities)
+
+# Reports:
+*

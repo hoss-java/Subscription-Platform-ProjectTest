@@ -1,0 +1,68 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Subscription History View
+Tags: Phase4, Frontend, Dashboard
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Subscription history section created and registered in config.json
+- Timeline view displays all subscription events (created, changed, canceled)
+- Each event shows date, time, action type, plan details, and status
+- Filtering by event type (subscription, plan change, cancellation)
+- Filtering by date range (last 7 days, 30 days, 90 days, custom)
+- Pagination implemented for large history lists
+- Loading states during data fetch
+- Error handling with toast notifications
+- Empty state displayed when no history exists
+- Responsive layout works on mobile, tablet, desktop
+- Section follows modular pattern (init() and cleanup() methods)
+- CSS created in both default/ and dark/ theme directories
+- Manual testing completed with various filters and date ranges
+
+# TODO:
+- [ ] Create `pages/sections/subscription-history.html` with section structure
+- [ ] Create `pages/sections/subscription-history.js` with SubscriptionHistorySection class
+- [ ] Implement init() method to fetch subscription history via apiClient
+- [ ] Design timeline layout (vertical timeline with events)
+- [ ] Create event card component (date, time, action, plan name, status)
+- [ ] Add event type badges (SUBSCRIPTION_CREATED, PLAN_CHANGED, CANCELED, RENEWED)
+- [ ] Implement event type filtering (dropdown or button group)
+- [ ] Create date range filter (last 7/30/90 days, custom date picker)
+- [ ] Add loading skeleton loader while fetching history
+- [ ] Implement empty state message ("No subscription history")
+- [ ] Add pagination controls (prev/next buttons or load more)
+- [ ] Show event details on click (full plan info, pricing, reason for change)
+- [ ] Add error handling with toast notifications for API failures
+- [ ] Implement sorting (newest first, oldest first)
+- [ ] Add export functionality (optional: download as CSV)
+- [ ] Create responsive timeline layout (vertical on mobile, horizontal on desktop)
+- [ ] Add color coding for event types (green=created, blue=changed, red=canceled, orange=renewed)
+- [ ] Create `css/default/subscription-history.css` with timeline and filter styles
+- [ ] Create `css/dark/subscription-history.css` with dark theme variants
+- [ ] Add styles to `config/styles.json` for both theme directories
+- [ ] Add section to `config.json` with role: ["CUSTOMER"] (customer-only access)
+- [ ] Test API calls with apiClient (no /api prefix)
+- [ ] Test 401 error handling (token refresh auto-retry)
+- [ ] Test event type filtering works correctly
+- [ ] Test date range filtering (predefined and custom ranges)
+- [ ] Test pagination (load more events, navigate pages)
+- [ ] Test loading states and error messages
+- [ ] Test empty state when no history exists
+- [ ] Test responsive layout on mobile (375px), tablet (768px), desktop (1920px)
+- [ ] Test both default and dark themes
+- [ ] Test sorting (newest/oldest first)
+- [ ] Test event detail modal opens on click
+- [ ] Verify section loads only for CUSTOMER role
+- [ ] Manual testing with multiple subscription events
+
+# Reports:
+*
+
+---

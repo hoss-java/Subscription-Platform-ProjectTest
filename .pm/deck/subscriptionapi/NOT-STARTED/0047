@@ -1,0 +1,63 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Add Audit Logging
+Tags: Phase5, Backend, Auditing
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- AuditLog entity created with all required fields (user_id, action, entity_type, entity_id, changes, timestamp, ip_address)
+- AuditLogRepository implemented with custom query methods
+- AuditService created to log all user actions
+- Aspect-oriented programming (AOP) used to automatically log method calls
+- Audit logging implemented for all critical operations (subscription create/update/cancel, plan change, user profile update, login/logout)
+- Audit trail queryable by user, date range, action type, entity type
+- Sensitive data masked in audit logs (passwords, tokens, payment info)
+- Audit logs immutable (no updates, only inserts)
+- Unit tests for audit logging pass
+- Integration tests for audit trail accuracy pass
+- Compliance requirements verified (data retention, access controls)
+
+# TODO:
+- [ ] Create AuditLog.java entity with JPA annotations
+- [ ] Add fields: id (UUID), user_id (FK), action (ENUM), entity_type (VARCHAR), entity_id (UUID), old_values (JSON), new_values (JSON), changes (TEXT), ip_address (VARCHAR), user_agent (VARCHAR), timestamp (TIMESTAMP), created_at (TIMESTAMP)
+- [ ] Create AuditAction enum (CREATE, UPDATE, DELETE, LOGIN, LOGOUT, SUBSCRIBE, PLAN_CHANGE, CANCEL_SUBSCRIPTION, PASSWORD_CHANGE)
+- [ ] Add relationships: @ManyToOne to User
+- [ ] Create AuditLogRepository interface with custom query methods
+- [ ] Add query methods: findByUserId(), findByDateRange(), findByActionType(), findByEntityType(), findByEntityId()
+- [ ] Create AuditService class with logAction() method
+- [ ] Implement AOP aspect (AuditAspect) to intercept method calls
+- [ ] Add @Auditable annotation for methods that should be logged
+- [ ] Implement method interceptor to capture method parameters and return values
+- [ ] Create logic to detect changes between old and new values
+- [ ] Implement data masking for sensitive fields (password, token, card_number, ssn, etc.)
+- [ ] Add IP address capture from HTTP request
+- [ ] Add user agent capture from HTTP request
+- [ ] Create audit logging for subscription operations (create, update, cancel)
+- [ ] Create audit logging for plan change operations
+- [ ] Create audit logging for user profile updates
+- [ ] Create audit logging for authentication events (login, logout, password change)
+- [ ] Create audit logging for admin operations (user management, operator management)
+- [ ] Implement immutability for audit logs (prevent updates/deletes)
+- [ ] Create AuditLogDTO for API responses
+- [ ] Implement audit log query endpoints (GET /audit-logs with filters)
+- [ ] Add pagination and sorting for audit log queries
+- [ ] Add audit log retention policy (keep logs for X years)
+- [ ] Create scheduled task to archive old audit logs
+- [ ] Write unit tests for AuditService and AuditAspect
+- [ ] Write integration tests for audit logging on all critical operations
+- [ ] Test data masking for sensitive fields
+- [ ] Test audit log queries with various filters
+- [ ] Test immutability (verify logs cannot be modified)
+- [ ] Test IP address and user agent capture
+- [ ] Verify audit trail is complete for subscription lifecycle
+- [ ] Test with concurrent operations to ensure accuracy
+
+# Reports:
+*

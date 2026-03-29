@@ -1,0 +1,79 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Billing History Endpoints
+Tags: Phase5, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- BillingHistory JPA entity created with all required fields
+- Database migration script created and tested
+- BillingHistory repository interface implemented with custom queries
+- Billing history endpoints implemented (list, filter, details)
+- Filtering by date range, operator, subscription status
+- Pagination implemented for list endpoints
+- Aggregation logic for billing summaries (total spent, monthly breakdown)
+- Caching implemented for frequently accessed billing data
+- Authorization checks ensure customers only see own billing history
+- Error handling with appropriate HTTP status codes
+- Input validation on all parameters
+- Unit and integration tests passing
+- Database schema verified in test environment
+
+# TODO:
+- [ ] Create BillingHistory.java entity class with JPA annotations
+- [ ] Add fields: id (UUID), user_id (FK), subscription_id (FK), operator_id (FK), plan_id (FK), amount (DECIMAL), currency (VARCHAR), billing_date, due_date, payment_date, status (ENUM), description, created_at, updated_at
+- [ ] Create BillingStatus enum (PENDING, PAID, OVERDUE, CANCELED, REFUNDED)
+- [ ] Add relationships: @ManyToOne to User, Subscription, Operator, Plan
+- [ ] Create BillingHistoryRepository interface extending JpaRepository
+- [ ] Add custom query methods: findByUserId(), findByUserIdAndDateRange(), findByOperatorId(), findByStatus(), findBySubscriptionId()
+- [ ] Create database migration (Flyway/Liquibase) for billing_history table
+- [ ] Add validation constraints to entity fields (NotNull, NotBlank, Positive for amount)
+- [ ] Add timestamps: created_at (auto-set on creation), updated_at (auto-set on update), payment_date (set on payment)
+- [ ] Create BillingHistoryDTO for API responses
+- [ ] Create BillingHistoryController with REST endpoints
+- [ ] Implement GET /billing-history (list all billing records with pagination)
+- [ ] Implement GET /billing-history/{id} (get billing record details)
+- [ ] Implement GET /billing-history/summary (billing summary: total spent, monthly breakdown)
+- [ ] Add filtering by date range (start_date, end_date query parameters)
+- [ ] Add filtering by status (PENDING, PAID, OVERDUE, etc.)
+- [ ] Add filtering by operator_id
+- [ ] Add filtering by subscription_id
+- [ ] Implement sorting (by date, by amount, by status)
+- [ ] Add pagination parameters (page, size, sort)
+- [ ] Create BillingHistoryService for business logic
+- [ ] Implement billing record creation logic (triggered on subscription creation/renewal)
+- [ ] Implement billing record update logic (on payment received)
+- [ ] Add authorization checks (@PreAuthorize or custom logic)
+- [ ] Ensure customers only see own billing history
+- [ ] Ensure operators only see billing for their plans
+- [ ] Implement caching for billing summaries (5-15 minute TTL)
+- [ ] Add cache invalidation on new billing record creation
+- [ ] Implement aggregation queries (total spent, monthly breakdown, by operator)
+- [ ] Add error handling (404 for non-existent records, 403 for unauthorized access)
+- [ ] Add input validation (date range validation, status validation)
+- [ ] Create unit tests for BillingHistory entity
+- [ ] Create unit tests for BillingHistoryRepository queries
+- [ ] Create integration tests for billing endpoints
+- [ ] Test list endpoint with pagination
+- [ ] Test filtering by date range
+- [ ] Test filtering by status
+- [ ] Test filtering by operator
+- [ ] Test summary endpoint calculations
+- [ ] Test authorization (customer sees only own, operator sees own plans)
+- [ ] Test error scenarios (invalid date range, non-existent record)
+- [ ] Test caching behavior (data updates on new record)
+- [ ] Test concurrent billing record creation
+- [ ] Verify database schema and indexes
+- [ ] Test with sample billing data (multiple records, various statuses)
+
+# Reports:
+*
+
+---

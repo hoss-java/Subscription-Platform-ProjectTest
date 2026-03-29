@@ -1,0 +1,46 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Plan Change Logic
+Tags: Phase4, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- PUT /subscriptions/{id}/change-plan allows plan changes
+- Plan change validates new plan availability and eligibility
+- Proration logic calculates refund/charge for mid-cycle changes
+- Plan change creates audit trail entry
+- Plan change triggers activity logging
+- User isolation enforced (customer can only change own subscription)
+- Input validation for new plan parameter
+- Integration tests pass for plan change logic
+- Business rules validated (same operator, valid plan, no duplicates)
+
+# TODO:
+- [ ] Create ChangePlanRequest DTO with new_plan_id field
+- [ ] Implement PUT /subscriptions/{id}/change-plan endpoint
+- [ ] Add user ownership validation
+- [ ] Create plan change business logic in SubscriptionService
+- [ ] Validate new plan exists and is ACTIVE
+- [ ] Validate new plan belongs to same operator (or allow cross-operator)
+- [ ] Check for duplicate subscription (user doesn't already have new plan)
+- [ ] Implement proration calculation (refund/charge for mid-cycle change)
+- [ ] Calculate prorated amount based on days remaining and new plan price
+- [ ] Update subscription: plan_id, updated_at, next_renewal_date
+- [ ] Create audit trail entry for plan change
+- [ ] Implement activity logging for plan change
+- [ ] Add validation constraints to request DTO
+- [ ] Write integration tests for plan change logic
+- [ ] Test successful plan change with proration calculation
+- [ ] Test plan change validation (invalid plan, duplicate, different operator)
+- [ ] Test user isolation (customer cannot change other user's subscription)
+- [ ] Test proration calculation accuracy (upgrade, downgrade, same price)
+
+# Reports:
+*

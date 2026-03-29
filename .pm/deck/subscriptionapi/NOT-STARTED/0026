@@ -1,0 +1,46 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Activity Timeline Endpoint
+Tags: Phase3, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- GET /dashboard/activity-timeline returns paginated activity log
+- Activity includes subscriptions, plan changes, cancellations, user actions
+- Timeline sorted by timestamp (newest first)
+- Pagination working (page, size parameters)
+- Filtering by activity type (subscription, plan_change, cancellation, etc.)
+- Filtering by date range supported
+- Response includes user, action, timestamp, details
+- Admin can see all activities, customers see only their own
+- Input validation for query parameters
+- Integration tests pass
+- Performance acceptable for large activity datasets
+
+# TODO:
+- [ ] Create Activity entity with user_id, action_type, resource_type, resource_id, timestamp, details
+- [ ] Create ActivityRepository with custom query methods
+- [ ] Create ActivityController.java with @RestController annotation
+- [ ] Implement GET /dashboard/activity-timeline endpoint
+- [ ] Add pagination support (page, size parameters)
+- [ ] Add @RequestParam for filtering (activityType, dateRange, startDate, endDate)
+- [ ] Create ActivityService layer with business logic
+- [ ] Implement role-based filtering (admin sees all, customers see own activities)
+- [ ] Add sorting by timestamp (newest first)
+- [ ] Create ActivityResponseDTO with user, action, timestamp, details
+- [ ] Add input validation for query parameters
+- [ ] Write integration tests for endpoint
+- [ ] Test pagination and filtering accuracy
+- [ ] Test role-based access control (admin vs customer)
+- [ ] Test activity retrieval with various filters
+- [ ] Optimize database queries for performance
+
+# Reports:
+*

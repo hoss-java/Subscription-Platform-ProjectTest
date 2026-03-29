@@ -1,0 +1,50 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Build Dashboard Widgets & Charts
+Tags: Phase3, Frontend, UI
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Reusable widget component created for statistics display
+- Line chart component displays revenue trends
+- Pie chart component displays subscription breakdown
+- Bar chart component displays operator comparison
+- All charts responsive on mobile/tablet/desktop
+- Chart data updates when filters change
+- Loading states shown while fetching chart data
+- Error states handled gracefully
+- Chart legends and labels clear and readable
+- CSS added to both default/ and dark/ theme directories
+- Manual testing on multiple screen sizes passes
+
+# TODO:
+- [ ] Create widget.js component with title, value, trend indicator
+- [ ] Create widget.html template for statistics display
+- [ ] Implement widget styling in css/default/ and css/dark/
+- [ ] Create chart-base.js component with common chart functionality
+- [ ] Create line-chart.js component for revenue trends
+- [ ] Create pie-chart.js component for subscription breakdown
+- [ ] Create bar-chart.js component for operator comparison
+- [ ] Choose chart library (Chart.js, D3.js, or similar)
+- [ ] Implement chart initialization and data binding
+- [ ] Add responsive chart sizing (use container width/height)
+- [ ] Implement chart update on data change
+- [ ] Add loading state (spinner or skeleton loader)
+- [ ] Add error state (error message display)
+- [ ] Add chart legends with clear labels
+- [ ] Add chart tooltips with detailed information
+- [ ] Implement color scheme for default and dark themes
+- [ ] Test chart rendering with various data sizes
+- [ ] Test chart responsiveness on mobile/tablet/desktop
+- [ ] Test chart updates on filter changes
+- [ ] Test error handling (missing data, API failure)
+
+# Reports:
+*

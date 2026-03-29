@@ -1,0 +1,69 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Create Notification Preferences Section
+Tags: Phase5, Frontend, Dashboard
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Notification preferences section created and registered in config.json
+- User can enable/disable email notifications
+- User can enable/disable SMS notifications
+- User can select notification types to receive (subscription created, plan changed, cancellation, renewal reminder, payment failed)
+- User can set notification frequency (immediate, daily digest, weekly digest)
+- User can manage email and phone number for notifications
+- Save preferences button with success confirmation
+- Loading states implemented during data fetch and save
+- Error handling with toast notifications for API failures
+- Validation for email and phone number formats
+- Empty state or default preferences displayed
+- Responsive layout works on mobile, tablet, desktop
+- Section follows modular pattern (init() and cleanup() methods)
+- CSS created in both default/ and dark/ theme directories
+- Manual testing completed on multiple screen sizes
+
+# TODO:
+- [ ] Create `pages/sections/notification-preferences.html` with section structure
+- [ ] Create `pages/sections/notification-preferences.js` with NotificationPreferencesSection class
+- [ ] Implement init() method to fetch user notification preferences via apiClient
+- [ ] Design notification preferences form with toggles and checkboxes
+- [ ] Add toggle for "Email Notifications" (enable/disable all email)
+- [ ] Add toggle for "SMS Notifications" (enable/disable all SMS)
+- [ ] Create checkboxes for notification types: Subscription Created, Plan Changed, Cancellation, Renewal Reminder, Payment Failed
+- [ ] Create frequency selector (Immediate, Daily Digest, Weekly Digest) for each notification type
+- [ ] Add email input field for notification email address with validation
+- [ ] Add phone input field for SMS notifications with validation (format: +1-XXX-XXX-XXXX)
+- [ ] Implement form validation (email format, phone format)
+- [ ] Create "Save Preferences" button
+- [ ] Add loading state while saving preferences
+- [ ] Add success toast notification after preferences saved
+- [ ] Add error toast notification if save fails
+- [ ] Implement cancel button to revert unsaved changes
+- [ ] Add "Test Notification" buttons to send test email/SMS
+- [ ] Create section showing notification history (recent notifications sent)
+- [ ] Add loading skeleton loader while fetching preferences
+- [ ] Implement responsive form layout (1 column mobile, 2 columns tablet/desktop)
+- [ ] Create `css/default/notification-preferences.css` with form styles, toggles, checkboxes
+- [ ] Create `css/dark/notification-preferences.css` with dark theme variants
+- [ ] Add styles to `config/styles.json` for both theme directories
+- [ ] Add section to `config.json` with role: ["CUSTOMER"] (customer-only access)
+- [ ] Test API calls with apiClient (no /api prefix)
+- [ ] Test 401 error handling (token refresh auto-retry)
+- [ ] Test form validation (email, phone format)
+- [ ] Test loading states and error messages
+- [ ] Test save functionality and success confirmation
+- [ ] Test cancel functionality (revert changes)
+- [ ] Test test notification functionality
+- [ ] Test responsive layout on mobile (375px), tablet (768px), desktop (1920px)
+- [ ] Test both default and dark themes
+- [ ] Verify section loads only for CUSTOMER role
+- [ ] Manual testing with sample preference data
+
+# Reports:
+*

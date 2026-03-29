@@ -1,0 +1,44 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Add Metrics Caching & Aggregation
+Tags: Phase3, Backend, Performance
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Dashboard statistics cached with 5-15 minute TTL
+- Activity timeline cached appropriately (shorter TTL for recent data)
+- Cache invalidates on relevant data changes (new subscriptions, cancellations, etc.)
+- Cache key strategy implemented (dashboard-stats, dashboard-revenue, activity-timeline)
+- Database queries optimized using aggregations (GROUP BY, COUNT, SUM, AVG)
+- Cache statistics logged and monitored
+- Integration tests verify cache behavior
+- Performance improvement measured (response time reduction)
+- Cache configuration externalized in application.properties
+
+# TODO:
+- [ ] Configure CacheManager for dashboard metrics
+- [ ] Set cache TTL in application.properties (5-15 minutes for stats, shorter for timeline)
+- [ ] Add @Cacheable annotation to DashboardService methods
+- [ ] Add @Cacheable annotation to ActivityService methods
+- [ ] Implement cache key generation strategy for metrics
+- [ ] Add @CacheEvict on subscription create/update/delete operations
+- [ ] Add @CacheEvict on plan change and cancellation operations
+- [ ] Optimize database queries using native SQL aggregations
+- [ ] Use GROUP BY for operator performance metrics
+- [ ] Use COUNT, SUM, AVG for revenue and user statistics
+- [ ] Create cache configuration class with custom settings
+- [ ] Add cache statistics logging and monitoring
+- [ ] Write integration tests for cache behavior
+- [ ] Test cache invalidation on data updates
+- [ ] Test query performance with large datasets
+- [ ] Measure and document performance improvements
+
+# Reports:
+*

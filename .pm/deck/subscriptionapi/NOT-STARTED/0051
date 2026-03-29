@@ -1,0 +1,44 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Create API Documentation (Swagger)
+Tags: Phase6, Backend, Documentation, Swagger
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+
+# DOD (definition of done):
+- Swagger UI accessible at `/swagger-ui.html`
+- All REST endpoints documented with method, path, parameters, and responses
+- Authentication requirements clearly marked (JWT Bearer token)
+- Request/response examples for each endpoint
+- Error responses documented (400, 401, 403, 404, 500)
+- Data models documented with field descriptions
+- Endpoint grouping by feature
+- Rate limiting information included
+- OpenAPI JSON/YAML downloadable
+- Documentation reviewed and approved
+
+# TODO:
+- [] Add springdoc-openapi-ui dependency to pom.xml
+- [] Add springdoc-openapi-starter-webmvc-ui dependency
+- [] Add springdoc-openapi-starter-webmvc-api dependency
+- [] Configure Swagger/OpenAPI in application.properties
+- [] Add @Operation annotations to all controller methods
+- [] Add @ApiResponse annotations for error responses
+- [] Add @Schema annotations to DTOs
+- [] Document all request/response examples
+- [] Document pagination parameters
+- [] Document filtering parameters
+- [] Create endpoint grouping by feature
+- [] Test Swagger UI loads correctly
+- [] Verify all endpoints appear in documentation
+- [] Test example requests from Swagger UI
+- [] Verify response schemas match actual responses
+
+# Reports:
+*

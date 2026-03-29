@@ -1,0 +1,52 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Testing: Phase 2 Backend Integration Tests
+Tags: Phase2, Backend, Testing
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Integration tests for all operator endpoints pass
+- Integration tests for all plan endpoints pass
+- Test coverage minimum 80% for Phase 2 code
+- Operator isolation tests verify only ACTIVE operators returned
+- Plan isolation tests verify only ACTIVE plans returned
+- Pagination tests verify correct page/size handling
+- Filtering tests verify service_type, status, billing_period filters work correctly
+- Search tests verify name/description search accuracy
+- Cache invalidation tests verify cache updates on data changes
+- Error handling tests verify proper HTTP status codes and error messages
+- All tests run successfully in CI/CD pipeline
+
+# TODO:
+- [ ] Create OperatorControllerIntegrationTest class
+- [ ] Test GET /operators returns paginated list of ACTIVE operators
+- [ ] Test GET /operators with pagination parameters (page, size)
+- [ ] Test GET /operators with serviceType filter
+- [ ] Test GET /operators with status filter
+- [ ] Test GET /operators/{id} returns operator details with plan count
+- [ ] Test GET /operators/{id} with invalid ID returns 404
+- [ ] Test operator isolation (INACTIVE operators not returned)
+- [ ] Create PlanControllerIntegrationTest class
+- [ ] Test GET /plans returns paginated list of ACTIVE plans
+- [ ] Test GET /operators/{id}/plans returns only plans for that operator
+- [ ] Test GET /plans with serviceType filter
+- [ ] Test GET /plans with billingPeriod filter
+- [ ] Test GET /plans with status filter
+- [ ] Test GET /plans/search?q={query} returns correct results
+- [ ] Test search with special characters and edge cases
+- [ ] Test GET /plans/{id} returns full plan details
+- [ ] Test GET /plans/{id} with invalid ID returns 404
+- [ ] Test plan isolation (INACTIVE plans not returned)
+- [ ] Test cache behavior (data cached and invalidated correctly)
+- [ ] Test error handling (invalid parameters, missing fields)
+- [ ] Run all tests and verify 80%+ code coverage
+
+# Reports:
+*

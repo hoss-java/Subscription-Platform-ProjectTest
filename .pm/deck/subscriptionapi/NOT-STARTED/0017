@@ -1,0 +1,40 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Add Caching Layer for Operators & Plans
+Tags: Phase2, Backend, Performance
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Operator list cached with 5-15 minute TTL
+- Plan list cached with 5-15 minute TTL
+- Cache invalidates on operator/plan create/update/delete
+- Cache key strategy implemented (operator-list, plans-by-operator-{id}, plan-{id})
+- Cache statistics logged and monitored
+- Integration tests verify cache behavior
+- Performance improvement measured (response time reduction)
+- Cache configuration externalized in application.properties
+
+# TODO:
+- [ ] Add Spring Cache dependency (spring-boot-starter-cache)
+- [ ] Configure CacheManager (ConcurrentMapCacheManager or Redis)
+- [ ] Set cache TTL in application.properties (5-15 minutes)
+- [ ] Add @Cacheable annotation to OperatorService methods
+- [ ] Add @Cacheable annotation to PlanService methods
+- [ ] Implement cache key generation strategy
+- [ ] Add @CacheEvict on create/update/delete operations
+- [ ] Create cache configuration class with custom cache settings
+- [ ] Add cache statistics logging
+- [ ] Write integration tests for cache behavior
+- [ ] Test cache invalidation on data updates
+- [ ] Measure and document performance improvements
+
+# Reports:
+*
+

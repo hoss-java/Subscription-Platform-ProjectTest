@@ -1,0 +1,94 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Testing: Phase 4 Integration Tests
+Tags: Phase4, Testing, Integration
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- All Phase 4 backend endpoints tested with integration tests
+- Subscription creation flow tested end-to-end
+- Plan change logic validated with proration calculations
+- Subscription cancellation tested (immediate and end-of-period)
+- Subscription status transitions validated
+- Error scenarios tested (invalid plan, duplicate subscription, etc.)
+- Frontend sections tested with mocked API responses
+- User flows tested (subscribe, change plan, cancel, view history)
+- Loading states and error handling verified
+- Responsive layout tested on multiple screen sizes
+- Test coverage report generated (target: 80%+ for Phase 4 code)
+- All tests passing before Phase 4 completion
+
+# TODO:
+- [ ] Create integration test class for SubscriptionController
+- [ ] Test POST /subscriptions (create subscription) with valid data
+- [ ] Test POST /subscriptions with invalid plan ID (should fail)
+- [ ] Test POST /subscriptions with duplicate subscription (should fail)
+- [ ] Test GET /subscriptions (list user subscriptions) with pagination
+- [ ] Test GET /subscriptions/{id} (get subscription details)
+- [ ] Test PUT /subscriptions/{id} (change plan) with upgrade scenario
+- [ ] Test PUT /subscriptions/{id} (change plan) with downgrade scenario
+- [ ] Test PUT /subscriptions/{id} (change plan) with proration calculation
+- [ ] Test DELETE /subscriptions/{id} (cancel subscription) immediate
+- [ ] Test DELETE /subscriptions/{id} (cancel subscription) end-of-period
+- [ ] Test subscription status transitions (ACTIVE -> PENDING -> ACTIVE)
+- [ ] Test subscription status transitions (ACTIVE -> CANCELED)
+- [ ] Test soft delete functionality (status = CANCELED, not hard delete)
+- [ ] Test GET /subscriptions/history (subscription history with filters)
+- [ ] Test history filtering by event type (CREATED, CHANGED, CANCELED)
+- [ ] Test history filtering by date range
+- [ ] Test history pagination
+- [ ] Test authorization (customer can only access own subscriptions)
+- [ ] Test authorization (admin can access all subscriptions)
+- [ ] Test error responses (400, 401, 403, 404, 500)
+- [ ] Test concurrent subscription operations (race conditions)
+- [ ] Test database transactions (rollback on error)
+- [ ] Test timestamp accuracy (created_at, updated_at, canceled_at)
+- [ ] Test renewal date calculation
+- [ ] Test next_renewal_date updates on plan change
+- [ ] Create frontend unit tests for SubscriptionSection
+- [ ] Test subscription list loads and displays correctly
+- [ ] Test subscription cards render with correct data
+- [ ] Test status badges display correct colors
+- [ ] Test loading state during data fetch
+- [ ] Test error handling with toast notifications
+- [ ] Test empty state message displays
+- [ ] Test responsive layout on mobile, tablet, desktop
+- [ ] Create frontend unit tests for SubscribeFlow
+- [ ] Test modal opens with plan details
+- [ ] Test T&C checkbox validation
+- [ ] Test subscription creation via apiClient
+- [ ] Test success message displays
+- [ ] Test error handling for API failures
+- [ ] Test modal closes on success
+- [ ] Create frontend unit tests for PlanChangeFlow
+- [ ] Test modal opens with current and available plans
+- [ ] Test price difference calculation
+- [ ] Test effective date selector
+- [ ] Test plan change via apiClient
+- [ ] Test success message displays
+- [ ] Test error handling for API failures
+- [ ] Create frontend unit tests for SubscriptionHistorySection
+- [ ] Test history timeline loads and displays
+- [ ] Test event type filtering
+- [ ] Test date range filtering
+- [ ] Test pagination
+- [ ] Test responsive timeline layout
+- [ ] Test both default and dark themes for all sections
+- [ ] Run full test suite and generate coverage report
+- [ ] Verify 80%+ code coverage for Phase 4
+- [ ] Document any failing tests and create follow-up issues
+- [ ] Performance test subscription list with 100+ subscriptions
+- [ ] Load test plan change endpoint with concurrent requests
+- [ ] Manual end-to-end testing (subscribe, change plan, cancel, view history)
+
+# Reports:
+*
+
+---

@@ -1,0 +1,42 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Performance Optimization & Indexing
+Tags: Phase6, Backend, Performance, Database
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+
+# DOD (definition of done):
+- Database indexes created on frequently queried columns
+- Query performance metrics measured and documented
+- N+1 query problems identified and resolved
+- Caching strategy implemented for read-heavy endpoints
+- Database connection pooling configured
+- Slow query log enabled and analyzed
+- Performance benchmarks established
+- Load testing completed successfully
+- Query execution plans optimized
+
+# TODO:
+- [] Identify frequently queried columns in all tables
+- [] Create indexes on user_id, operator_id, plan_id, status fields
+- [] Create composite indexes for filter queries
+- [] Enable slow query log in database
+- [] Run performance baseline tests
+- [] Implement query result caching with TTL
+- [] Configure database connection pooling (HikariCP)
+- [] Add query pagination to prevent large result sets
+- [] Optimize N+1 queries with JOIN statements
+- [] Add database query monitoring
+- [] Implement lazy loading for related entities
+- [] Test performance with 10000+ records
+- [] Document all optimizations made
+- [] Create performance report
+
+# Reports:
+*

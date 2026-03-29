@@ -1,0 +1,39 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Implement Operator List & Filter Endpoints
+Tags: Phase2, Backend, API
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- GET /operators endpoint returns paginated list of active operators
+- Pagination working (page, size parameters)
+- Filtering by service_type implemented and tested
+- Filtering by status (ACTIVE/INACTIVE) implemented
+- GET /operators/{id} endpoint returns operator details with plan count
+- Response structure consistent with project standards
+- Input validation for all query parameters
+- Integration tests pass for both endpoints
+- Operator isolation enforced (only ACTIVE operators visible to customers)
+
+# TODO:
+- [ ] Create OperatorController.java with @RestController annotation
+- [ ] Implement GET /operators with @GetMapping, pagination support
+- [ ] Add @RequestParam for filtering (serviceType, status, page, size)
+- [ ] Implement GET /operators/{id} endpoint
+- [ ] Create OperatorService layer with business logic
+- [ ] Add filtering logic: findActiveOperators(), filterByServiceType()
+- [ ] Implement pagination using Page<Operator> and PageRequest
+- [ ] Add response DTO (OperatorResponseDTO) for consistent JSON structure
+- [ ] Write integration tests for both endpoints
+- [ ] Test operator isolation (inactive operators not returned to customers)
+- [ ] Add input validation using @Valid and custom validators
+
+# Reports:
+*

@@ -1,0 +1,48 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Performance & Security Testing
+Tags: Phase6, Frontend, Testing, Performance, Security
+Creator: 
+AssignedTo: 
+# Time tracker settings
+StartAt: 
+EndAt: 
+---
+
+# DOD (definition of done):
+- XSS vulnerabilities tested and fixed
+- CSRF protection verified
+- Performance benchmarks established
+- Load testing completed (1000+ concurrent users)
+- Security headers validated
+- Token handling tested
+- API response times measured
+- Bundle size optimized
+- No console errors or warnings
+- Security audit passed
+
+# TODO:
+- [] Run XSS vulnerability tests on all forms
+- [] Test CSRF token validation
+- [] Test token expiration and refresh flow
+- [] Measure page load times
+- [] Measure API response times
+- [] Test with 1000+ concurrent users
+- [] Optimize JavaScript bundle size
+- [] Optimize CSS bundle size
+- [] Test on slow network (3G/4G)
+- [] Test on low-end devices
+- [] Verify security headers present
+- [] Test localStorage security
+- [] Test password field masking
+- [] Run Lighthouse audit
+- [] Test responsive design on all breakpoints
+- [] Verify no sensitive data in localStorage
+- [] Test error handling and error messages
+- [] Document performance metrics
+- [] Create performance report
+
+# Reports:
+*
