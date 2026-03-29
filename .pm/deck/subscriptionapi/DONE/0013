@@ -1,0 +1,83 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Create Operator Entity & Database Schema
+Tags: Phase2, Backend, Database
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Operator JPA entity created with all required fields (id, name, description, service_types, status, created_at, updated_at)
+- Database migration script created and tested
+- Operator repository interface implemented with custom query methods
+- Entity validation annotations added (NotBlank, NotNull, etc.)
+- Soft delete mechanism implemented (status field)
+- Database schema verified in test environment
+- Unit tests for entity validation pass
+
+# TODO:
+- [-] Create Operator.java entity class with JPA annotations
+- [-] Add fields: id (UUID), name, description, service_types (comma-separated or JSON), status (ENUM), created_at, updated_at
+- [-] Create OperatorRepository interface extending JpaRepository
+- [-] Add custom query methods: findAllByStatusOrderByName(), findByIdAndStatus()
+- [-] Create database migration (Flyway/Liquibase) for operators table
+- [-] Add validation constraints to entity fields
+- [-] Write unit tests for entity and repository
+- [-] Test soft delete functionality (status = INACTIVE)
+
+# Reports:
+## Corrected Report: Backend: Create Operator Management Endpoints
+
+### Scenario
+- **Operator creates plans** → Each plan belongs to one operator
+- **Customer subscribes to plans** → Subscription links customer to plan (and indirectly to operator)
+- **Operator manages their own plans** → Add, enable, disable, delete
+- **Customer sees all available plans** from all operators
+- **Operator sees their own customers** (those who subscribed to their plans)
+
+### ✅ Already Done
+- User entity with roles (OPERATOR role exists)
+- Registration/login flow
+- Role-based access control
+
+### ❌ What's Needed for This Card
+
+**1. Create Plan Entity:**
+- `id` (UUID/Long)
+- `name`, `description`, `price`
+- `service_type` (Internet, Mobile, Bundle)
+- `operator_id` (FK to User with OPERATOR role)
+- `status` (ACTIVE, INACTIVE, DELETED)
+- `created_at`, `updated_at`
+
+**2. Create Subscription Entity:**
+- `id` (UUID/Long)
+- `customer_id` (FK to User with CUSTOMER role)
+- `plan_id` (FK to Plan)
+- `status` (ACTIVE, PENDING, CANCELED)
+- `created_at`, `updated_at`
+
+**3. PlanRepository:**
+- `findByOperatorIdAndIsActiveTrue(Long operatorId, Pageable pageable)` — Get operator's plans
+- `findByOperatorIdAndId(Long operatorId, Long planId)` — Get specific plan for operator
+
+**4. Create OperatorController:**
+- **GET `/api/operators/plans`** — List operator's own plans
+- **GET `/api/operators/plans/{planId}`** — Get specific plan details
+- **POST `/api/operators/plans`** — Create new plan
+- **PUT `/api/operators/plans/{planId}`** — Update plan
+- **DELETE `/api/operators/plans/{planId}`** — Delete plan
+
+**5. Create OperatorService:**
+- Plan CRUD operations with operator authorization checks
+- Ensure operator can only manage their own plans
+
+**6. SecurityConfig Updates:**
+- `/api/operators/**` requires `hasRole('OPERATOR')`
+
+---
