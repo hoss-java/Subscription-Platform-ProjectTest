@@ -1982,6 +1982,111 @@ gantt
 > - [x] 5. Add password strength validation
 > </details>
 
+## 001-0013
+> **Backend: Create Operator Entity & Database Schema** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - Operator JPA entity created with all required fields (id, name, description, service_types, status, created_at, updated_at)
+> - Database migration script created and tested
+> - Operator repository interface implemented with custom query methods
+> - Entity validation annotations added (NotBlank, NotNull, etc.)
+> - Soft delete mechanism implemented (status field)
+> - Database schema verified in test environment
+> - Unit tests for entity validation pass
+> 
+> # TODO:
+> - [-] Create Operator.java entity class with JPA annotations
+> - [-] Add fields: id (UUID), name, description, service_types (comma-separated or JSON), status (ENUM), created_at, updated_at
+> - [-] Create OperatorRepository interface extending JpaRepository
+> - [-] Add custom query methods: findAllByStatusOrderByName(), findByIdAndStatus()
+> - [-] Create database migration (Flyway/Liquibase) for operators table
+> - [-] Add validation constraints to entity fields
+> - [-] Write unit tests for entity and repository
+> - [-] Test soft delete functionality (status = INACTIVE)
+> 
+> # Reports:
+> ## Corrected Report: Backend: Create Operator Management Endpoints
+> 
+> ### Scenario
+> - **Operator creates plans** → Each plan belongs to one operator
+> - **Customer subscribes to plans** → Subscription links customer to plan (and indirectly to operator)
+> - **Operator manages their own plans** → Add, enable, disable, delete
+> - **Customer sees all available plans** from all operators
+> - **Operator sees their own customers** (those who subscribed to their plans)
+> 
+> ### ✅ Already Done
+> - User entity with roles (OPERATOR role exists)
+> - Registration/login flow
+> - Role-based access control
+> 
+> ### ❌ What's Needed for This Card
+> 
+> **1. Create Plan Entity:**
+> - `id` (UUID/Long)
+> - `name`, `description`, `price`
+> - `service_type` (Internet, Mobile, Bundle)
+> - `operator_id` (FK to User with OPERATOR role)
+> - `status` (ACTIVE, INACTIVE, DELETED)
+> - `created_at`, `updated_at`
+> 
+> **2. Create Subscription Entity:**
+> - `id` (UUID/Long)
+> - `customer_id` (FK to User with CUSTOMER role)
+> - `plan_id` (FK to Plan)
+> - `status` (ACTIVE, PENDING, CANCELED)
+> - `created_at`, `updated_at`
+> 
+> **3. PlanRepository:**
+> - `findByOperatorIdAndIsActiveTrue(Long operatorId, Pageable pageable)` — Get operator's plans
+> - `findByOperatorIdAndId(Long operatorId, Long planId)` — Get specific plan for operator
+> 
+> **4. Create OperatorController:**
+> - **GET `/api/operators/plans`** — List operator's own plans
+> - **GET `/api/operators/plans/{planId}`** — Get specific plan details
+> - **POST `/api/operators/plans`** — Create new plan
+> - **PUT `/api/operators/plans/{planId}`** — Update plan
+> - **DELETE `/api/operators/plans/{planId}`** — Delete plan
+> 
+> **5. Create OperatorService:**
+> - Plan CRUD operations with operator authorization checks
+> - Ensure operator can only manage their own plans
+> 
+> **6. SecurityConfig Updates:**
+> - `/api/operators/**` requires `hasRole('OPERATOR')`
+> </details>
+
+## 001-0012
+> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - AuthService converted to TypeScript with proper interfaces
+> - All components have TypeScript types
+> - Redux/Zustand/Context store implemented for auth state management
+> - Auth state changes automatically trigger UI updates
+> - Type-safe selectors for user, token, isAuthenticated, userRole
+> - No `any` types used (strict mode)
+> - All API calls properly typed with request/response interfaces
+> 
+> # TODO:
+> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
+> - [ ] 2. Convert AuthService to TypeScript with proper typing
+> - [ ] 3. Convert AuthGuard to TypeScript
+> - [ ] 4. Convert ApiClient to TypeScript
+> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
+> - [ ] 6. Implement auth reducer/actions for login, logout, register
+> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
+> - [ ] 8. Integrate state management with existing components
+> - [ ] 9. Replace localStorage-only approach with state management
+> - [ ] 10. Test state persistence and retrieval after page refresh
+> 
+> # Reports:
+> * (to be filled during development)
+> </details>
+
 ## 001-0014
 > **Backend: Implement Operator List & Filter Endpoints** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -4023,64 +4128,6 @@ gantt
 > - [] Train team on deployment process
 > - [] Schedule production launch
 > - [] Prepare incident response plan
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0012
-> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - AuthService converted to TypeScript with proper interfaces
-> - All components have TypeScript types
-> - Redux/Zustand/Context store implemented for auth state management
-> - Auth state changes automatically trigger UI updates
-> - Type-safe selectors for user, token, isAuthenticated, userRole
-> - No `any` types used (strict mode)
-> - All API calls properly typed with request/response interfaces
-> 
-> # TODO:
-> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
-> - [ ] 2. Convert AuthService to TypeScript with proper typing
-> - [ ] 3. Convert AuthGuard to TypeScript
-> - [ ] 4. Convert ApiClient to TypeScript
-> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
-> - [ ] 6. Implement auth reducer/actions for login, logout, register
-> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
-> - [ ] 8. Integrate state management with existing components
-> - [ ] 9. Replace localStorage-only approach with state management
-> - [ ] 10. Test state persistence and retrieval after page refresh
-> 
-> # Reports:
-> * (to be filled during development)
-> </details>
-
-## 001-0013
-> **Backend: Create Operator Entity & Database Schema** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Operator JPA entity created with all required fields (id, name, description, service_types, status, created_at, updated_at)
-> - Database migration script created and tested
-> - Operator repository interface implemented with custom query methods
-> - Entity validation annotations added (NotBlank, NotNull, etc.)
-> - Soft delete mechanism implemented (status field)
-> - Database schema verified in test environment
-> - Unit tests for entity validation pass
-> 
-> # TODO:
-> - [ ] Create Operator.java entity class with JPA annotations
-> - [ ] Add fields: id (UUID), name, description, service_types (comma-separated or JSON), status (ENUM), created_at, updated_at
-> - [ ] Create OperatorRepository interface extending JpaRepository
-> - [ ] Add custom query methods: findAllByStatusOrderByName(), findByIdAndStatus()
-> - [ ] Create database migration (Flyway/Liquibase) for operators table
-> - [ ] Add validation constraints to entity fields
-> - [ ] Write unit tests for entity and repository
-> - [ ] Test soft delete functionality (status = INACTIVE)
 > 
 > # Reports:
 > *
