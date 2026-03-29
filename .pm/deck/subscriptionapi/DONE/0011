@@ -25,8 +25,8 @@ The goal of this card is to build responsive login and registration pages with c
 - Accessibility standards are met (ARIA labels, semantic HTML)
 
 # TODO:
-- [ ] 1. Create LoginForm component with email and password inputs
-- [ ] 2. Create RegistrationForm component with all required fields
-- [ ] 3. Implement form validation library (React Hook Form, Formik, etc.)
-- [ ] 4. Add email format validation
-- [ ] 5. Add password strength validation
+- [x] 1. Create LoginForm component with email and password inputs
+- [x] 2. Create RegistrationForm component with all required fields
+- [x] 3. Implement form validation library (React Hook Form, Formik, etc.)
+- [x] 4. Add email format validation
+- [x] 5. Add password strength validation
