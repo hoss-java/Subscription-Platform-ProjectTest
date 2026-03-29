@@ -4064,13 +4064,13 @@ gantt
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
-> - [ ] Operator JPA entity created with all required fields (id, name, description, service_types, status, created_at, updated_at)
-> - [ ] Database migration script created and tested
-> - [ ] Operator repository interface implemented with custom query methods
-> - [ ] Entity validation annotations added (NotBlank, NotNull, etc.)
-> - [ ] Soft delete mechanism implemented (status field)
-> - [ ] Database schema verified in test environment
-> - [ ] Unit tests for entity validation pass
+> - Operator JPA entity created with all required fields (id, name, description, service_types, status, created_at, updated_at)
+> - Database migration script created and tested
+> - Operator repository interface implemented with custom query methods
+> - Entity validation annotations added (NotBlank, NotNull, etc.)
+> - Soft delete mechanism implemented (status field)
+> - Database schema verified in test environment
+> - Unit tests for entity validation pass
 > 
 > # TODO:
 > - [ ] Create Operator.java entity class with JPA annotations
