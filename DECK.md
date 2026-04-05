@@ -2087,103 +2087,43 @@ gantt
 > * (to be filled during development)
 > </details>
 
-## 001-0014
-> **Backend: Implement Operator List & Filter Endpoints** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - GET /operators endpoint returns paginated list of active operators
-> - Pagination working (page, size parameters)
-> - Filtering by service_type implemented and tested
-> - Filtering by status (ACTIVE/INACTIVE) implemented
-> - GET /operators/{id} endpoint returns operator details with plan count
-> - Response structure consistent with project standards
-> - Input validation for all query parameters
-> - Integration tests pass for both endpoints
-> - Operator isolation enforced (only ACTIVE operators visible to customers)
-> 
-> # TODO:
-> - [ ] Create OperatorController.java with @RestController annotation
-> - [ ] Implement GET /operators with @GetMapping, pagination support
-> - [ ] Add @RequestParam for filtering (serviceType, status, page, size)
-> - [ ] Implement GET /operators/{id} endpoint
-> - [ ] Create OperatorService layer with business logic
-> - [ ] Add filtering logic: findActiveOperators(), filterByServiceType()
-> - [ ] Implement pagination using Page<Operator> and PageRequest
-> - [ ] Add response DTO (OperatorResponseDTO) for consistent JSON structure
-> - [ ] Write integration tests for both endpoints
-> - [ ] Test operator isolation (inactive operators not returned to customers)
-> - [ ] Add input validation using @Valid and custom validators
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0015
-> **Backend: Implement Plan List & Filter Endpoints** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - GET /plans endpoint returns paginated list of active plans
-> - GET /operators/{id}/plans returns plans for specific operator only
-> - Filtering by service_type (Internet, Mobile, Bundle) implemented
-> - Filtering by billing_period (MONTHLY, YEARLY) implemented
-> - Filtering by status (ACTIVE/INACTIVE) implemented
-> - Pagination working (page, size parameters)
-> - Response structure consistent with project standards
-> - Input validation for all query parameters
-> - Integration tests pass for all endpoints
-> - Plan isolation enforced (only ACTIVE plans visible to customers)
-> 
-> # TODO:
-> - [ ] Create Plan.java JPA entity with operator_id foreign key
-> - [ ] Create PlanRepository interface with custom query methods
-> - [ ] Create PlanController.java with @RestController annotation
-> - [ ] Implement GET /plans with pagination and filtering support
-> - [ ] Implement GET /operators/{id}/plans endpoint
-> - [ ] Add @RequestParam for filtering (serviceType, billingPeriod, status, page, size)
-> - [ ] Create PlanService layer with business logic
-> - [ ] Add filtering logic: findActiveByOperator(), filterByServiceType()
-> - [ ] Add response DTO (PlanResponseDTO) for consistent JSON structure
-> - [ ] Write integration tests for all endpoints
-> - [ ] Test plan isolation (only ACTIVE plans returned)
-> - [ ] Add input validation using @Valid and custom validators
-> 
-> # Reports:
-> *
-> </details>
-
 ## 001-0016
-> **Backend: Implement Plan Search & Details Endpoints** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Frontend: Operator Listing Page with Filtering & Search** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
 > 
-> # DOD (definition of done):
-> - GET /plans/search?q={query} searches plans by name and description
-> - Search returns paginated results with relevance ranking
-> - GET /plans/{id} returns full plan details (description, features, pricing, terms)
-> - Features returned as JSON array or list
-> - Pricing tiers displayed with monthly/yearly options
-> - Response structure consistent with project standards
-> - Input validation for search query (min/max length, special characters)
-> - Integration tests pass for both endpoints
-> - Search performance acceptable (database query optimized)
+> # DOD (Definition of Done):
+> - Operator listing page created as dashboard section in pages/sections/
+> - Section registered in config.json with role-based access (CUSTOMER, OPERATOR, ADMIN)
+> - Operators display in card/grid layout with name, description, service types
+> - Pagination working (load more / page numbers)
+> - Filter by serviceType (Internet, Mobile, Bundle) functional
+> - Search operators by name functional
+> - Operator status indicator (active/inactive) displayed
+> - Click operator → navigate to plan catalog view
+> - Loading states shown during API fetch
+> - Error handling with toast notifications
+> - Responsive layout (mobile, tablet, desktop)
+> - CSS created in both default/ and dark/ themes
+> - Styles registered in config/styles.json
+> - Manual testing with different screen sizes
 > 
 > # TODO:
-> - [ ] Implement GET /plans/search endpoint with @GetMapping
-> - [ ] Add @RequestParam for query string and pagination (q, page, size)
-> - [ ] Create search logic using SQL LIKE or full-text search
-> - [ ] Implement relevance ranking for search results
-> - [ ] Implement GET /plans/{id} endpoint for plan details
-> - [ ] Create PlanDetailResponseDTO with all fields (features, pricing tiers, terms)
-> - [ ] Parse features from JSON to list in response
-> - [ ] Add pricing tier structure to response (monthly/yearly options)
-> - [ ] Validate search query length and content
-> - [ ] Write integration tests for search functionality
-> - [ ] Test search accuracy and pagination
-> - [ ] Optimize database query for search performance
+> - [ ] Create pages/sections/operators.html structure (header, filter bar, grid, pagination)
+> - [ ] Create pages/sections/operators.js with init() function
+> - [ ] Implement apiClient calls to GET /operators with pagination
+> - [ ] Implement filter by serviceType with UI controls
+> - [ ] Implement search by operator name
+> - [ ] Add loading spinner during fetch
+> - [ ] Add error handling with toast notifications
+> - [ ] Create click handler to navigate to plan catalog (Card 4)
+> - [ ] Create css/default/operators.css with card/grid styles
+> - [ ] Create css/dark/operators.css with dark theme styles
+> - [ ] Register section in config.json
+> - [ ] Register styles in config/styles.json
+> - [ ] Test responsive layout on mobile/tablet/desktop
+> - [ ] Test all filters and search functionality
+> - [ ] Test pagination with different page sizes
 > 
 > # Reports:
 > *
@@ -4128,6 +4068,79 @@ gantt
 > - [] Train team on deployment process
 > - [] Schedule production launch
 > - [] Prepare incident response plan
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0014
+> **Backend: Create OperatorInitializer & Add Default Operator User** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - OperatorInitializer.java created following AdminInitializer/CustomerInitializer pattern
+> - Default operator user created at startup with email/password
+> - Operator user assigned OPERATOR role
+> - Operator user active/enabled
+> - Initializer runs only once (checks if operator already exists)
+> - Integration test verifies operator user created
+> 
+> # TODO:
+> - [x] Create OperatorInitializer.java
+> - [x] Follow AdminInitializer pattern (inject UserRepository, RoleRepository)
+> - [x] Create default operator user (email: operator@test.com or similar)
+> - [x] Assign OPERATOR role to user
+> - [-] Add idempotency check (don't create if exists)
+> - [-] Register initializer in SecurityConfig or SubscriptionApiApp
+> - [-] Write integration test
+> - [-] Verify operator user exists after startup
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0015
+> **Backend: Plan Entity, Repository, Service & CRUD Endpoints** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - Plan entity with userId FK to User (operator owner) created
+> - PlanRepository with custom queries implemented
+> - PlanService with business logic layer created
+> - GET /plans endpoint returns paginated list of ACTIVE plans
+> - GET /plans/{id} endpoint returns full plan details
+> - GET /my-plans endpoint returns current OPERATOR user's plans (OPERATOR role only)
+> - Filtering by serviceType (Internet/Mobile/Bundle) implemented
+> - Search plans by name/description implemented
+> - Pagination working (page, size parameters)
+> - POST /plans endpoint creates new plan (OPERATOR role only)
+> - PUT /plans/{id} endpoint updates plan (OPERATOR owner only)
+> - DELETE /plans/{id} endpoint soft-deletes plan (OPERATOR owner only)
+> - Security: Only OPERATOR role can create/update/delete plans
+> - Response structure consistent with project standards
+> - Input validation for all parameters
+> - Integration tests pass for all endpoints
+> 
+> # TODO:
+> - [ ] Create Plan entity (id, userId FK, name, description, serviceType, basePrice, billingPeriod, features JSON, status, timestamps)
+> - [ ] Create PlanRepository with findByUserId(), findByServiceType(), search queries
+> - [ ] Create PlanService with business logic and security checks
+> - [ ] Create PlanResponseDTO and PlanCreateRequest DTOs
+> - [ ] Implement GET /plans with pagination and filtering
+> - [ ] Implement GET /plans/{id} endpoint
+> - [ ] Implement GET /my-plans endpoint (OPERATOR only)
+> - [ ] Implement POST /plans endpoint (OPERATOR only, @PreAuthorize check)
+> - [ ] Implement PUT /plans/{id} endpoint (owner only)
+> - [ ] Implement DELETE /plans/{id} endpoint (owner only)
+> - [ ] Implement GET /plans/search?q={query} endpoint
+> - [ ] Add @PreAuthorize("hasRole('OPERATOR')") to create/update/delete endpoints
+> - [ ] Add owner validation (userId == currentUser.id)
+> - [ ] Add input validation using @Valid
+> - [ ] Write integration tests for all endpoints
+> - [ ] Test security (non-OPERATOR users cannot create/update/delete)
+> - [ ] Test owner isolation (operator can only modify own plans)
 > 
 > # Reports:
 > *
