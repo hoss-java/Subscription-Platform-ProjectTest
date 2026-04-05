@@ -2160,154 +2160,130 @@ gantt
 > * (to be filled during development)
 > </details>
 
-## 001-0016
-> **Frontend: Operator Listing Page with Filtering & Search** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+## 001-0017
+> **Frontend: Operator Listing Page - JavaScript Logic & API Integration** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
 > 
 > # DOD (Definition of Done):
-> - Operator listing page created as dashboard section in pages/sections/
-> - Section registered in config.json with role-based access (CUSTOMER, OPERATOR, ADMIN)
-> - Operators display in card/grid layout with name, description, service types
-> - Pagination working (load more / page numbers)
-> - Filter by serviceType (Internet, Mobile, Bundle) functional
-> - Search operators by name functional
-> - Operator status indicator (active/inactive) displayed
-> - Click operator → navigate to plan catalog view
-> - Loading states shown during API fetch
-> - Error handling with toast notifications
-> - Responsive layout (mobile, tablet, desktop)
-> - CSS created in both default/ and dark/ themes
-> - Styles registered in config/styles.json
-> - Manual testing with different screen sizes
+> - pages/sections/operators.js created with OperatorsSection object
+> - init() method implemented with setTimeout and attachEventListeners call
+> - attachEventListeners() method for filter, search, pagination events
+> - loadOperators() async method fetches from /operators endpoint
+> - renderOperators() method dynamically creates operator cards
+> - Search functionality with debounce to prevent excessive API calls
+> - Filter by serviceType with dropdown selector
+> - Pagination logic implemented (page tracking, load more or page numbers)
+> - Error handling with UIController.showMessage() for errors
+> - Loading state messages during API fetch
+> - Empty state message when no operators found
+> - escapeHtml() method for security
+> - cleanup() method for section teardown
+> - window.OperatorsSection = OperatorsSection export
+> - Follows exact AdminSection pattern and structure
 > 
 > # TODO:
-> - [ ] Create pages/sections/operators.html structure (header, filter bar, grid, pagination)
-> - [ ] Create pages/sections/operators.js with init() function
-> - [ ] Implement apiClient calls to GET /operators with pagination
-> - [ ] Implement filter by serviceType with UI controls
-> - [ ] Implement search by operator name
-> - [ ] Add loading spinner during fetch
-> - [ ] Add error handling with toast notifications
-> - [ ] Create click handler to navigate to plan catalog (Card 4)
-> - [ ] Create css/default/operators.css with card/grid styles
-> - [ ] Create css/dark/operators.css with dark theme styles
-> - [ ] Register section in config.json
-> - [ ] Register styles in config/styles.json
-> - [ ] Test responsive layout on mobile/tablet/desktop
-> - [ ] Test all filters and search functionality
-> - [ ] Test pagination with different page sizes
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0017
-> **Backend: Add Caching Layer for Operators & Plans** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Operator list cached with 5-15 minute TTL
-> - Plan list cached with 5-15 minute TTL
-> - Cache invalidates on operator/plan create/update/delete
-> - Cache key strategy implemented (operator-list, plans-by-operator-{id}, plan-{id})
-> - Cache statistics logged and monitored
-> - Integration tests verify cache behavior
-> - Performance improvement measured (response time reduction)
-> - Cache configuration externalized in application.properties
-> 
-> # TODO:
-> - [ ] Add Spring Cache dependency (spring-boot-starter-cache)
-> - [ ] Configure CacheManager (ConcurrentMapCacheManager or Redis)
-> - [ ] Set cache TTL in application.properties (5-15 minutes)
-> - [ ] Add @Cacheable annotation to OperatorService methods
-> - [ ] Add @Cacheable annotation to PlanService methods
-> - [ ] Implement cache key generation strategy
-> - [ ] Add @CacheEvict on create/update/delete operations
-> - [ ] Create cache configuration class with custom cache settings
-> - [ ] Add cache statistics logging
-> - [ ] Write integration tests for cache behavior
-> - [ ] Test cache invalidation on data updates
-> - [ ] Measure and document performance improvements
+> - [ ] Create pages/sections/operators.js file
+> - [ ] Create OperatorsSection object with properties (currentPage, operators, etc.)
+> - [ ] Implement init() method with setTimeout and attachEventListeners
+> - [ ] Implement attachEventListeners() for filter/search/pagination
+> - [ ] Implement loadOperators() async method with apiClient.get('/operators')
+> - [ ] Implement renderOperators() to dynamically create operator cards
+> - [ ] Add search input debounce handler
+> - [ ] Add serviceType filter dropdown handler
+> - [ ] Add pagination page tracking and handlers
+> - [ ] Implement loading state (show/hide loading message)
+> - [ ] Implement empty state (show message when no operators)
+> - [ ] Implement error handling with UIController
+> - [ ] Implement escapeHtml() method
+> - [ ] Implement cleanup() method
+> - [ ] Export OperatorsSection to window
+> - [ ] Test API calls with different filters and pagination
 > 
 > # Reports:
 > *
 > </details>
 
 ## 001-0018
-> **Frontend: Create Operator Listing Section** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Frontend: Operator Listing Page - CSS Styling (Default Theme)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
 > 
-> # DOD (definition of done):
-> - Operator listing section created in pages/sections/
-> - All active operators displayed in card/grid layout
-> - Operator name, description, service types shown
-> - Click operator card navigates to plan catalog
-> - Loading state displayed during data fetch
-> - Error handling with toast notifications
-> - Responsive layout (mobile, tablet, desktop)
-> - Section registered in config.json with role-based access
-> - CSS added to both default/ and dark/ theme directories
-> - Manual testing on multiple screen sizes passes
+> # DOD (Definition of Done):
+> - css/default/operators.css created with complete styling
+> - Operator cards grid layout responsive (1 col mobile, 2 cols tablet, 3+ cols desktop)
+> - Operator card structure styled (name, description, service types, status)
+> - Filter bar styled with dropdown and search input
+> - Pagination controls styled with buttons
+> - Loading message styled and centered
+> - Empty message styled and centered
+> - Error message styled with warning appearance
+> - Status indicator badge styled (active/inactive visual distinction)
+> - Service type badges styled with appropriate colors
+> - Hover effects on operator cards
+> - All styles use default theme colors (light background, dark text)
+> - Follows existing default theme CSS patterns
+> - Responsive breakpoints match project standards
 > 
 > # TODO:
-> - [ ] Create operators.html in pages/sections/
-> - [ ] Create operators.js with init() and cleanup() methods
-> - [ ] Implement API call using apiClient to GET /operators
-> - [ ] Add pagination support (page, size parameters)
-> - [ ] Create HTML structure for operator cards (name, description, service_types, status badge)
-> - [ ] Implement loading state (skeleton loaders or spinner)
-> - [ ] Implement error handling with toast notifications
-> - [ ] Add click handler to navigate to plan catalog (hash routing)
-> - [ ] Create operators.css in css/default/ directory
-> - [ ] Create operators.css in css/dark/ directory
-> - [ ] Add responsive grid layout (mobile-first approach)
-> - [ ] Register section in config.json with role-based access
-> - [ ] Test on mobile, tablet, and desktop screens
-> - [ ] Test error scenarios (API failure, empty list)
+> - [ ] Create css/default/operators.css file
+> - [ ] Style operators-container grid layout
+> - [ ] Style individual operator cards
+> - [ ] Style operator name and description
+> - [ ] Style service type badges
+> - [ ] Style status indicator badge
+> - [ ] Style filter bar and dropdown
+> - [ ] Style search input field
+> - [ ] Style pagination controls
+> - [ ] Style loading message
+> - [ ] Style empty message
+> - [ ] Style error message
+> - [ ] Add responsive grid breakpoints
+> - [ ] Add hover effects and transitions
+> - [ ] Verify colors match default theme palette
 > 
 > # Reports:
 > *
 > </details>
 
 ## 001-0019
-> **Frontend: Create Plan Catalog Section** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> **Frontend: Operator Listing Page - CSS Styling (Dark Theme)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
 >     <summary>Details</summary>
 > 
-> # DOD (definition of done):
-> - Plan catalog section created in pages/sections/
-> - Plans for selected operator displayed in card/list layout
-> - Plan name, description, price, billing period shown
-> - Plan features displayed as list or badges
-> - Service type badge visible (Internet, Mobile, Bundle)
-> - Plan status indicator shown (Active/Inactive)
-> - Loading state displayed during data fetch
-> - Error handling with toast notifications
-> - Click plan card opens detail modal
-> - Responsive layout (mobile, tablet, desktop)
-> - Section registered in config.json with role-based access
-> - CSS added to both default/ and dark/ theme directories
+> # DOD (Definition of Done):
+> - css/dark/operators.css created with complete styling
+> - Operator cards grid layout responsive (1 col mobile, 2 cols tablet, 3+ cols desktop)
+> - Operator card structure styled (name, description, service types, status)
+> - Filter bar styled with dropdown and search input
+> - Pagination controls styled with buttons
+> - Loading message styled and centered
+> - Empty message styled and centered
+> - Error message styled with warning appearance
+> - Status indicator badge styled (active/inactive visual distinction)
+> - Service type badges styled with appropriate colors
+> - Hover effects on operator cards
+> - All styles use dark theme colors (dark background, light text)
+> - Identical structure to default theme (only colors/backgrounds differ)
+> - Follows existing dark theme CSS patterns
+> - Responsive breakpoints match project standards
 > 
 > # TODO:
-> - [ ] Create plans.html in pages/sections/
-> - [ ] Create plans.js with init() and cleanup() methods
-> - [ ] Implement API call using apiClient to GET /operators/{id}/plans
-> - [ ] Add pagination support (page, size parameters)
-> - [ ] Create HTML structure for plan cards (name, description, price, billing period, features, service type, status)
-> - [ ] Implement loading state (skeleton loaders or spinner)
-> - [ ] Implement error handling with toast notifications
-> - [ ] Add click handler to open plan detail modal
-> - [ ] Display plan features as list or badge elements
-> - [ ] Add service type badge styling
-> - [ ] Create plans.css in css/default/ directory
-> - [ ] Create plans.css in css/dark/ directory
-> - [ ] Add responsive grid/list layout (mobile-first approach)
-> - [ ] Register section in config.json with role-based access
-> - [ ] Test on mobile, tablet, and desktop screens
-> - [ ] Test error scenarios (API failure, empty list)
+> - [ ] Create css/dark/operators.css file
+> - [ ] Style operators-container grid layout
+> - [ ] Style individual operator cards
+> - [ ] Style operator name and description
+> - [ ] Style service type badges
+> - [ ] Style status indicator badge
+> - [ ] Style filter bar and dropdown
+> - [ ] Style search input field
+> - [ ] Style pagination controls
+> - [ ] Style loading message
+> - [ ] Style empty message
+> - [ ] Style error message
+> - [ ] Add responsive grid breakpoints
+> - [ ] Add hover effects and transitions
+> - [ ] Verify colors match dark theme palette
 > 
 > # Reports:
 > *
@@ -4144,4 +4120,57 @@ gantt
 > 
 > # Reports:
 > *
+> </details>
+
+## 001-0016
+> **Frontend: Operator Panle - Operator Listing Page - HTML Structure** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - pages/sections/operators.html created with section-container structure
+> - Section header with "Operators" title
+> - Operator cards grid container with id="operators-container"
+> - Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
+> - Search input field for operator name
+> - Pagination controls container
+> - Loading message placeholder
+> - Empty message placeholder
+> - Error message placeholder
+> - All elements follow admin.html structure pattern
+> - HTML ready for JavaScript population
+> 
+> # TODO:
+> - [x] Create pages/sections/operators.html file
+> - [x] Add section-container and section-content divs
+> - [x] Add section-header with h2 "Operators"
+> - [x] Add section-view div with id="operators-view"
+> - [x] Add operators-container div for operator cards
+> - [x] Add filter bar with serviceType dropdown
+> - [x] Add search input field
+> - [x] Add pagination controls container
+> - [x] Add loading/empty/error message placeholders
+> - [x] Match structure exactly to admin.html pattern
+> 
+> # Reports:
+> ## Backend Plan Controller Summary
+> 
+> **Endpoint**: `GET /api/plans/my-plans` (paginated)
+> **Auth**: OPERATOR role required
+> **Response**: `Page<PlanResponseDTO>` with pagination
+> 
+> **CRUD Operations**:
+> - **Read**: `GET /api/plans/my-plans?page=0&size=10` - operator's own plans
+> - **Create**: `POST /api/plans` - create new plan (PlanCreateRequest)
+> - **Update**: `PUT /api/plans/{id}` - update plan (PlanUpdateRequest)
+> - **Delete**: `DELETE /api/plans/{id}` - delete plan
+> 
+> **Additional Filters**:
+> - `GET /api/plans/filter?serviceType=INTERNET&page=0&size=10`
+> - `GET /api/plans/search?q=planName&page=0&size=10`
+> 
+> 
+> Now I need the **PlanResponseDTO structure** to know what fields to display in the table and form.
+> 
+> Show me the PlanResponseDTO class (what fields does it have?).
 > </details>
