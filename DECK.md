@@ -2057,6 +2057,33 @@ gantt
 > - `/api/operators/**` requires `hasRole('OPERATOR')`
 > </details>
 
+## 001-0014
+> **Backend: Create OperatorInitializer & Add Default Operator User** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - OperatorInitializer.java created following AdminInitializer/CustomerInitializer pattern
+> - Default operator user created at startup with email/password
+> - Operator user assigned OPERATOR role
+> - Operator user active/enabled
+> - Initializer runs only once (checks if operator already exists)
+> - Integration test verifies operator user created
+> 
+> # TODO:
+> - [x] Create OperatorInitializer.java
+> - [x] Follow AdminInitializer pattern (inject UserRepository, RoleRepository)
+> - [x] Create default operator user (email: operator@test.com or similar)
+> - [x] Assign OPERATOR role to user
+> - [-] Add idempotency check (don't create if exists)
+> - [-] Register initializer in SecurityConfig or SubscriptionApiApp
+> - [-] Write integration test
+> - [-] Verify operator user exists after startup
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -4073,33 +4100,6 @@ gantt
 > *
 > </details>
 
-## 001-0014
-> **Backend: Create OperatorInitializer & Add Default Operator User** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (Definition of Done):
-> - OperatorInitializer.java created following AdminInitializer/CustomerInitializer pattern
-> - Default operator user created at startup with email/password
-> - Operator user assigned OPERATOR role
-> - Operator user active/enabled
-> - Initializer runs only once (checks if operator already exists)
-> - Integration test verifies operator user created
-> 
-> # TODO:
-> - [x] Create OperatorInitializer.java
-> - [x] Follow AdminInitializer pattern (inject UserRepository, RoleRepository)
-> - [x] Create default operator user (email: operator@test.com or similar)
-> - [x] Assign OPERATOR role to user
-> - [-] Add idempotency check (don't create if exists)
-> - [-] Register initializer in SecurityConfig or SubscriptionApiApp
-> - [-] Write integration test
-> - [-] Verify operator user exists after startup
-> 
-> # Reports:
-> *
-> </details>
-
 ## 001-0015
 > **Backend: Plan Entity, Repository, Service & CRUD Endpoints** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
@@ -4124,23 +4124,23 @@ gantt
 > - Integration tests pass for all endpoints
 > 
 > # TODO:
-> - [ ] Create Plan entity (id, userId FK, name, description, serviceType, basePrice, billingPeriod, features JSON, status, timestamps)
-> - [ ] Create PlanRepository with findByUserId(), findByServiceType(), search queries
-> - [ ] Create PlanService with business logic and security checks
-> - [ ] Create PlanResponseDTO and PlanCreateRequest DTOs
-> - [ ] Implement GET /plans with pagination and filtering
-> - [ ] Implement GET /plans/{id} endpoint
-> - [ ] Implement GET /my-plans endpoint (OPERATOR only)
-> - [ ] Implement POST /plans endpoint (OPERATOR only, @PreAuthorize check)
-> - [ ] Implement PUT /plans/{id} endpoint (owner only)
-> - [ ] Implement DELETE /plans/{id} endpoint (owner only)
-> - [ ] Implement GET /plans/search?q={query} endpoint
-> - [ ] Add @PreAuthorize("hasRole('OPERATOR')") to create/update/delete endpoints
-> - [ ] Add owner validation (userId == currentUser.id)
-> - [ ] Add input validation using @Valid
-> - [ ] Write integration tests for all endpoints
-> - [ ] Test security (non-OPERATOR users cannot create/update/delete)
-> - [ ] Test owner isolation (operator can only modify own plans)
+> - [x] Create Plan entity (id, userId FK, name, description, serviceType, basePrice, billingPeriod, features JSON, status, timestamps)
+> - [x] Create PlanRepository with findByUserId(), findByServiceType(), search queries
+> - [x] Create PlanService with business logic and security checks
+> - [x] Create PlanResponseDTO and PlanCreateRequest DTOs
+> - [x] Implement GET /plans with pagination and filtering
+> - [x] Implement GET /plans/{id} endpoint
+> - [x] Implement GET /my-plans endpoint (OPERATOR only)
+> - [x] Implement POST /plans endpoint (OPERATOR only, @PreAuthorize check)
+> - [x] Implement PUT /plans/{id} endpoint (owner only)
+> - [x] Implement DELETE /plans/{id} endpoint (owner only)
+> - [x] Implement GET /plans/search?q={query} endpoint
+> - [x] Add @PreAuthorize("hasRole('OPERATOR')") to create/update/delete endpoints
+> - [x] Add owner validation (userId == currentUser.id)
+> - [x] Add input validation using @Valid
+> - [x] Write integration tests for all endpoints
+> - [x] Test security (non-OPERATOR users cannot create/update/delete)
+> - [x] Test owner isolation (operator can only modify own plans)
 > 
 > # Reports:
 > *
