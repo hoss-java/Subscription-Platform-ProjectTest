@@ -2084,6 +2084,52 @@ gantt
 > *
 > </details>
 
+## 001-0015
+> **Backend: Plan Entity, Repository, Service & CRUD Endpoints** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - Plan entity with userId FK to User (operator owner) created
+> - PlanRepository with custom queries implemented
+> - PlanService with business logic layer created
+> - GET /plans endpoint returns paginated list of ACTIVE plans
+> - GET /plans/{id} endpoint returns full plan details
+> - GET /my-plans endpoint returns current OPERATOR user's plans (OPERATOR role only)
+> - Filtering by serviceType (Internet/Mobile/Bundle) implemented
+> - Search plans by name/description implemented
+> - Pagination working (page, size parameters)
+> - POST /plans endpoint creates new plan (OPERATOR role only)
+> - PUT /plans/{id} endpoint updates plan (OPERATOR owner only)
+> - DELETE /plans/{id} endpoint soft-deletes plan (OPERATOR owner only)
+> - Security: Only OPERATOR role can create/update/delete plans
+> - Response structure consistent with project standards
+> - Input validation for all parameters
+> - Integration tests pass for all endpoints
+> 
+> # TODO:
+> - [x] Create Plan entity (id, userId FK, name, description, serviceType, basePrice, billingPeriod, features JSON, status, timestamps)
+> - [x] Create PlanRepository with findByUserId(), findByServiceType(), search queries
+> - [x] Create PlanService with business logic and security checks
+> - [x] Create PlanResponseDTO and PlanCreateRequest DTOs
+> - [x] Implement GET /plans with pagination and filtering
+> - [x] Implement GET /plans/{id} endpoint
+> - [x] Implement GET /my-plans endpoint (OPERATOR only)
+> - [x] Implement POST /plans endpoint (OPERATOR only, @PreAuthorize check)
+> - [x] Implement PUT /plans/{id} endpoint (owner only)
+> - [x] Implement DELETE /plans/{id} endpoint (owner only)
+> - [x] Implement GET /plans/search?q={query} endpoint
+> - [x] Add @PreAuthorize("hasRole('OPERATOR')") to create/update/delete endpoints
+> - [x] Add owner validation (userId == currentUser.id)
+> - [x] Add input validation using @Valid
+> - [x] Write integration tests for all endpoints
+> - [x] Test security (non-OPERATOR users cannot create/update/delete)
+> - [x] Test owner isolation (operator can only modify own plans)
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -4095,52 +4141,6 @@ gantt
 > - [] Train team on deployment process
 > - [] Schedule production launch
 > - [] Prepare incident response plan
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0015
-> **Backend: Plan Entity, Repository, Service & CRUD Endpoints** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (Definition of Done):
-> - Plan entity with userId FK to User (operator owner) created
-> - PlanRepository with custom queries implemented
-> - PlanService with business logic layer created
-> - GET /plans endpoint returns paginated list of ACTIVE plans
-> - GET /plans/{id} endpoint returns full plan details
-> - GET /my-plans endpoint returns current OPERATOR user's plans (OPERATOR role only)
-> - Filtering by serviceType (Internet/Mobile/Bundle) implemented
-> - Search plans by name/description implemented
-> - Pagination working (page, size parameters)
-> - POST /plans endpoint creates new plan (OPERATOR role only)
-> - PUT /plans/{id} endpoint updates plan (OPERATOR owner only)
-> - DELETE /plans/{id} endpoint soft-deletes plan (OPERATOR owner only)
-> - Security: Only OPERATOR role can create/update/delete plans
-> - Response structure consistent with project standards
-> - Input validation for all parameters
-> - Integration tests pass for all endpoints
-> 
-> # TODO:
-> - [x] Create Plan entity (id, userId FK, name, description, serviceType, basePrice, billingPeriod, features JSON, status, timestamps)
-> - [x] Create PlanRepository with findByUserId(), findByServiceType(), search queries
-> - [x] Create PlanService with business logic and security checks
-> - [x] Create PlanResponseDTO and PlanCreateRequest DTOs
-> - [x] Implement GET /plans with pagination and filtering
-> - [x] Implement GET /plans/{id} endpoint
-> - [x] Implement GET /my-plans endpoint (OPERATOR only)
-> - [x] Implement POST /plans endpoint (OPERATOR only, @PreAuthorize check)
-> - [x] Implement PUT /plans/{id} endpoint (owner only)
-> - [x] Implement DELETE /plans/{id} endpoint (owner only)
-> - [x] Implement GET /plans/search?q={query} endpoint
-> - [x] Add @PreAuthorize("hasRole('OPERATOR')") to create/update/delete endpoints
-> - [x] Add owner validation (userId == currentUser.id)
-> - [x] Add input validation using @Valid
-> - [x] Write integration tests for all endpoints
-> - [x] Test security (non-OPERATOR users cannot create/update/delete)
-> - [x] Test owner isolation (operator can only modify own plans)
 > 
 > # Reports:
 > *
