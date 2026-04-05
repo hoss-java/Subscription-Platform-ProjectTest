@@ -215,4 +215,42 @@ public class PlanService {
                 .updatedAt(plan.getUpdatedAt())
                 .build();
     }
+
+    public Page<PlanPublicResponseDTO> getAllActivePlansForPublic(Pageable pageable) {
+        log.debug("Fetching all active plans for public view");
+        return planRepository.findByStatus(PlanStatus.ACTIVE, pageable)
+                .map(this::mapToPublicDTO);
+    }
+
+    private PlanPublicResponseDTO mapToPublicDTO(Plan plan) {
+        String operatorName = plan.getUser().getFirstName() + " " + plan.getUser().getLastName();
+        return PlanPublicResponseDTO.builder()
+                .id(plan.getId())
+                .operatorName(operatorName)
+                .name(plan.getName())
+                .description(plan.getDescription())
+                .serviceType(plan.getServiceType())
+                .basePrice(plan.getBasePrice())
+                .billingPeriod(plan.getBillingPeriod())
+                .features(plan.getFeatures())
+                .build();
+    }
+
+    @Transactional
+    public PlanResponseDTO activatePlan(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+        plan.setStatus(PlanStatus.ACTIVE);
+        plan.setUpdatedAt(LocalDateTime.now());
+        return mapToDTO(planRepository.save(plan));
+    }
+
+    @Transactional
+    public PlanResponseDTO deactivatePlan(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+        plan.setStatus(PlanStatus.INACTIVE);
+        plan.setUpdatedAt(LocalDateTime.now());
+        return mapToDTO(planRepository.save(plan));
+    }
 }

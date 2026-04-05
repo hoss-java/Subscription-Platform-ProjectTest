@@ -31,8 +31,8 @@ public class PlanController {
      * Get all active plans with pagination
      */
     @GetMapping
-    public ResponseEntity<Page<PlanResponseDTO>> getAllPlans(Pageable pageable) {
-        Page<PlanResponseDTO> plans = planService.getAllActivePlans(pageable);
+    public ResponseEntity<Page<PlanPublicResponseDTO>> getAllPlans(Pageable pageable) {
+        Page<PlanPublicResponseDTO> plans = planService.getAllActivePlansForPublic(pageable);
         return ResponseEntity.ok(plans);
     }
     
@@ -132,5 +132,26 @@ public class PlanController {
         
         planService.deletePlan(id, userId);
         return ResponseEntity.noContent().build();
+    }
+
+
+    /**
+     * Admin: Activate plan
+     */
+    @PutMapping("/{id}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlanResponseDTO> activatePlan(@PathVariable Long id) {
+        PlanResponseDTO plan = planService.activatePlan(id);
+        return ResponseEntity.ok(plan);
+    }
+
+    /**
+     * Admin: Deactivate plan
+     */
+    @PutMapping("/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlanResponseDTO> deactivatePlan(@PathVariable Long id) {
+        PlanResponseDTO plan = planService.deactivatePlan(id);
+        return ResponseEntity.ok(plan);
     }
 }

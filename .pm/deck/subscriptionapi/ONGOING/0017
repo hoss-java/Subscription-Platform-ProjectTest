@@ -1,0 +1,45 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Plan Controller & Service - Public Plans Listing & Admin Activation/Deactivation
+Tags: Phase2, Backend, API
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (Definition of Done):
+- PlanPublicResponseDTO created with operatorName field (no status/createdAt/updatedAt)
+- mapToPublicDTO() method added to PlanService
+- getAllActivePlansForPublic() service method implemented
+- GET /api/plans endpoint updated to return PlanPublicResponseDTO
+- Admin activate endpoint: PUT /api/plans/{id}/activate implemented
+- Admin deactivate endpoint: PUT /api/plans/{id}/deactivate implemented
+- activatePlan() service method with status update logic
+- deactivatePlan() service method with status update logic
+- All endpoints secured with @PreAuthorize annotations
+- Operator name formatted as firstName + lastName in public response
+
+# TODO:
+- [x] Create PlanPublicResponseDTO.java in dto folder
+- [x] Add operatorName, name, description, serviceType, basePrice, billingPeriod, features fields
+- [x] Remove status, createdAt, updatedAt, userId fields from public DTO
+- [x] Add mapToPublicDTO() method in PlanService
+- [x] Add getAllActivePlansForPublic() method in PlanService
+- [x] Update getAllPlans() in PlanController to use new public DTO
+- [x] Add activatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
+- [x] Add deactivatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
+- [x] Implement activatePlan() service method
+- [x] Implement deactivatePlan() service method
+- [x] Test public endpoint returns only active plans with operator name
+- [x] Test admin activation/deactivation endpoints with proper authorization
+
+# Reports:
+- Successfully implemented public plan listing for all users showing only active plans with operator names
+- Created separate DTO to prevent exposure of sensitive fields (status, timestamps, userId)
+- Added admin-only endpoints for plan status management (activate/deactivate)
+- All endpoints properly secured with role-based access control
+- Operator name properly concatenated from firstName and lastName fields

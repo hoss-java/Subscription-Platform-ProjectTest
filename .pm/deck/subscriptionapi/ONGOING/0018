@@ -1,0 +1,41 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Plan Listing Page - Public Plans Display with Operator Names
+Tags: Phase2, Frontend, UI
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (Definition of Done):
+- pages/sections/plans.html created with section-container structure
+- Section header with "Available Plans" title
+- Plans cards grid container with id="plans-container"
+- Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
+- Search input field for plan name
+- Pagination controls container
+- Plan card displays: operatorName, name, description, serviceType, basePrice, billingPeriod, features
+- Loading message placeholder
+- Empty message placeholder
+- Error message placeholder
+- All elements follow admin.html structure pattern
+- HTML ready for JavaScript population
+
+# TODO:
+- [ ] Create pages/sections/plans.html file
+- [ ] Add section-container and section-content divs
+- [ ] Add section-header with h2 "Available Plans"
+- [ ] Add section-view div with id="plans-view"
+- [ ] Add plans-container div for plan cards grid
+- [ ] Add filter bar with serviceType dropdown
+- [ ] Add search input field
+- [ ] Add pagination controls container
+- [ ] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
+- [ ] Add loading/empty/error message placeholders
+- [ ] Match structure exactly to admin.html pattern
+
+# Reports:
