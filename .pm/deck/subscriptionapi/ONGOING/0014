@@ -1,0 +1,37 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Create OperatorInitializer & Add Default Operator User
+Tags: Phase2, Backend, Setup
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (Definition of Done):
+- OperatorInitializer.java created following AdminInitializer/CustomerInitializer pattern
+- Default operator user created at startup with email/password
+- Operator user assigned OPERATOR role
+- Operator user active/enabled
+- Initializer runs only once (checks if operator already exists)
+- Integration test verifies operator user created
+
+# TODO:
+- [x] Create OperatorInitializer.java
+- [x] Follow AdminInitializer pattern (inject UserRepository, RoleRepository)
+- [x] Create default operator user (email: operator@test.com or similar)
+- [x] Assign OPERATOR role to user
+- [-] Add idempotency check (don't create if exists)
+- [-] Register initializer in SecurityConfig or SubscriptionApiApp
+- [-] Write integration test
+- [-] Verify operator user exists after startup
+
+# Reports:
+*
+
+
+
+

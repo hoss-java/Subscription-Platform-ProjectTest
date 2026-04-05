@@ -18,6 +18,7 @@ pack/
 **/pack/
 target/
 .workingon/
+.chat/
 #**/target/
 
 # misc
