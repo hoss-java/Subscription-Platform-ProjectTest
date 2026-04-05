@@ -2130,6 +2130,59 @@ gantt
 > *
 > </details>
 
+## 001-0016
+> **Frontend: Operator Panle - Operator Listing Page - HTML Structure** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - pages/sections/operators.html created with section-container structure
+> - Section header with "Operators" title
+> - Operator cards grid container with id="operators-container"
+> - Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
+> - Search input field for operator name
+> - Pagination controls container
+> - Loading message placeholder
+> - Empty message placeholder
+> - Error message placeholder
+> - All elements follow admin.html structure pattern
+> - HTML ready for JavaScript population
+> 
+> # TODO:
+> - [x] Create pages/sections/operators.html file
+> - [x] Add section-container and section-content divs
+> - [x] Add section-header with h2 "Operators"
+> - [x] Add section-view div with id="operators-view"
+> - [x] Add operators-container div for operator cards
+> - [x] Add filter bar with serviceType dropdown
+> - [x] Add search input field
+> - [x] Add pagination controls container
+> - [x] Add loading/empty/error message placeholders
+> - [x] Match structure exactly to admin.html pattern
+> 
+> # Reports:
+> ## Backend Plan Controller Summary
+> 
+> **Endpoint**: `GET /api/plans/my-plans` (paginated)
+> **Auth**: OPERATOR role required
+> **Response**: `Page<PlanResponseDTO>` with pagination
+> 
+> **CRUD Operations**:
+> - **Read**: `GET /api/plans/my-plans?page=0&size=10` - operator's own plans
+> - **Create**: `POST /api/plans` - create new plan (PlanCreateRequest)
+> - **Update**: `PUT /api/plans/{id}` - update plan (PlanUpdateRequest)
+> - **Delete**: `DELETE /api/plans/{id}` - delete plan
+> 
+> **Additional Filters**:
+> - `GET /api/plans/filter?serviceType=INTERNET&page=0&size=10`
+> - `GET /api/plans/search?q=planName&page=0&size=10`
+> 
+> 
+> Now I need the **PlanResponseDTO structure** to know what fields to display in the table and form.
+> 
+> Show me the PlanResponseDTO class (what fields does it have?).
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2158,92 +2211,6 @@ gantt
 > 
 > # Reports:
 > * (to be filled during development)
-> </details>
-
-## 001-0017
-> **Frontend: Operator Listing Page - JavaScript Logic & API Integration** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (Definition of Done):
-> - pages/sections/operators.js created with OperatorsSection object
-> - init() method implemented with setTimeout and attachEventListeners call
-> - attachEventListeners() method for filter, search, pagination events
-> - loadOperators() async method fetches from /operators endpoint
-> - renderOperators() method dynamically creates operator cards
-> - Search functionality with debounce to prevent excessive API calls
-> - Filter by serviceType with dropdown selector
-> - Pagination logic implemented (page tracking, load more or page numbers)
-> - Error handling with UIController.showMessage() for errors
-> - Loading state messages during API fetch
-> - Empty state message when no operators found
-> - escapeHtml() method for security
-> - cleanup() method for section teardown
-> - window.OperatorsSection = OperatorsSection export
-> - Follows exact AdminSection pattern and structure
-> 
-> # TODO:
-> - [ ] Create pages/sections/operators.js file
-> - [ ] Create OperatorsSection object with properties (currentPage, operators, etc.)
-> - [ ] Implement init() method with setTimeout and attachEventListeners
-> - [ ] Implement attachEventListeners() for filter/search/pagination
-> - [ ] Implement loadOperators() async method with apiClient.get('/operators')
-> - [ ] Implement renderOperators() to dynamically create operator cards
-> - [ ] Add search input debounce handler
-> - [ ] Add serviceType filter dropdown handler
-> - [ ] Add pagination page tracking and handlers
-> - [ ] Implement loading state (show/hide loading message)
-> - [ ] Implement empty state (show message when no operators)
-> - [ ] Implement error handling with UIController
-> - [ ] Implement escapeHtml() method
-> - [ ] Implement cleanup() method
-> - [ ] Export OperatorsSection to window
-> - [ ] Test API calls with different filters and pagination
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0018
-> **Frontend: Operator Listing Page - CSS Styling (Default Theme)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (Definition of Done):
-> - css/default/operators.css created with complete styling
-> - Operator cards grid layout responsive (1 col mobile, 2 cols tablet, 3+ cols desktop)
-> - Operator card structure styled (name, description, service types, status)
-> - Filter bar styled with dropdown and search input
-> - Pagination controls styled with buttons
-> - Loading message styled and centered
-> - Empty message styled and centered
-> - Error message styled with warning appearance
-> - Status indicator badge styled (active/inactive visual distinction)
-> - Service type badges styled with appropriate colors
-> - Hover effects on operator cards
-> - All styles use default theme colors (light background, dark text)
-> - Follows existing default theme CSS patterns
-> - Responsive breakpoints match project standards
-> 
-> # TODO:
-> - [ ] Create css/default/operators.css file
-> - [ ] Style operators-container grid layout
-> - [ ] Style individual operator cards
-> - [ ] Style operator name and description
-> - [ ] Style service type badges
-> - [ ] Style status indicator badge
-> - [ ] Style filter bar and dropdown
-> - [ ] Style search input field
-> - [ ] Style pagination controls
-> - [ ] Style loading message
-> - [ ] Style empty message
-> - [ ] Style error message
-> - [ ] Add responsive grid breakpoints
-> - [ ] Add hover effects and transitions
-> - [ ] Verify colors match default theme palette
-> 
-> # Reports:
-> *
 > </details>
 
 ## 001-0019
@@ -4122,18 +4089,58 @@ gantt
 > *
 > </details>
 
-## 001-0016
-> **Frontend: Operator Panle - Operator Listing Page - HTML Structure** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+## 001-0017
+> **Backend: Plan Controller & Service - Public Plans Listing & Admin Activation/Deactivation** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (Definition of Done):
-> - pages/sections/operators.html created with section-container structure
-> - Section header with "Operators" title
-> - Operator cards grid container with id="operators-container"
+> - PlanPublicResponseDTO created with operatorName field (no status/createdAt/updatedAt)
+> - mapToPublicDTO() method added to PlanService
+> - getAllActivePlansForPublic() service method implemented
+> - GET /api/plans endpoint updated to return PlanPublicResponseDTO
+> - Admin activate endpoint: PUT /api/plans/{id}/activate implemented
+> - Admin deactivate endpoint: PUT /api/plans/{id}/deactivate implemented
+> - activatePlan() service method with status update logic
+> - deactivatePlan() service method with status update logic
+> - All endpoints secured with @PreAuthorize annotations
+> - Operator name formatted as firstName + lastName in public response
+> 
+> # TODO:
+> - [x] Create PlanPublicResponseDTO.java in dto folder
+> - [x] Add operatorName, name, description, serviceType, basePrice, billingPeriod, features fields
+> - [x] Remove status, createdAt, updatedAt, userId fields from public DTO
+> - [x] Add mapToPublicDTO() method in PlanService
+> - [x] Add getAllActivePlansForPublic() method in PlanService
+> - [x] Update getAllPlans() in PlanController to use new public DTO
+> - [x] Add activatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
+> - [x] Add deactivatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
+> - [x] Implement activatePlan() service method
+> - [x] Implement deactivatePlan() service method
+> - [x] Test public endpoint returns only active plans with operator name
+> - [x] Test admin activation/deactivation endpoints with proper authorization
+> 
+> # Reports:
+> - Successfully implemented public plan listing for all users showing only active plans with operator names
+> - Created separate DTO to prevent exposure of sensitive fields (status, timestamps, userId)
+> - Added admin-only endpoints for plan status management (activate/deactivate)
+> - All endpoints properly secured with role-based access control
+> - Operator name properly concatenated from firstName and lastName fields
+> </details>
+
+## 001-0018
+> **Frontend: Plan Listing Page - Public Plans Display with Operator Names** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - pages/sections/plans.html created with section-container structure
+> - Section header with "Available Plans" title
+> - Plans cards grid container with id="plans-container"
 > - Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
-> - Search input field for operator name
+> - Search input field for plan name
 > - Pagination controls container
+> - Plan card displays: operatorName, name, description, serviceType, basePrice, billingPeriod, features
 > - Loading message placeholder
 > - Empty message placeholder
 > - Error message placeholder
@@ -4141,36 +4148,17 @@ gantt
 > - HTML ready for JavaScript population
 > 
 > # TODO:
-> - [x] Create pages/sections/operators.html file
-> - [x] Add section-container and section-content divs
-> - [x] Add section-header with h2 "Operators"
-> - [x] Add section-view div with id="operators-view"
-> - [x] Add operators-container div for operator cards
-> - [x] Add filter bar with serviceType dropdown
-> - [x] Add search input field
-> - [x] Add pagination controls container
-> - [x] Add loading/empty/error message placeholders
-> - [x] Match structure exactly to admin.html pattern
+> - [ ] Create pages/sections/plans.html file
+> - [ ] Add section-container and section-content divs
+> - [ ] Add section-header with h2 "Available Plans"
+> - [ ] Add section-view div with id="plans-view"
+> - [ ] Add plans-container div for plan cards grid
+> - [ ] Add filter bar with serviceType dropdown
+> - [ ] Add search input field
+> - [ ] Add pagination controls container
+> - [ ] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
+> - [ ] Add loading/empty/error message placeholders
+> - [ ] Match structure exactly to admin.html pattern
 > 
 > # Reports:
-> ## Backend Plan Controller Summary
-> 
-> **Endpoint**: `GET /api/plans/my-plans` (paginated)
-> **Auth**: OPERATOR role required
-> **Response**: `Page<PlanResponseDTO>` with pagination
-> 
-> **CRUD Operations**:
-> - **Read**: `GET /api/plans/my-plans?page=0&size=10` - operator's own plans
-> - **Create**: `POST /api/plans` - create new plan (PlanCreateRequest)
-> - **Update**: `PUT /api/plans/{id}` - update plan (PlanUpdateRequest)
-> - **Delete**: `DELETE /api/plans/{id}` - delete plan
-> 
-> **Additional Filters**:
-> - `GET /api/plans/filter?serviceType=INTERNET&page=0&size=10`
-> - `GET /api/plans/search?q=planName&page=0&size=10`
-> 
-> 
-> Now I need the **PlanResponseDTO structure** to know what fields to display in the table and form.
-> 
-> Show me the PlanResponseDTO class (what fields does it have?).
 > </details>
