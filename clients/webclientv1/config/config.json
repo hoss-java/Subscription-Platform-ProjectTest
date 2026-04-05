@@ -45,6 +45,14 @@
       "roles": ["admin"]
     },
     {
+      "name": "operator",
+      "path": "pages/sections/operator.html",
+      "title": "My Plans",
+      "script": "OperatorsSection",
+      "icon": "briefcase",
+      "roles": ["operator"]
+    },
+    {
       "name": "settings",
       "path": "pages/sections/settings.html",
       "title": "Settings",

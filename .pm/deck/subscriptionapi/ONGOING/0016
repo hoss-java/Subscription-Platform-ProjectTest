@@ -1,0 +1,60 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Operator Panle - Operator Listing Page - HTML Structure
+Tags: Phase2, Frontend, UI
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (Definition of Done):
+- pages/sections/operators.html created with section-container structure
+- Section header with "Operators" title
+- Operator cards grid container with id="operators-container"
+- Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
+- Search input field for operator name
+- Pagination controls container
+- Loading message placeholder
+- Empty message placeholder
+- Error message placeholder
+- All elements follow admin.html structure pattern
+- HTML ready for JavaScript population
+
+# TODO:
+- [x] Create pages/sections/operators.html file
+- [x] Add section-container and section-content divs
+- [x] Add section-header with h2 "Operators"
+- [x] Add section-view div with id="operators-view"
+- [x] Add operators-container div for operator cards
+- [x] Add filter bar with serviceType dropdown
+- [x] Add search input field
+- [x] Add pagination controls container
+- [x] Add loading/empty/error message placeholders
+- [x] Match structure exactly to admin.html pattern
+
+# Reports:
+## Backend Plan Controller Summary
+
+**Endpoint**: `GET /api/plans/my-plans` (paginated)
+**Auth**: OPERATOR role required
+**Response**: `Page<PlanResponseDTO>` with pagination
+
+**CRUD Operations**:
+- **Read**: `GET /api/plans/my-plans?page=0&size=10` - operator's own plans
+- **Create**: `POST /api/plans` - create new plan (PlanCreateRequest)
+- **Update**: `PUT /api/plans/{id}` - update plan (PlanUpdateRequest)
+- **Delete**: `DELETE /api/plans/{id}` - delete plan
+
+**Additional Filters**:
+- `GET /api/plans/filter?serviceType=INTERNET&page=0&size=10`
+- `GET /api/plans/search?q=planName&page=0&size=10`
+
+---
+
+Now I need the **PlanResponseDTO structure** to know what fields to display in the table and form.
+
+Show me the PlanResponseDTO class (what fields does it have?).

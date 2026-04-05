@@ -1,6 +1,7 @@
 package com.subscriptionapi.repository;
 
 import com.subscriptionapi.entity.Plan;
+import com.subscriptionapi.entity.PlanStatus;
 import com.subscriptionapi.entity.ServiceType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,14 +20,14 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     Page<Plan> findByUserId(Long userId, Pageable pageable);
     
     // Find active plans with pagination
-    Page<Plan> findByStatus(String status, Pageable pageable);
+    Page<Plan> findByStatus(PlanStatus status, Pageable pageable);
     
     // Find plans by service type
     Page<Plan> findByServiceType(ServiceType serviceType, Pageable pageable);
     
     // Search plans by name or description
-    @Query("SELECT p FROM Plan p WHERE p.status = 'ACTIVE' AND (LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%')))")
-    Page<Plan> searchPlans(@Param("query") String query, Pageable pageable);
+    @Query("SELECT p FROM Plan p WHERE p.status = :status AND (LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Plan> searchPlans(@Param("query") String query, @Param("status") PlanStatus status, Pageable pageable);
     
     // Find plans by user and service type
     Page<Plan> findByUserIdAndServiceType(Long userId, ServiceType serviceType, Pageable pageable);

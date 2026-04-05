@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
@@ -26,6 +27,8 @@ public class Plan {
     
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User user;
     
     @Column(nullable = false)
@@ -50,7 +53,7 @@ public class Plan {
     @NotNull(message = "Billing period cannot be null")
     private BillingPeriod billingPeriod;
     
-    @Column(columnDefinition = "JSON")
+    @Column(columnDefinition = "TEXT")
     private String features;
     
     @Enumerated(EnumType.STRING)

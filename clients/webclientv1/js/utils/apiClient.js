@@ -38,20 +38,20 @@ class ApiClient {
       }
     };
 
-  // DEBUG: Check auth service
-  console.debug(`[ApiClient] authService exists:`, !!this.authService);
-  if (this.authService) {
-    console.debug(`[ApiClient] isAuthenticated():`, this.authService.isAuthenticated());
-    console.debug(`[ApiClient] Token:`, this.authService.getToken() ? 'EXISTS' : 'MISSING');
-  }
+    // DEBUG: Check auth service
+    console.debug(`[ApiClient] authService exists:`, !!this.authService);
+    if (this.authService) {
+      console.debug(`[ApiClient] isAuthenticated():`, this.authService.isAuthenticated());
+      console.debug(`[ApiClient] Token:`, this.authService.getToken() ? 'EXISTS' : 'MISSING');
+    }
 
-  if (this.authService && this.authService.isAuthenticated()) {
-    const token = this.authService.getToken();
-    options.headers['Authorization'] = `Bearer ${token}`;
-    console.log(`[ApiClient] ✓ Authorization header added`);
-  } else {
-    console.warn(`[ApiClient] ✗ Authorization header NOT added - authService or isAuthenticated failed`);
-  }
+    if (this.authService && this.authService.isAuthenticated()) {
+      const token = this.authService.getToken();
+      options.headers['Authorization'] = `Bearer ${token}`;
+      console.log(`[ApiClient] ✓ Authorization header added`);
+    } else {
+      console.warn(`[ApiClient] ✗ Authorization header NOT added - authService or isAuthenticated failed`);
+    }
 
     if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
       options.body = JSON.stringify(data);
@@ -62,9 +62,16 @@ class ApiClient {
       console.log(`[ApiClient] Sending request...`);
       
       const response = await fetch(proxyUrl, options);
-      const responseData = await response.json();
 
       console.log(`[ApiClient] Response status: ${response.status}`);
+
+      // Handle 204 No Content - no body to parse
+      if (response.status === 204) {
+        console.log(`[ApiClient] 204 No Content - returning success`);
+        return { success: true };
+      }
+
+      const responseData = await response.json();
       console.log(`[ApiClient] Response data:`, responseData);
 
       // Handle 401 FIRST - before checking response.ok
@@ -112,6 +119,7 @@ class ApiClient {
       throw error;
     }
   }
+
 
   /**
    * GET request

@@ -3,45 +3,47 @@
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
 #...
-Title: Frontend: Create Plan Catalog Section
+Title: Frontend: Operator Listing Page - CSS Styling (Dark Theme)
 Tags: Phase2, Frontend, UI
 Creator:
 AssignedTo:
-tartAt:
+StartAt:
 EndAt:
 ---
 
-# DOD (definition of done):
-- Plan catalog section created in pages/sections/
-- Plans for selected operator displayed in card/list layout
-- Plan name, description, price, billing period shown
-- Plan features displayed as list or badges
-- Service type badge visible (Internet, Mobile, Bundle)
-- Plan status indicator shown (Active/Inactive)
-- Loading state displayed during data fetch
-- Error handling with toast notifications
-- Click plan card opens detail modal
-- Responsive layout (mobile, tablet, desktop)
-- Section registered in config.json with role-based access
-- CSS added to both default/ and dark/ theme directories
+# DOD (Definition of Done):
+- css/dark/operators.css created with complete styling
+- Operator cards grid layout responsive (1 col mobile, 2 cols tablet, 3+ cols desktop)
+- Operator card structure styled (name, description, service types, status)
+- Filter bar styled with dropdown and search input
+- Pagination controls styled with buttons
+- Loading message styled and centered
+- Empty message styled and centered
+- Error message styled with warning appearance
+- Status indicator badge styled (active/inactive visual distinction)
+- Service type badges styled with appropriate colors
+- Hover effects on operator cards
+- All styles use dark theme colors (dark background, light text)
+- Identical structure to default theme (only colors/backgrounds differ)
+- Follows existing dark theme CSS patterns
+- Responsive breakpoints match project standards
 
 # TODO:
-- [ ] Create plans.html in pages/sections/
-- [ ] Create plans.js with init() and cleanup() methods
-- [ ] Implement API call using apiClient to GET /operators/{id}/plans
-- [ ] Add pagination support (page, size parameters)
-- [ ] Create HTML structure for plan cards (name, description, price, billing period, features, service type, status)
-- [ ] Implement loading state (skeleton loaders or spinner)
-- [ ] Implement error handling with toast notifications
-- [ ] Add click handler to open plan detail modal
-- [ ] Display plan features as list or badge elements
-- [ ] Add service type badge styling
-- [ ] Create plans.css in css/default/ directory
-- [ ] Create plans.css in css/dark/ directory
-- [ ] Add responsive grid/list layout (mobile-first approach)
-- [ ] Register section in config.json with role-based access
-- [ ] Test on mobile, tablet, and desktop screens
-- [ ] Test error scenarios (API failure, empty list)
+- [ ] Create css/dark/operators.css file
+- [ ] Style operators-container grid layout
+- [ ] Style individual operator cards
+- [ ] Style operator name and description
+- [ ] Style service type badges
+- [ ] Style status indicator badge
+- [ ] Style filter bar and dropdown
+- [ ] Style search input field
+- [ ] Style pagination controls
+- [ ] Style loading message
+- [ ] Style empty message
+- [ ] Style error message
+- [ ] Add responsive grid breakpoints
+- [ ] Add hover effects and transitions
+- [ ] Verify colors match dark theme palette
 
 # Reports:
 *
