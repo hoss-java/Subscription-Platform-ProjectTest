@@ -26,16 +26,16 @@ EndAt:
 - HTML ready for JavaScript population
 
 # TODO:
-- [ ] Create pages/sections/plans.html file
-- [ ] Add section-container and section-content divs
-- [ ] Add section-header with h2 "Available Plans"
-- [ ] Add section-view div with id="plans-view"
-- [ ] Add plans-container div for plan cards grid
-- [ ] Add filter bar with serviceType dropdown
-- [ ] Add search input field
-- [ ] Add pagination controls container
-- [ ] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
-- [ ] Add loading/empty/error message placeholders
-- [ ] Match structure exactly to admin.html pattern
+- [x] Create pages/sections/plans.html file
+- [x] Add section-container and section-content divs
+- [x] Add section-header with h2 "Available Plans"
+- [x] Add section-view div with id="plans-view"
+- [x] Add plans-container div for plan cards grid
+- [x] Add filter bar with serviceType dropdown
+- [x] Add search input field
+- [x] Add pagination controls container
+- [x] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
+- [x] Add loading/empty/error message placeholders
+- [x] Match structure exactly to admin.html pattern
 
 # Reports:

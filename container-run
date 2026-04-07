@@ -83,36 +83,31 @@ container-run() {
     # Check for the ---noit directive and run the appropriate Docker command
     if [[ " ${directives[@]} " =~ " ---noit " ]]; then
         # Capture the output of the Docker command without TTY
-        set -x
-        output=$(docker exec "$docker_name" $command_to_run "$@")
-        set +x
+        output=$(docker exec "$docker_name" $command_to_run "$@" 2>&1)
         exit_code=$?
     elif [[ " ${directives[@]} " =~ " ---it " ]]; then
         # Run with -it option for interactive mode
-        set -x
         docker exec -it "$docker_name" $command_to_run "$@"
-        set +x
         exit_code=$?
     elif [[ " ${directives[@]} " =~ " ---i " ]]; then
         # Run with -i only for interactive input
-        set -x
         docker exec -i "$docker_name" $command_to_run "$@"
-        set +x
         exit_code=$?
     else
         # Default: use -it for interactive unless specified otherwise
-        set -x
         docker exec -it "$docker_name" $command_to_run "$@"
-        set +x
         exit_code=$?
     fi
 
     # Print the output if the exit code is not 0
     if [ $exit_code -ne 0 ]; then
-        echo "Error running Docker command:"
-        echo "$output"
-    elif [[ ! " ${directives[@]} " =~ " ---quiet " ]]; then
-        # If ---quiet is not present, print the output anyway
+        echo "Error running Docker command:" >&2
+        echo "$output" >&2
+    elif [[ " ${directives[@]} " =~ " ---quiet " ]]; then
+        # If ---quiet is present, suppress output
+        : # do nothing
+    else
+        # Otherwise, print the output
         echo "$output"
     fi
 

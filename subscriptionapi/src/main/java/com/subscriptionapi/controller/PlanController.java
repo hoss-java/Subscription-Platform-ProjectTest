@@ -3,6 +3,7 @@ package com.subscriptionapi.controller;
 import com.subscriptionapi.dto.PlanCreateRequest;
 import com.subscriptionapi.dto.PlanResponseDTO;
 import com.subscriptionapi.dto.PlanUpdateRequest;
+import com.subscriptionapi.dto.PlanPublicResponseDTO;
 import com.subscriptionapi.entity.ServiceType;
 import com.subscriptionapi.exception.ResourceNotFoundException;
 import com.subscriptionapi.repository.UserRepository;

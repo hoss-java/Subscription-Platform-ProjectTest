@@ -37,6 +37,14 @@
       "roles": ["customer", "admin", "operator"]
     },
     {
+      "name": "plans",
+      "path": "pages/sections/plans.html",
+      "title": "Available Plans",
+      "script": "PlansSection",
+      "icon": "list",
+      "roles": ["customer", "admin", "operator"]
+    },
+    {
       "name": "admin",
       "path": "pages/sections/admin.html",
       "title": "User Management",
@@ -45,10 +53,18 @@
       "roles": ["admin"]
     },
     {
+      "name": "admin-plans",
+      "path": "pages/sections/admin-plans.html",
+      "title": "Manage Plans",
+      "script": "AdminPlansSection",
+      "icon": "cog",
+      "roles": ["admin"]
+    },
+    {
       "name": "operator",
       "path": "pages/sections/operator.html",
       "title": "My Plans",
-      "script": "OperatorsSection",
+      "script": "OperatorSection",
       "icon": "briefcase",
       "roles": ["operator"]
     },

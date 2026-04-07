@@ -3,6 +3,7 @@ package com.subscriptionapi.repository;
 import com.subscriptionapi.entity.Plan;
 import com.subscriptionapi.entity.PlanStatus;
 import com.subscriptionapi.entity.ServiceType;
+import com.subscriptionapi.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,4 +32,7 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     
     // Find plans by user and service type
     Page<Plan> findByUserIdAndServiceType(Long userId, ServiceType serviceType, Pageable pageable);
+    
+    // Find plan by name and user (for initializer)
+    Optional<Plan> findByNameAndUser(String name, User user);
 }

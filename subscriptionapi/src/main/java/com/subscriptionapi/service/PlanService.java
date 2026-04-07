@@ -3,6 +3,7 @@ package com.subscriptionapi.service;
 import com.subscriptionapi.dto.PlanCreateRequest;
 import com.subscriptionapi.dto.PlanResponseDTO;
 import com.subscriptionapi.dto.PlanUpdateRequest;
+import com.subscriptionapi.dto.PlanPublicResponseDTO;
 import com.subscriptionapi.entity.Plan;
 import com.subscriptionapi.entity.PlanStatus;
 import com.subscriptionapi.entity.ServiceType;
