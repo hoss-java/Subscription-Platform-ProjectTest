@@ -150,6 +150,8 @@ public class SubscriptionService {
                 .userId(subscription.getUser().getId())
                 .planId(subscription.getPlan().getId())
                 .operatorId(subscription.getOperator().getId())
+                .customerName(subscription.getUser().getName())  // or getFullName() depending on User entity
+                .planName(subscription.getPlan().getName())      // or getTitle() depending on Plan entity
                 .status(subscription.getStatus())
                 .createdAt(subscription.getCreatedAt())
                 .endDate(subscription.getEndDate())
@@ -158,5 +160,12 @@ public class SubscriptionService {
                 .cancellationReason(subscription.getCancellationReason())
                 .updatedAt(subscription.getUpdatedAt())
                 .build();
+    }
+
+    public Page<SubscriptionResponseDTO> getOperatorSubscriptionsByStatus(Long operatorId, SubscriptionStatus status, Pageable pageable) {
+        log.debug("Fetching subscriptions for operator ID: {} with status: {}", operatorId, status);
+        
+        return subscriptionRepository.findByOperatorIdAndStatus(operatorId, status, pageable)
+                .map(this::mapToDTO);
     }
 }

@@ -37,6 +37,14 @@
       "roles": ["customer", "admin", "operator"]
     },
     {
+      "name": "subscriptionsman",
+      "path": "pages/sections/subscriptionsman.html",
+      "title": "Manage Subscriptions",
+      "script": "SubscriptionsManagerSection",
+      "icon": "clipboard",
+      "roles": ["operator"]
+    },
+    {
       "name": "plans",
       "path": "pages/sections/plans.html",
       "title": "Available Plans",

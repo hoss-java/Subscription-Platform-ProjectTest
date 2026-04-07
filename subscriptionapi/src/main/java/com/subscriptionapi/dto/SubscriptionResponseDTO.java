@@ -17,6 +17,8 @@ public class SubscriptionResponseDTO {
     private Long userId;
     private Long planId;
     private Long operatorId;
+    private String customerName;
+    private String planName;
     private SubscriptionStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime endDate;
@@ -25,3 +27,4 @@ public class SubscriptionResponseDTO {
     private String cancellationReason;
     private LocalDateTime updatedAt;
 }
+

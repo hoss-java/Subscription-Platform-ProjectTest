@@ -23,6 +23,7 @@
     "toast.css",
     "list.css",
     "sections.css",
-    "dashboard.css"
+    "dashboard.css",
+    "subscriptions.css"
   ]
 }

@@ -127,20 +127,6 @@
   flex-grow: 1;
 }
 
-/* Service Type Badge */
-.plan-service-type-badge {
-  display: inline-block;
-  background: #3a3a3a;
-  color: #e0e0e0;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
 /* Price Section */
 .plan-price-section {
   display: flex;
@@ -340,4 +326,75 @@
   .pagination-controls {
     flex-wrap: wrap;
   }
+}
+
+/* Badges Container */
+.plan-badges-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+/* Service Type Badge */
+.plan-service-type-badge {
+  display: inline-block;
+  background: #3a3a3a;
+  color: #e0e0e0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Subscription Status Badges */
+.plan-status-badge {
+  display: inline-block;
+  background: #3a3a3a;
+  color: #e0e0e0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.plan-status-pending {
+  background: #c9a227;
+  color: #fff;
+}
+
+.plan-status-active {
+  background: #27ae60;
+  color: #fff;
+}
+
+.plan-status-suspended {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.plan-status-cancelled {
+  background: #7f8c8d;
+  color: #fff;
+}
+
+/* Subscriptions Manager Filter Bar - Override */
+.subscriptions-manager-filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+}
+
+.subscriptions-manager-filter-bar .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+  min-width: 200px;
 }

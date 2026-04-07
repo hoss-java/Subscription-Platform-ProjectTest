@@ -70,18 +70,29 @@ public class SubscriptionController {
     }
     
     /**
-     * Get all subscriptions for current operator
+     * Get all subscriptions for current operator with optional status filter
      */
     @GetMapping("/operator/subscriptions")
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<Page<SubscriptionResponseDTO>> getOperatorSubscriptions(Pageable pageable) {
+    public ResponseEntity<Page<SubscriptionResponseDTO>> getOperatorSubscriptions(
+            @RequestParam(required = false) SubscriptionStatus status,
+            Pageable pageable) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         
         Long operatorId = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"))
                 .getId();
         
-        Page<SubscriptionResponseDTO> subscriptions = subscriptionService.getOperatorSubscriptions(operatorId, pageable);
+        Page<SubscriptionResponseDTO> subscriptions;
+        
+        if (status != null) {
+            // Filter by status if provided
+            subscriptions = subscriptionService.getOperatorSubscriptionsByStatus(operatorId, status, pageable);
+        } else {
+            // Get all subscriptions if no status filter
+            subscriptions = subscriptionService.getOperatorSubscriptions(operatorId, pageable);
+        }
+        
         return ResponseEntity.ok(subscriptions);
     }
     

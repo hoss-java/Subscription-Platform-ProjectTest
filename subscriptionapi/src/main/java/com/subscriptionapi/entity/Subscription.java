@@ -12,11 +12,19 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "subscriptions")
+@NamedEntityGraph(
+    name = "Subscription.withUserAndPlan",
+    attributeNodes = {
+        @NamedAttributeNode("user"),
+        @NamedAttributeNode("plan"),
+        @NamedAttributeNode("operator")
+    }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "subscriptions")
 public class Subscription {
 
     @Id
