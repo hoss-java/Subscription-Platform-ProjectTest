@@ -1,0 +1,49 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Backend: Subscription Entity, Service, and Controller - Phase 4
+Tags: Phase4, Backend, Core
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (Definition of Done):
+- Subscription entity created with all required fields
+- SubscriptionService interface defined with core methods
+- SubscriptionServiceImpl implemented with business logic
+- SubscriptionController created with REST endpoints
+- SubscriptionRepository interface created
+- All DTOs created (SubscriptionCreateRequest, SubscriptionResponseDTO, etc.)
+- Role-based access control implemented on endpoints
+- Input validation on all request parameters
+- Consistent JSON response structure across all endpoints
+- Error handling with appropriate HTTP status codes
+- Unit tests for service layer methods
+- Integration tests for controller endpoints
+- Token validation on protected endpoints
+
+# TODO:
+- [x] Create Subscription entity class
+- [x] Define subscription status enum
+- [x] Create SubscriptionRepository interface
+- [x] Create SubscriptionService interface
+- [x] Implement SubscriptionServiceImpl
+- [x] Create subscription DTOs (Create/Response/Update)
+- [x] Create SubscriptionController
+- [x] Implement POST /subscriptions (create subscription)
+- [x] Implement GET /subscriptions (list user subscriptions)
+- [x] Implement GET /subscriptions/{id} (get subscription details)
+- [x] Implement PUT /subscriptions/{id}/plan (change plan)
+- [x] Implement DELETE /subscriptions/{id} (cancel subscription)
+- [x] Add validation for subscription creation
+- [x] Add role-based access control
+- [x] Add error handling and exceptions
+- [x] Write unit tests
+- [x] Write integration tests
+
+# Reports:
+*

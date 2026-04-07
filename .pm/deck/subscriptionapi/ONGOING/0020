@@ -1,0 +1,64 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Implement Subscription Management
+Tags: Phase4, Frontend, Subscription
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Subscription section created (SubscriptionSection) and registered in config.json
+- Display customer's active subscriptions with pagination
+- Show subscription status (ACTIVE, PENDING, SUSPENDED, CANCELED)
+- Display subscription details: plan name, operator, start date, billing period
+- Implement "View Details" modal for subscription info
+- Implement "Change Plan" modal with plan selection and preview
+- Implement "Cancel Subscription" confirmation dialog with reason input
+- Load and display active subscriptions on section init
+- Handle pagination for subscriptions list
+- Show empty state when no subscriptions exist
+- Error handling with toast notifications for failed operations
+- Responsive design (mobile-friendly subscription cards)
+- CSS files created in both css/default/ and css/dark/ directories
+- Follow existing PlansSection pattern for consistency
+
+# TODO:
+- [ ] Create pages/sections/subscription.html with subscriptions list container
+- [ ] Create pages/sections/subscription.js (SubscriptionSection object)
+- [ ] Register SubscriptionSection in config.json with customer/operator/admin roles
+- [ ] Implement init() method - load subscriptions on section load
+- [ ] Implement loadSubscriptions() - fetch /my-subscriptions endpoint with pagination
+- [ ] Implement renderSubscriptions() - display subscription cards in grid layout
+- [ ] Add subscription card with: plan name, operator, status badge, start date, billing period
+- [ ] Implement "View Details" button and detail modal
+- [ ] Implement openDetailModal() - show full subscription info
+- [ ] Add subscription status indicator/badge (color-coded: green/yellow/red/gray)
+- [ ] Implement renderPagination() for subscriptions list
+- [ ] Create "Change Plan" modal with plan dropdown and pricing preview
+- [ ] Implement changePlan() - POST to /subscriptions/{id}/change endpoint
+- [ ] Create "Cancel Subscription" confirmation dialog
+- [ ] Implement cancelSubscription() - PUT to /subscriptions/{id}/cancel endpoint
+- [ ] Add event listeners for all modal buttons (close, change plan, cancel)
+- [ ] Implement loadAvailablePlans() for "Change Plan" dropdown (same operator only)
+- [ ] Add "Manage" button on subscription card (opens action menu)
+- [ ] Handle loading states during API calls
+- [ ] Display error messages with toast notifications
+- [ ] Show success messages after actions (plan change, cancellation)
+- [ ] Implement syncUI() to update modals after actions
+- [ ] Create subscription-specific CSS in css/default/subscriptions.css
+- [ ] Create subscription-specific CSS in css/dark/subscriptions.css
+- [ ] Add to config/styles.json for both theme directories
+- [ ] Test subscription list load and pagination
+- [ ] Test detail modal opens/closes correctly
+- [ ] Test change plan flow (plan selection, preview, confirmation)
+- [ ] Test cancel subscription flow (reason input, confirmation)
+- [ ] Test responsive layout on mobile/tablet screens
+- [ ] Test error handling (failed API calls, empty states)
+- [ ] Test with multiple user roles (customer, operator, admin)
+
+# Reports:
+*
