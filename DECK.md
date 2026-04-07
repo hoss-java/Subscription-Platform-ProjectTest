@@ -2183,6 +2183,45 @@ gantt
 > Show me the PlanResponseDTO class (what fields does it have?).
 > </details>
 
+## 001-0017
+> **Backend: Plan Controller & Service - Public Plans Listing & Admin Activation/Deactivation** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - PlanPublicResponseDTO created with operatorName field (no status/createdAt/updatedAt)
+> - mapToPublicDTO() method added to PlanService
+> - getAllActivePlansForPublic() service method implemented
+> - GET /api/plans endpoint updated to return PlanPublicResponseDTO
+> - Admin activate endpoint: PUT /api/plans/{id}/activate implemented
+> - Admin deactivate endpoint: PUT /api/plans/{id}/deactivate implemented
+> - activatePlan() service method with status update logic
+> - deactivatePlan() service method with status update logic
+> - All endpoints secured with @PreAuthorize annotations
+> - Operator name formatted as firstName + lastName in public response
+> 
+> # TODO:
+> - [x] Create PlanPublicResponseDTO.java in dto folder
+> - [x] Add operatorName, name, description, serviceType, basePrice, billingPeriod, features fields
+> - [x] Remove status, createdAt, updatedAt, userId fields from public DTO
+> - [x] Add mapToPublicDTO() method in PlanService
+> - [x] Add getAllActivePlansForPublic() method in PlanService
+> - [x] Update getAllPlans() in PlanController to use new public DTO
+> - [x] Add activatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
+> - [x] Add deactivatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
+> - [x] Implement activatePlan() service method
+> - [x] Implement deactivatePlan() service method
+> - [x] Test public endpoint returns only active plans with operator name
+> - [x] Test admin activation/deactivation endpoints with proper authorization
+> 
+> # Reports:
+> - Successfully implemented public plan listing for all users showing only active plans with operator names
+> - Created separate DTO to prevent exposure of sensitive fields (status, timestamps, userId)
+> - Added admin-only endpoints for plan status management (activate/deactivate)
+> - All endpoints properly secured with role-based access control
+> - Operator name properly concatenated from firstName and lastName fields
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -4089,45 +4128,6 @@ gantt
 > *
 > </details>
 
-## 001-0017
-> **Backend: Plan Controller & Service - Public Plans Listing & Admin Activation/Deactivation** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (Definition of Done):
-> - PlanPublicResponseDTO created with operatorName field (no status/createdAt/updatedAt)
-> - mapToPublicDTO() method added to PlanService
-> - getAllActivePlansForPublic() service method implemented
-> - GET /api/plans endpoint updated to return PlanPublicResponseDTO
-> - Admin activate endpoint: PUT /api/plans/{id}/activate implemented
-> - Admin deactivate endpoint: PUT /api/plans/{id}/deactivate implemented
-> - activatePlan() service method with status update logic
-> - deactivatePlan() service method with status update logic
-> - All endpoints secured with @PreAuthorize annotations
-> - Operator name formatted as firstName + lastName in public response
-> 
-> # TODO:
-> - [x] Create PlanPublicResponseDTO.java in dto folder
-> - [x] Add operatorName, name, description, serviceType, basePrice, billingPeriod, features fields
-> - [x] Remove status, createdAt, updatedAt, userId fields from public DTO
-> - [x] Add mapToPublicDTO() method in PlanService
-> - [x] Add getAllActivePlansForPublic() method in PlanService
-> - [x] Update getAllPlans() in PlanController to use new public DTO
-> - [x] Add activatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
-> - [x] Add deactivatePlan() endpoint in PlanController with @PreAuthorize("hasRole('ADMIN')")
-> - [x] Implement activatePlan() service method
-> - [x] Implement deactivatePlan() service method
-> - [x] Test public endpoint returns only active plans with operator name
-> - [x] Test admin activation/deactivation endpoints with proper authorization
-> 
-> # Reports:
-> - Successfully implemented public plan listing for all users showing only active plans with operator names
-> - Created separate DTO to prevent exposure of sensitive fields (status, timestamps, userId)
-> - Added admin-only endpoints for plan status management (activate/deactivate)
-> - All endpoints properly secured with role-based access control
-> - Operator name properly concatenated from firstName and lastName fields
-> </details>
-
 ## 001-0018
 > **Frontend: Plan Listing Page - Public Plans Display with Operator Names** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
@@ -4148,17 +4148,17 @@ gantt
 > - HTML ready for JavaScript population
 > 
 > # TODO:
-> - [ ] Create pages/sections/plans.html file
-> - [ ] Add section-container and section-content divs
-> - [ ] Add section-header with h2 "Available Plans"
-> - [ ] Add section-view div with id="plans-view"
-> - [ ] Add plans-container div for plan cards grid
-> - [ ] Add filter bar with serviceType dropdown
-> - [ ] Add search input field
-> - [ ] Add pagination controls container
-> - [ ] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
-> - [ ] Add loading/empty/error message placeholders
-> - [ ] Match structure exactly to admin.html pattern
+> - [x] Create pages/sections/plans.html file
+> - [x] Add section-container and section-content divs
+> - [x] Add section-header with h2 "Available Plans"
+> - [x] Add section-view div with id="plans-view"
+> - [x] Add plans-container div for plan cards grid
+> - [x] Add filter bar with serviceType dropdown
+> - [x] Add search input field
+> - [x] Add pagination controls container
+> - [x] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
+> - [x] Add loading/empty/error message placeholders
+> - [x] Match structure exactly to admin.html pattern
 > 
 > # Reports:
 > </details>
