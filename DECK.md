@@ -2222,6 +2222,84 @@ gantt
 > - Operator name properly concatenated from firstName and lastName fields
 > </details>
 
+## 001-0018
+> **Frontend: Plan Listing Page - Public Plans Display with Operator Names** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - pages/sections/plans.html created with section-container structure
+> - Section header with "Available Plans" title
+> - Plans cards grid container with id="plans-container"
+> - Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
+> - Search input field for plan name
+> - Pagination controls container
+> - Plan card displays: operatorName, name, description, serviceType, basePrice, billingPeriod, features
+> - Loading message placeholder
+> - Empty message placeholder
+> - Error message placeholder
+> - All elements follow admin.html structure pattern
+> - HTML ready for JavaScript population
+> 
+> # TODO:
+> - [x] Create pages/sections/plans.html file
+> - [x] Add section-container and section-content divs
+> - [x] Add section-header with h2 "Available Plans"
+> - [x] Add section-view div with id="plans-view"
+> - [x] Add plans-container div for plan cards grid
+> - [x] Add filter bar with serviceType dropdown
+> - [x] Add search input field
+> - [x] Add pagination controls container
+> - [x] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
+> - [x] Add loading/empty/error message placeholders
+> - [x] Match structure exactly to admin.html pattern
+> 
+> # Reports:
+> </details>
+
+## 001-0019
+> **Backend: Subscription Entity, Service, and Controller - Phase 4** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (Definition of Done):
+> - Subscription entity created with all required fields
+> - SubscriptionService interface defined with core methods
+> - SubscriptionServiceImpl implemented with business logic
+> - SubscriptionController created with REST endpoints
+> - SubscriptionRepository interface created
+> - All DTOs created (SubscriptionCreateRequest, SubscriptionResponseDTO, etc.)
+> - Role-based access control implemented on endpoints
+> - Input validation on all request parameters
+> - Consistent JSON response structure across all endpoints
+> - Error handling with appropriate HTTP status codes
+> - Unit tests for service layer methods
+> - Integration tests for controller endpoints
+> - Token validation on protected endpoints
+> 
+> # TODO:
+> - [x] Create Subscription entity class
+> - [x] Define subscription status enum
+> - [x] Create SubscriptionRepository interface
+> - [x] Create SubscriptionService interface
+> - [x] Implement SubscriptionServiceImpl
+> - [x] Create subscription DTOs (Create/Response/Update)
+> - [x] Create SubscriptionController
+> - [x] Implement POST /subscriptions (create subscription)
+> - [x] Implement GET /subscriptions (list user subscriptions)
+> - [x] Implement GET /subscriptions/{id} (get subscription details)
+> - [x] Implement PUT /subscriptions/{id}/plan (change plan)
+> - [x] Implement DELETE /subscriptions/{id} (cancel subscription)
+> - [x] Add validation for subscription creation
+> - [x] Add role-based access control
+> - [x] Add error handling and exceptions
+> - [x] Write unit tests
+> - [x] Write integration tests
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2250,88 +2328,6 @@ gantt
 > 
 > # Reports:
 > * (to be filled during development)
-> </details>
-
-## 001-0019
-> **Frontend: Operator Listing Page - CSS Styling (Dark Theme)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (Definition of Done):
-> - css/dark/operators.css created with complete styling
-> - Operator cards grid layout responsive (1 col mobile, 2 cols tablet, 3+ cols desktop)
-> - Operator card structure styled (name, description, service types, status)
-> - Filter bar styled with dropdown and search input
-> - Pagination controls styled with buttons
-> - Loading message styled and centered
-> - Empty message styled and centered
-> - Error message styled with warning appearance
-> - Status indicator badge styled (active/inactive visual distinction)
-> - Service type badges styled with appropriate colors
-> - Hover effects on operator cards
-> - All styles use dark theme colors (dark background, light text)
-> - Identical structure to default theme (only colors/backgrounds differ)
-> - Follows existing dark theme CSS patterns
-> - Responsive breakpoints match project standards
-> 
-> # TODO:
-> - [ ] Create css/dark/operators.css file
-> - [ ] Style operators-container grid layout
-> - [ ] Style individual operator cards
-> - [ ] Style operator name and description
-> - [ ] Style service type badges
-> - [ ] Style status indicator badge
-> - [ ] Style filter bar and dropdown
-> - [ ] Style search input field
-> - [ ] Style pagination controls
-> - [ ] Style loading message
-> - [ ] Style empty message
-> - [ ] Style error message
-> - [ ] Add responsive grid breakpoints
-> - [ ] Add hover effects and transitions
-> - [ ] Verify colors match dark theme palette
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0020
-> **Frontend: Implement Plan Filtering & Search** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Filter by service type (Internet, Mobile, Bundle) implemented
-> - Search plans by name/description implemented
-> - Sort by price (low-to-high, high-to-low) implemented
-> - Sort by newest first implemented
-> - Filters applied in real-time with loading state
-> - Search query validated (min/max length)
-> - Filter state persisted in URL hash parameters
-> - Results update dynamically without page reload
-> - Error handling for failed searches
-> - Responsive filter UI (mobile-friendly)
-> - CSS added to both default/ and dark/ theme directories
-> 
-> # TODO:
-> - [ ] Create filter UI component (dropdowns, search input, sort buttons)
-> - [ ] Implement service_type filter dropdown (Internet, Mobile, Bundle)
-> - [ ] Implement search input field with debouncing
-> - [ ] Implement sort dropdown (price ASC/DESC, newest first)
-> - [ ] Add API call parameters for filtering (serviceType, q, sortBy, page, size)
-> - [ ] Implement real-time filtering with loading state
-> - [ ] Add filter state to URL hash parameters for bookmarking
-> - [ ] Validate search query length (min 2, max 100 characters)
-> - [ ] Update plan list on filter/search change
-> - [ ] Implement clear filters button
-> - [ ] Add error handling for failed searches
-> - [ ] Create filter-specific CSS in css/default/ and css/dark/
-> - [ ] Test filtering accuracy with multiple filter combinations
-> - [ ] Test search with special characters and edge cases
-> - [ ] Test on mobile screens (filter UI responsive)
-> 
-> # Reports:
-> *
 > </details>
 
 ## 001-0021
@@ -4128,37 +4124,61 @@ gantt
 > *
 > </details>
 
-## 001-0018
-> **Frontend: Plan Listing Page - Public Plans Display with Operator Names** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+## 001-0020
+> **Frontend: Implement Subscription Management** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
-> # DOD (Definition of Done):
-> - pages/sections/plans.html created with section-container structure
-> - Section header with "Available Plans" title
-> - Plans cards grid container with id="plans-container"
-> - Filter bar with serviceType dropdown (Internet, Mobile, Bundle)
-> - Search input field for plan name
-> - Pagination controls container
-> - Plan card displays: operatorName, name, description, serviceType, basePrice, billingPeriod, features
-> - Loading message placeholder
-> - Empty message placeholder
-> - Error message placeholder
-> - All elements follow admin.html structure pattern
-> - HTML ready for JavaScript population
+> # DOD (definition of done):
+> - Subscription section created (SubscriptionSection) and registered in config.json
+> - Display customer's active subscriptions with pagination
+> - Show subscription status (ACTIVE, PENDING, SUSPENDED, CANCELED)
+> - Display subscription details: plan name, operator, start date, billing period
+> - Implement "View Details" modal for subscription info
+> - Implement "Change Plan" modal with plan selection and preview
+> - Implement "Cancel Subscription" confirmation dialog with reason input
+> - Load and display active subscriptions on section init
+> - Handle pagination for subscriptions list
+> - Show empty state when no subscriptions exist
+> - Error handling with toast notifications for failed operations
+> - Responsive design (mobile-friendly subscription cards)
+> - CSS files created in both css/default/ and css/dark/ directories
+> - Follow existing PlansSection pattern for consistency
 > 
 > # TODO:
-> - [x] Create pages/sections/plans.html file
-> - [x] Add section-container and section-content divs
-> - [x] Add section-header with h2 "Available Plans"
-> - [x] Add section-view div with id="plans-view"
-> - [x] Add plans-container div for plan cards grid
-> - [x] Add filter bar with serviceType dropdown
-> - [x] Add search input field
-> - [x] Add pagination controls container
-> - [x] Add plan card template with operatorName, name, description, serviceType, basePrice, billingPeriod, features
-> - [x] Add loading/empty/error message placeholders
-> - [x] Match structure exactly to admin.html pattern
+> - [ ] Create pages/sections/subscription.html with subscriptions list container
+> - [ ] Create pages/sections/subscription.js (SubscriptionSection object)
+> - [ ] Register SubscriptionSection in config.json with customer/operator/admin roles
+> - [ ] Implement init() method - load subscriptions on section load
+> - [ ] Implement loadSubscriptions() - fetch /my-subscriptions endpoint with pagination
+> - [ ] Implement renderSubscriptions() - display subscription cards in grid layout
+> - [ ] Add subscription card with: plan name, operator, status badge, start date, billing period
+> - [ ] Implement "View Details" button and detail modal
+> - [ ] Implement openDetailModal() - show full subscription info
+> - [ ] Add subscription status indicator/badge (color-coded: green/yellow/red/gray)
+> - [ ] Implement renderPagination() for subscriptions list
+> - [ ] Create "Change Plan" modal with plan dropdown and pricing preview
+> - [ ] Implement changePlan() - POST to /subscriptions/{id}/change endpoint
+> - [ ] Create "Cancel Subscription" confirmation dialog
+> - [ ] Implement cancelSubscription() - PUT to /subscriptions/{id}/cancel endpoint
+> - [ ] Add event listeners for all modal buttons (close, change plan, cancel)
+> - [ ] Implement loadAvailablePlans() for "Change Plan" dropdown (same operator only)
+> - [ ] Add "Manage" button on subscription card (opens action menu)
+> - [ ] Handle loading states during API calls
+> - [ ] Display error messages with toast notifications
+> - [ ] Show success messages after actions (plan change, cancellation)
+> - [ ] Implement syncUI() to update modals after actions
+> - [ ] Create subscription-specific CSS in css/default/subscriptions.css
+> - [ ] Create subscription-specific CSS in css/dark/subscriptions.css
+> - [ ] Add to config/styles.json for both theme directories
+> - [ ] Test subscription list load and pagination
+> - [ ] Test detail modal opens/closes correctly
+> - [ ] Test change plan flow (plan selection, preview, confirmation)
+> - [ ] Test cancel subscription flow (reason input, confirmation)
+> - [ ] Test responsive layout on mobile/tablet screens
+> - [ ] Test error handling (failed API calls, empty states)
+> - [ ] Test with multiple user roles (customer, operator, admin)
 > 
 > # Reports:
+> *
 > </details>
