@@ -17,6 +17,7 @@
     "js/pages/sections/operator.js",
     "js/pages/sections/profile.js",
     "js/pages/sections/subscriptionsman.js",
+    "js/pages/sections/mysubscriptions.js",
     "js/pages/sections/settings.js",
     "js/pages/dashboard.js",
     "js/app.js"

@@ -74,6 +74,8 @@ class ApiClient {
       const responseData = await response.json();
       console.log(`[ApiClient] Response data:`, responseData);
 
+      console.debug(`[ApiClient] ${method} ${endpoint} - RESPONSE:`, JSON.stringify(responseData, null, 2));
+
       // Handle 401 FIRST - before checking response.ok
       if (response.status === 401 && this.authService) {
         console.log(`[ApiClient] 401 Unauthorized - attempt ${retryAttempt + 1}/${this.maxRetries}`);

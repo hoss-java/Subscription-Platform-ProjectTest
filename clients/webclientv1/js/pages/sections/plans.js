@@ -9,11 +9,15 @@ const PlansSection = {
   currentPlanId: null,
   userSubscriptions: {}, // Map planId -> subscription status
 
-  init() {
-    setTimeout(() => {
+  async init() {
+    setTimeout(async () => {
       this.attachEventListeners();
-      this.loadServiceTypes();
-      this.loadUserSubscriptions(); // Load subscriptions first
+      await this.loadServiceTypes();
+      
+      // Load subscriptions FIRST and wait for it to complete
+      await this.loadUserSubscriptions();
+      
+      // Then load and render plans with populated subscription data
       this.loadPlans();
     }, 100);
   },

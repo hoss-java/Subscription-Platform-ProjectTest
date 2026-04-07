@@ -37,6 +37,14 @@
       "roles": ["customer", "admin", "operator"]
     },
     {
+      "name": "mysubscriptions",
+      "path": "pages/sections/mysubscriptions.html",
+      "title": "My Subscriptions",
+      "script": "MySubscriptionsSection",
+      "icon": "receipt",
+      "roles": ["customer"]
+    },
+    {
       "name": "subscriptionsman",
       "path": "pages/sections/subscriptionsman.html",
       "title": "Manage Subscriptions",
