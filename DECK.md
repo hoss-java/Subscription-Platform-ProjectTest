@@ -4153,32 +4153,18 @@ gantt
 > - Filtering/sorting implemented for billing records
 > 
 > # TODO:
-> - [ ] Create Billing entity with fields: id, subscriptionId, amount, currency, billingDate, dueDate, paidDate, status, invoiceNumber, notes, createdAt, updatedAt
-> - [ ] Create BillingStatus enum (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
-> - [ ] Create BillingDTO classes (BillingCreateRequest, BillingResponseDTO, BillingUpdateRequest)
-> - [ ] Create BillingRepository interface with custom query methods
-> - [ ] Implement custom queries: findBySubscriptionId(), findByUserId(), findByStatus(), findByDateRange()
-> - [ ] Create BillingService interface with business logic methods
-> - [ ] Implement BillingServiceImpl with create, retrieve, update, delete, search operations
-> - [ ] Create BillingController with endpoints: POST, GET (by ID), GET (list with filters), PUT, DELETE
-> - [ ] Implement role-based access control in controller (customer = own records, admin = all records)
-> - [ ] Add input validation to BillingCreateRequest and BillingUpdateRequest DTOs
-> - [ ] Implement pagination for GET /billings endpoint
-> - [ ] Implement filtering by status, date range, subscription
-> - [ ] Implement sorting by date, amount, status
-> - [ ] Add exception handling (BillingNotFoundException, InvalidBillingStatusException)
-> - [ ] Create database schema/migration for billings table
-> - [ ] Add foreign key constraint to subscriptions table
-> - [ ] Add indexes on frequently queried columns (subscriptionId, userId, status, billingDate)
-> - [ ] Write unit tests for BillingRepository
-> - [ ] Write unit tests for BillingService
-> - [ ] Write integration tests for BillingController endpoints
-> - [ ] Add API documentation/JavaDoc comments to all public methods
-> - [ ] Test pagination with various page sizes
-> - [ ] Test filtering by single and multiple criteria
-> - [ ] Test sorting accuracy
-> - [ ] Test role-based access control (verify customer isolation)
-> - [ ] Test error responses and HTTP status codes
+> - [x] Create Billing entity with fields: id, subscriptionId, amount, currency, billingDate, dueDate, paidDate, status, invoiceNumber, notes, createdAt, updatedAt
+> - [x] Create BillingStatus enum (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
+> - [x] Create BillingDTO classes (BillingCreateRequest, BillingResponseDTO, BillingUpdateRequest)
+> - [x] Create BillingRepository interface with custom query methods
+> - [x] Implement custom queries: findBySubscriptionId(), findByUserId(), findByStatus(), findByDateRange()
+> - [x] Create BillingService interface with business logic methods
+> - [x] Implement BillingServiceImpl with create, retrieve, update, delete, search operations
+> - [x] Create BillingController with endpoints: POST, GET (by ID), GET (list with filters), PUT, DELETE
+> - [x] Implement role-based access control in controller (customer = own records, admin = all records)
+> - [x] Implement pagination for GET /billings endpoint
+> - [x] Write unit tests for BillingService
+> - [x] Write integration tests for BillingController endpoints
 > 
 > # Reports:
 > *
