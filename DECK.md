@@ -2300,6 +2300,54 @@ gantt
 > *
 > </details>
 
+## 001-0020
+> **Frontend: Implement Subscription Management** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - Subscription section created (SubscriptionSection) and registered in config.json
+> - Display customer's active subscriptions with pagination
+> - Show subscription status (ACTIVE, PENDING, SUSPENDED, CANCELED)
+> - Display subscription details: plan name, operator, start date, billing period
+> - Implement "View Details" modal for subscription info
+> - Implement "Change Plan" modal with plan selection and preview
+> - Implement "Cancel Subscription" confirmation dialog with reason input
+> - Load and display active subscriptions on section init
+> - Handle pagination for subscriptions list
+> - Show empty state when no subscriptions exist
+> - Error handling with toast notifications for failed operations
+> - Responsive design (mobile-friendly subscription cards)
+> - CSS files created in both css/default/ and css/dark/ directories
+> - Follow existing PlansSection pattern for consistency
+> 
+> # TODO:
+> - [x] Create pages/sections/subscription.html with subscriptions list container
+> - [x] Create pages/sections/subscription.js (SubscriptionSection object)
+> - [x] Register SubscriptionSection in config.json with customer/operator/admin roles
+> - [x] Implement init() method - load subscriptions on section load
+> - [x] Implement loadSubscriptions() - fetch /my-subscriptions endpoint with pagination
+> - [x] Implement renderSubscriptions() - display subscription cards in grid layout
+> - [x] Add subscription card with: plan name, operator, status badge, start date, billing period
+> - [x] Implement "View Details" button and detail modal
+> - [x] Implement openDetailModal() - show full subscription info
+> - [x] Add subscription status indicator/badge (color-coded: green/yellow/red/gray)
+> - [x] Implement renderPagination() for subscriptions list
+> - [x] Create "Change Plan" modal with plan dropdown and pricing preview
+> - [x] Implement changePlan() - POST to /subscriptions/{id}/change endpoint
+> - [x] Create "Cancel Subscription" confirmation dialog
+> - [x] Implement cancelSubscription() - PUT to /subscriptions/{id}/cancel endpoint
+> - [x] Add event listeners for all modal buttons (close, change plan, cancel)
+> - [x] Implement loadAvailablePlans() for "Change Plan" dropdown (same operator only)
+> - [x] Add "Manage" button on subscription card (opens action menu)
+> - [x] Handle loading states during API calls
+> - [x] Display error messages with toast notifications
+> - [x] Show success messages after actions (plan change, cancellation)
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2328,49 +2376,6 @@ gantt
 > 
 > # Reports:
 > * (to be filled during development)
-> </details>
-
-## 001-0021
-> **Frontend: Create Plan Detail Modal** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Plan detail modal displays full plan information
-> - Plan name, description, all features shown
-> - Pricing details (monthly/yearly options) displayed
-> - Terms and conditions section included
-> - Subscribe Now button present and functional
-> - Related plans from same operator shown
-> - Modal closes on background click or close button
-> - Loading state displayed during data fetch
-> - Error handling with toast notifications
-> - Responsive design (mobile, tablet, desktop)
-> - Accessibility features implemented (focus management, keyboard navigation)
-> - CSS added to both default/ and dark/ theme directories
-> 
-> # TODO:
-> - [ ] Create plan-detail-modal.html component
-> - [ ] Create plan-detail-modal.js with show(), hide(), init() methods
-> - [ ] Implement API call using apiClient to GET /plans/{id}
-> - [ ] Display plan full description and all features
-> - [ ] Display pricing tiers (monthly/yearly with prices)
-> - [ ] Display terms and conditions section
-> - [ ] Add Subscribe Now button (link to Phase 4 subscription flow)
-> - [ ] Implement related plans section (fetch from same operator)
-> - [ ] Add modal open/close functionality
-> - [ ] Implement background click to close
-> - [ ] Add close button (X icon)
-> - [ ] Implement loading state (skeleton loaders)
-> - [ ] Implement error handling with toast notifications
-> - [ ] Create modal-specific CSS in css/default/ and css/dark/
-> - [ ] Add responsive modal sizing for mobile/tablet/desktop
-> - [ ] Implement keyboard navigation (Escape to close)
-> - [ ] Test modal opening/closing behavior
-> - [ ] Test on multiple screen sizes
-> 
-> # Reports:
-> *
 > </details>
 
 ## 001-0022
@@ -4124,60 +4129,44 @@ gantt
 > *
 > </details>
 
-## 001-0020
-> **Frontend: Implement Subscription Management** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+## 001-0021
+> **Frontend: Create Plan Detail Modal** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
-> - Subscription section created (SubscriptionSection) and registered in config.json
-> - Display customer's active subscriptions with pagination
-> - Show subscription status (ACTIVE, PENDING, SUSPENDED, CANCELED)
-> - Display subscription details: plan name, operator, start date, billing period
-> - Implement "View Details" modal for subscription info
-> - Implement "Change Plan" modal with plan selection and preview
-> - Implement "Cancel Subscription" confirmation dialog with reason input
-> - Load and display active subscriptions on section init
-> - Handle pagination for subscriptions list
-> - Show empty state when no subscriptions exist
-> - Error handling with toast notifications for failed operations
-> - Responsive design (mobile-friendly subscription cards)
-> - CSS files created in both css/default/ and css/dark/ directories
-> - Follow existing PlansSection pattern for consistency
+> - Plan detail modal displays full plan information
+> - Plan name, description, all features shown
+> - Pricing details (monthly/yearly options) displayed
+> - Terms and conditions section included
+> - Subscribe Now button present and functional
+> - Related plans from same operator shown
+> - Modal closes on background click or close button
+> - Loading state displayed during data fetch
+> - Error handling with toast notifications
+> - Responsive design (mobile, tablet, desktop)
+> - Accessibility features implemented (focus management, keyboard navigation)
+> - CSS added to both default/ and dark/ theme directories
 > 
 > # TODO:
-> - [x] Create pages/sections/subscription.html with subscriptions list container
-> - [x] Create pages/sections/subscription.js (SubscriptionSection object)
-> - [x] Register SubscriptionSection in config.json with customer/operator/admin roles
-> - [x] Implement init() method - load subscriptions on section load
-> - [x] Implement loadSubscriptions() - fetch /my-subscriptions endpoint with pagination
-> - [x] Implement renderSubscriptions() - display subscription cards in grid layout
-> - [x] Add subscription card with: plan name, operator, status badge, start date, billing period
-> - [x] Implement "View Details" button and detail modal
-> - [x] Implement openDetailModal() - show full subscription info
-> - [x] Add subscription status indicator/badge (color-coded: green/yellow/red/gray)
-> - [x] Implement renderPagination() for subscriptions list
-> - [ ] Create "Change Plan" modal with plan dropdown and pricing preview
-> - [ ] Implement changePlan() - POST to /subscriptions/{id}/change endpoint
-> - [ ] Create "Cancel Subscription" confirmation dialog
-> - [ ] Implement cancelSubscription() - PUT to /subscriptions/{id}/cancel endpoint
-> - [ ] Add event listeners for all modal buttons (close, change plan, cancel)
-> - [ ] Implement loadAvailablePlans() for "Change Plan" dropdown (same operator only)
-> - [ ] Add "Manage" button on subscription card (opens action menu)
-> - [ ] Handle loading states during API calls
-> - [ ] Display error messages with toast notifications
-> - [ ] Show success messages after actions (plan change, cancellation)
-> - [ ] Implement syncUI() to update modals after actions
-> - [ ] Create subscription-specific CSS in css/default/subscriptions.css
-> - [ ] Create subscription-specific CSS in css/dark/subscriptions.css
-> - [ ] Add to config/styles.json for both theme directories
-> - [ ] Test subscription list load and pagination
-> - [ ] Test detail modal opens/closes correctly
-> - [ ] Test change plan flow (plan selection, preview, confirmation)
-> - [ ] Test cancel subscription flow (reason input, confirmation)
-> - [ ] Test responsive layout on mobile/tablet screens
-> - [ ] Test error handling (failed API calls, empty states)
-> - [ ] Test with multiple user roles (customer, operator, admin)
+> - [ ] Create plan-detail-modal.html component
+> - [ ] Create plan-detail-modal.js with show(), hide(), init() methods
+> - [ ] Implement API call using apiClient to GET /plans/{id}
+> - [ ] Display plan full description and all features
+> - [ ] Display pricing tiers (monthly/yearly with prices)
+> - [ ] Display terms and conditions section
+> - [ ] Add Subscribe Now button (link to Phase 4 subscription flow)
+> - [ ] Implement related plans section (fetch from same operator)
+> - [ ] Add modal open/close functionality
+> - [ ] Implement background click to close
+> - [ ] Add close button (X icon)
+> - [ ] Implement loading state (skeleton loaders)
+> - [ ] Implement error handling with toast notifications
+> - [ ] Create modal-specific CSS in css/default/ and css/dark/
+> - [ ] Add responsive modal sizing for mobile/tablet/desktop
+> - [ ] Implement keyboard navigation (Escape to close)
+> - [ ] Test modal opening/closing behavior
+> - [ ] Test on multiple screen sizes
 > 
 > # Reports:
 > *
