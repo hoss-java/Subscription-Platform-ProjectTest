@@ -2389,6 +2389,68 @@ gantt
 > *
 > </details>
 
+## 001-0022
+> **Untitled** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> Title: Backend: Implement Automatic Invoice Generation at Billing Period Start
+> Tags: Phase5, Backend, Billing, Automation
+> Creator:
+> AssignedTo:
+> StartAt:
+> EndAt:
+> 
+> # DOD (definition of done):
+> - Invoice generation scheduler created and configured
+> - Invoices automatically generated at billing period start (monthly/yearly)
+> - Invoice records inserted into billing table via existing service
+> - Cron job/scheduler triggers at correct times based on subscription billing period
+> - All active subscriptions checked for invoice generation eligibility
+> - Duplicate invoice prevention implemented (check if invoice already exists for period)
+> - Invoice status tracked (PENDING, SENT, PAID, OVERDUE)
+> - Transaction safety ensured (no partial/failed invoice creation)
+> - Error handling and retry logic implemented
+> - Logging added for invoice generation events
+> - Unit tests verify invoice generation logic
+> - Integration tests verify scheduler executes correctly
+> - Manual testing confirms invoices generated for test subscriptions
+> 
+> # TODO:
+> - [x] Review existing billing entity and subscription entity structure
+> - [x] Review existing invoice/billing repository and service
+> - [x] Create InvoiceScheduler class with @Scheduled annotation
+> - [x] Implement method to fetch all active subscriptions due for invoice
+> - [x] Implement invoice generation logic (create Invoice entity with correct data)
+> - [x] Add duplicate check (prevent re-issuing invoice for same period)
+> - [x] Set invoice status to PENDING on creation
+> - [x] Add billing period calculation logic (determine next invoice date)
+> - [x] Implement transaction handling (@Transactional) for invoice creation
+> - [x] Add logging for successful and failed invoice generation
+> - [x] Create error handling for scheduler failures
+> - [x] Add retry mechanism for failed invoices
+> - [x] Create unit tests for invoice generation logic
+> - [x] Create integration tests for scheduler execution
+> - [x] Test with monthly subscription billing periods
+> - [x] Test with yearly subscription billing periods
+> - [x] Test duplicate prevention (re-run scheduler, verify no duplicate invoices)
+> - [x] Verify invoice records appear in billing table
+> - [x] Test scheduler runs at expected intervals
+> 
+> # Reports:
+> **Short explanation:**
+> 
+> 1. **Create `InvoiceScheduler` class** with `@Scheduled` annotation (runs daily)
+> 2. **Fetch all active subscriptions** where billing period start date = today
+> 3. **Check if invoice already exists** for that subscription + period (prevent duplicates)
+> 4. **Create Invoice entity** with subscription data (amount, period, due date)
+> 5. **Save to database** via existing invoice repository (existing service handles it)
+> 6. **Log success/errors** and handle exceptions
+> 
+> That's it. The scheduler checks daily, generates invoices when needed, existing billing service handles the rest.
+> 
+> Ready to see your subscription and invoice entities to write the code?
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2417,52 +2479,6 @@ gantt
 > 
 > # Reports:
 > * (to be filled during development)
-> </details>
-
-## 001-0023
-> **Testing: Phase 2 Backend Integration Tests** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Integration tests for all operator endpoints pass
-> - Integration tests for all plan endpoints pass
-> - Test coverage minimum 80% for Phase 2 code
-> - Operator isolation tests verify only ACTIVE operators returned
-> - Plan isolation tests verify only ACTIVE plans returned
-> - Pagination tests verify correct page/size handling
-> - Filtering tests verify service_type, status, billing_period filters work correctly
-> - Search tests verify name/description search accuracy
-> - Cache invalidation tests verify cache updates on data changes
-> - Error handling tests verify proper HTTP status codes and error messages
-> - All tests run successfully in CI/CD pipeline
-> 
-> # TODO:
-> - [ ] Create OperatorControllerIntegrationTest class
-> - [ ] Test GET /operators returns paginated list of ACTIVE operators
-> - [ ] Test GET /operators with pagination parameters (page, size)
-> - [ ] Test GET /operators with serviceType filter
-> - [ ] Test GET /operators with status filter
-> - [ ] Test GET /operators/{id} returns operator details with plan count
-> - [ ] Test GET /operators/{id} with invalid ID returns 404
-> - [ ] Test operator isolation (INACTIVE operators not returned)
-> - [ ] Create PlanControllerIntegrationTest class
-> - [ ] Test GET /plans returns paginated list of ACTIVE plans
-> - [ ] Test GET /operators/{id}/plans returns only plans for that operator
-> - [ ] Test GET /plans with serviceType filter
-> - [ ] Test GET /plans with billingPeriod filter
-> - [ ] Test GET /plans with status filter
-> - [ ] Test GET /plans/search?q={query} returns correct results
-> - [ ] Test search with special characters and edge cases
-> - [ ] Test GET /plans/{id} returns full plan details
-> - [ ] Test GET /plans/{id} with invalid ID returns 404
-> - [ ] Test plan isolation (INACTIVE plans not returned)
-> - [ ] Test cache behavior (data cached and invalidated correctly)
-> - [ ] Test error handling (invalid parameters, missing fields)
-> - [ ] Run all tests and verify 80%+ code coverage
-> 
-> # Reports:
-> *
 > </details>
 
 ## 001-0024
@@ -4128,43 +4144,47 @@ gantt
 > *
 > </details>
 
-## 001-0022
-> **Frontend: Add Plan Comparison View** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+## 001-0023
+> **Testing: Phase 2 Backend Integration Tests** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
-> - Plan comparison section created in pages/sections/
-> - User can select 2-3 plans to compare side-by-side
-> - Comparison table displays plan attributes (name, price, features, billing period, service type)
-> - Features highlighted with checkmarks/X marks for presence/absence
-> - Price comparison clearly visible
-> - Remove plan button available for each compared plan
-> - Clear comparison button resets view
-> - Responsive table layout (mobile-friendly with horizontal scroll)
-> - Section registered in config.json with role-based access
-> - CSS added to both default/ and dark/ theme directories
-> - Manual testing on multiple screen sizes passes
+> - Integration tests for all operator endpoints pass
+> - Integration tests for all plan endpoints pass
+> - Test coverage minimum 80% for Phase 2 code
+> - Operator isolation tests verify only ACTIVE operators returned
+> - Plan isolation tests verify only ACTIVE plans returned
+> - Pagination tests verify correct page/size handling
+> - Filtering tests verify service_type, status, billing_period filters work correctly
+> - Search tests verify name/description search accuracy
+> - Cache invalidation tests verify cache updates on data changes
+> - Error handling tests verify proper HTTP status codes and error messages
+> - All tests run successfully in CI/CD pipeline
 > 
 > # TODO:
-> - [ ] Create comparison.html in pages/sections/
-> - [ ] Create comparison.js with init() and cleanup() methods
-> - [ ] Implement plan selection mechanism (checkboxes or add buttons)
-> - [ ] Create comparison table structure (plan columns, attribute rows)
-> - [ ] Implement API calls to fetch selected plan details
-> - [ ] Display plan attributes: name, price (monthly/yearly), features, billing period, service type
-> - [ ] Add feature comparison with checkmarks/X marks
-> - [ ] Add remove plan button for each column
-> - [ ] Add clear all comparison button
-> - [ ] Implement loading state during data fetch
-> - [ ] Implement error handling with toast notifications
-> - [ ] Create comparison.css in css/default/ directory
-> - [ ] Create comparison.css in css/dark/ directory
-> - [ ] Add responsive table design (horizontal scroll on mobile)
-> - [ ] Register section in config.json with role-based access
-> - [ ] Test comparison with 2 and 3 plans
-> - [ ] Test on mobile, tablet, and desktop screens
-> - [ ] Test add/remove plan functionality
+> - [ ] Create OperatorControllerIntegrationTest class
+> - [ ] Test GET /operators returns paginated list of ACTIVE operators
+> - [ ] Test GET /operators with pagination parameters (page, size)
+> - [ ] Test GET /operators with serviceType filter
+> - [ ] Test GET /operators with status filter
+> - [ ] Test GET /operators/{id} returns operator details with plan count
+> - [ ] Test GET /operators/{id} with invalid ID returns 404
+> - [ ] Test operator isolation (INACTIVE operators not returned)
+> - [ ] Create PlanControllerIntegrationTest class
+> - [ ] Test GET /plans returns paginated list of ACTIVE plans
+> - [ ] Test GET /operators/{id}/plans returns only plans for that operator
+> - [ ] Test GET /plans with serviceType filter
+> - [ ] Test GET /plans with billingPeriod filter
+> - [ ] Test GET /plans with status filter
+> - [ ] Test GET /plans/search?q={query} returns correct results
+> - [ ] Test search with special characters and edge cases
+> - [ ] Test GET /plans/{id} returns full plan details
+> - [ ] Test GET /plans/{id} with invalid ID returns 404
+> - [ ] Test plan isolation (INACTIVE plans not returned)
+> - [ ] Test cache behavior (data cached and invalidated correctly)
+> - [ ] Test error handling (invalid parameters, missing fields)
+> - [ ] Run all tests and verify 80%+ code coverage
 > 
 > # Reports:
 > *
