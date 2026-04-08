@@ -2348,6 +2348,47 @@ gantt
 > *
 > </details>
 
+## 001-0021
+> **Backend: Create Billing Entity, Repository, and Controller** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - Billing entity created with all required fields
+> - BillingStatus enum defined (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
+> - BillingPeriod enum extended for billing context if needed
+> - BillingRepository created with custom query methods
+> - BillingController created with CRUD and query endpoints
+> - Service layer (BillingService) created for business logic
+> - All endpoints return consistent JSON response structure
+> - Input validation on all request DTOs
+> - Error handling with appropriate HTTP status codes
+> - Role-based access control (customers see own billing, admins see all)
+> - Database migration/schema created
+> - Unit tests for repository and service layer
+> - Integration tests for controller endpoints
+> - API documentation/comments added
+> - Pagination implemented for list endpoints
+> - Filtering/sorting implemented for billing records
+> 
+> # TODO:
+> - [x] Create Billing entity with fields: id, subscriptionId, amount, currency, billingDate, dueDate, paidDate, status, invoiceNumber, notes, createdAt, updatedAt
+> - [x] Create BillingStatus enum (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
+> - [x] Create BillingDTO classes (BillingCreateRequest, BillingResponseDTO, BillingUpdateRequest)
+> - [x] Create BillingRepository interface with custom query methods
+> - [x] Implement custom queries: findBySubscriptionId(), findByUserId(), findByStatus(), findByDateRange()
+> - [x] Create BillingService interface with business logic methods
+> - [x] Implement BillingServiceImpl with create, retrieve, update, delete, search operations
+> - [x] Create BillingController with endpoints: POST, GET (by ID), GET (list with filters), PUT, DELETE
+> - [x] Implement role-based access control in controller (customer = own records, admin = all records)
+> - [x] Implement pagination for GET /billings endpoint
+> - [x] Write unit tests for BillingService
+> - [x] Write integration tests for BillingController endpoints
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2376,48 +2417,6 @@ gantt
 > 
 > # Reports:
 > * (to be filled during development)
-> </details>
-
-## 001-0022
-> **Frontend: Add Plan Comparison View** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Plan comparison section created in pages/sections/
-> - User can select 2-3 plans to compare side-by-side
-> - Comparison table displays plan attributes (name, price, features, billing period, service type)
-> - Features highlighted with checkmarks/X marks for presence/absence
-> - Price comparison clearly visible
-> - Remove plan button available for each compared plan
-> - Clear comparison button resets view
-> - Responsive table layout (mobile-friendly with horizontal scroll)
-> - Section registered in config.json with role-based access
-> - CSS added to both default/ and dark/ theme directories
-> - Manual testing on multiple screen sizes passes
-> 
-> # TODO:
-> - [ ] Create comparison.html in pages/sections/
-> - [ ] Create comparison.js with init() and cleanup() methods
-> - [ ] Implement plan selection mechanism (checkboxes or add buttons)
-> - [ ] Create comparison table structure (plan columns, attribute rows)
-> - [ ] Implement API calls to fetch selected plan details
-> - [ ] Display plan attributes: name, price (monthly/yearly), features, billing period, service type
-> - [ ] Add feature comparison with checkmarks/X marks
-> - [ ] Add remove plan button for each column
-> - [ ] Add clear all comparison button
-> - [ ] Implement loading state during data fetch
-> - [ ] Implement error handling with toast notifications
-> - [ ] Create comparison.css in css/default/ directory
-> - [ ] Create comparison.css in css/dark/ directory
-> - [ ] Add responsive table design (horizontal scroll on mobile)
-> - [ ] Register section in config.json with role-based access
-> - [ ] Test comparison with 2 and 3 plans
-> - [ ] Test on mobile, tablet, and desktop screens
-> - [ ] Test add/remove plan functionality
-> 
-> # Reports:
-> *
 > </details>
 
 ## 001-0023
@@ -4129,42 +4128,43 @@ gantt
 > *
 > </details>
 
-## 001-0021
-> **Backend: Create Billing Entity, Repository, and Controller** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+## 001-0022
+> **Frontend: Add Plan Comparison View** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
-> - Billing entity created with all required fields
-> - BillingStatus enum defined (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
-> - BillingPeriod enum extended for billing context if needed
-> - BillingRepository created with custom query methods
-> - BillingController created with CRUD and query endpoints
-> - Service layer (BillingService) created for business logic
-> - All endpoints return consistent JSON response structure
-> - Input validation on all request DTOs
-> - Error handling with appropriate HTTP status codes
-> - Role-based access control (customers see own billing, admins see all)
-> - Database migration/schema created
-> - Unit tests for repository and service layer
-> - Integration tests for controller endpoints
-> - API documentation/comments added
-> - Pagination implemented for list endpoints
-> - Filtering/sorting implemented for billing records
+> - Plan comparison section created in pages/sections/
+> - User can select 2-3 plans to compare side-by-side
+> - Comparison table displays plan attributes (name, price, features, billing period, service type)
+> - Features highlighted with checkmarks/X marks for presence/absence
+> - Price comparison clearly visible
+> - Remove plan button available for each compared plan
+> - Clear comparison button resets view
+> - Responsive table layout (mobile-friendly with horizontal scroll)
+> - Section registered in config.json with role-based access
+> - CSS added to both default/ and dark/ theme directories
+> - Manual testing on multiple screen sizes passes
 > 
 > # TODO:
-> - [x] Create Billing entity with fields: id, subscriptionId, amount, currency, billingDate, dueDate, paidDate, status, invoiceNumber, notes, createdAt, updatedAt
-> - [x] Create BillingStatus enum (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
-> - [x] Create BillingDTO classes (BillingCreateRequest, BillingResponseDTO, BillingUpdateRequest)
-> - [x] Create BillingRepository interface with custom query methods
-> - [x] Implement custom queries: findBySubscriptionId(), findByUserId(), findByStatus(), findByDateRange()
-> - [x] Create BillingService interface with business logic methods
-> - [x] Implement BillingServiceImpl with create, retrieve, update, delete, search operations
-> - [x] Create BillingController with endpoints: POST, GET (by ID), GET (list with filters), PUT, DELETE
-> - [x] Implement role-based access control in controller (customer = own records, admin = all records)
-> - [x] Implement pagination for GET /billings endpoint
-> - [x] Write unit tests for BillingService
-> - [x] Write integration tests for BillingController endpoints
+> - [ ] Create comparison.html in pages/sections/
+> - [ ] Create comparison.js with init() and cleanup() methods
+> - [ ] Implement plan selection mechanism (checkboxes or add buttons)
+> - [ ] Create comparison table structure (plan columns, attribute rows)
+> - [ ] Implement API calls to fetch selected plan details
+> - [ ] Display plan attributes: name, price (monthly/yearly), features, billing period, service type
+> - [ ] Add feature comparison with checkmarks/X marks
+> - [ ] Add remove plan button for each column
+> - [ ] Add clear all comparison button
+> - [ ] Implement loading state during data fetch
+> - [ ] Implement error handling with toast notifications
+> - [ ] Create comparison.css in css/default/ directory
+> - [ ] Create comparison.css in css/dark/ directory
+> - [ ] Add responsive table design (horizontal scroll on mobile)
+> - [ ] Register section in config.json with role-based access
+> - [ ] Test comparison with 2 and 3 plans
+> - [ ] Test on mobile, tablet, and desktop screens
+> - [ ] Test add/remove plan functionality
 > 
 > # Reports:
 > *
