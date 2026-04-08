@@ -22,4 +22,6 @@ public interface BillingRepository extends JpaRepository<Billing, Long> {
     List<Billing> findByStatusAndDueDateBefore(BillingStatus status, LocalDateTime dueDate);
     
     Optional<Billing> findByIdAndSubscriptionUserId(Long id, Long userId);
+
+    Optional<Billing> findBySubscriptionIdAndBillingDateBetween(Long subscriptionId, LocalDateTime startDate, LocalDateTime endDate);
 }

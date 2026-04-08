@@ -2,6 +2,7 @@ package com.subscriptionapi.service;
 
 import com.subscriptionapi.dto.SubscriptionCreateRequest;
 import com.subscriptionapi.dto.SubscriptionResponseDTO;
+import com.subscriptionapi.dto.BillingCreateRequest;
 import com.subscriptionapi.entity.Plan;
 import com.subscriptionapi.entity.Subscription;
 import com.subscriptionapi.entity.SubscriptionStatus;
@@ -10,6 +11,8 @@ import com.subscriptionapi.exception.ResourceNotFoundException;
 import com.subscriptionapi.repository.PlanRepository;
 import com.subscriptionapi.repository.SubscriptionRepository;
 import com.subscriptionapi.repository.UserRepository;
+import com.subscriptionapi.service.BillingService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +30,7 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final BillingService billingService;
     
     @Transactional
     public SubscriptionResponseDTO createSubscription(Long userId, SubscriptionCreateRequest request) {
@@ -106,6 +110,10 @@ public class SubscriptionService {
         subscription.setUpdatedAt(LocalDateTime.now());
         
         Subscription updatedSubscription = subscriptionRepository.save(subscription);
+        
+        // Generate first billing when subscription is approved
+        generateFirstBilling(updatedSubscription);
+        
         log.info("Subscription approved");
         
         return mapToDTO(updatedSubscription);
@@ -168,4 +176,24 @@ public class SubscriptionService {
         return subscriptionRepository.findByOperatorIdAndStatus(operatorId, status, pageable)
                 .map(this::mapToDTO);
     }
+
+    private void generateFirstBilling(Subscription subscription) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime dueDate = now.plusDays(15);
+            
+            BillingCreateRequest billingRequest = BillingCreateRequest.builder()
+                    .subscriptionId(subscription.getId())
+                    .amount(subscription.getPlan().getBasePrice())
+                    .billingDate(now)
+                    .dueDate(dueDate)
+                    .build();
+            
+            billingService.createBilling(billingRequest);
+            log.info("First billing created for subscription ID: {}", subscription.getId());
+        } catch (Exception e) {
+            log.error("Error creating first billing for subscription ID: {}", subscription.getId(), e);
+        }
+    }
+
 }

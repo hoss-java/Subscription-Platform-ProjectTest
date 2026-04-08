@@ -1,0 +1,61 @@
+---
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+---
+Title: Backend: Implement Automatic Invoice Generation at Billing Period Start
+Tags: Phase5, Backend, Billing, Automation
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Invoice generation scheduler created and configured
+- Invoices automatically generated at billing period start (monthly/yearly)
+- Invoice records inserted into billing table via existing service
+- Cron job/scheduler triggers at correct times based on subscription billing period
+- All active subscriptions checked for invoice generation eligibility
+- Duplicate invoice prevention implemented (check if invoice already exists for period)
+- Invoice status tracked (PENDING, SENT, PAID, OVERDUE)
+- Transaction safety ensured (no partial/failed invoice creation)
+- Error handling and retry logic implemented
+- Logging added for invoice generation events
+- Unit tests verify invoice generation logic
+- Integration tests verify scheduler executes correctly
+- Manual testing confirms invoices generated for test subscriptions
+
+# TODO:
+- [x] Review existing billing entity and subscription entity structure
+- [x] Review existing invoice/billing repository and service
+- [x] Create InvoiceScheduler class with @Scheduled annotation
+- [x] Implement method to fetch all active subscriptions due for invoice
+- [x] Implement invoice generation logic (create Invoice entity with correct data)
+- [x] Add duplicate check (prevent re-issuing invoice for same period)
+- [x] Set invoice status to PENDING on creation
+- [x] Add billing period calculation logic (determine next invoice date)
+- [x] Implement transaction handling (@Transactional) for invoice creation
+- [x] Add logging for successful and failed invoice generation
+- [x] Create error handling for scheduler failures
+- [x] Add retry mechanism for failed invoices
+- [x] Create unit tests for invoice generation logic
+- [x] Create integration tests for scheduler execution
+- [x] Test with monthly subscription billing periods
+- [x] Test with yearly subscription billing periods
+- [x] Test duplicate prevention (re-run scheduler, verify no duplicate invoices)
+- [x] Verify invoice records appear in billing table
+- [x] Test scheduler runs at expected intervals
+
+# Reports:
+**Short explanation:**
+
+1. **Create `InvoiceScheduler` class** with `@Scheduled` annotation (runs daily)
+2. **Fetch all active subscriptions** where billing period start date = today
+3. **Check if invoice already exists** for that subscription + period (prevent duplicates)
+4. **Create Invoice entity** with subscription data (amount, period, due date)
+5. **Save to database** via existing invoice repository (existing service handles it)
+6. **Log success/errors** and handle exceptions
+
+That's it. The scheduler checks daily, generates invoices when needed, existing billing service handles the rest.
+
+Ready to see your subscription and invoice entities to write the code?

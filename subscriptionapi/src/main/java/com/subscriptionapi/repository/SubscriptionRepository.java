@@ -5,8 +5,6 @@ import com.subscriptionapi.entity.SubscriptionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,21 +19,24 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     // Find subscriptions by operator
     Page<Subscription> findByOperatorId(Long operatorId, Pageable pageable);
     
-    // Find subscriptions by status
+    // Find subscriptions by status with pagination
     Page<Subscription> findByStatus(SubscriptionStatus status, Pageable pageable);
     
-    // Find subscriptions by user and status
+    // Find all subscriptions by status without pagination
+    List<Subscription> findByStatus(SubscriptionStatus status);
+    
+    // Find subscriptions by user and status with pagination
     Page<Subscription> findByUserIdAndStatus(Long userId, SubscriptionStatus status, Pageable pageable);
 
-    // Find subscriptions by plan
+    // Find subscriptions by plan with pagination
     Page<Subscription> findByPlanId(Long planId, Pageable pageable);
     
-    // Find active subscriptions for a user
+    // Find active subscriptions for a user without pagination
     List<Subscription> findByUserIdAndStatus(Long userId, SubscriptionStatus status);
     
     // Find subscription by user and plan
     Optional<Subscription> findByUserIdAndPlanId(Long userId, Long planId);
     
-    // Find pending subscriptions for operator
+    // Find pending subscriptions for operator with pagination
     Page<Subscription> findByOperatorIdAndStatus(Long operatorId, SubscriptionStatus status, Pageable pageable);
 }

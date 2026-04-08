@@ -48,7 +48,7 @@
       "name": "subscriptionsman",
       "path": "pages/sections/subscriptionsman.html",
       "title": "Manage Subscriptions",
-      "script": "SubscriptionsManagerSection",
+      "script": "SubscriptionsmanSection",
       "icon": "clipboard",
       "roles": ["operator"]
     },
