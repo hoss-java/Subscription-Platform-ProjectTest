@@ -69,14 +69,6 @@
       "roles": ["admin"]
     },
     {
-      "name": "admin-plans",
-      "path": "pages/sections/admin-plans.html",
-      "title": "Manage Plans",
-      "script": "AdminPlansSection",
-      "icon": "cog",
-      "roles": ["admin"]
-    },
-    {
       "name": "operator",
       "path": "pages/sections/operator.html",
       "title": "My Plans",

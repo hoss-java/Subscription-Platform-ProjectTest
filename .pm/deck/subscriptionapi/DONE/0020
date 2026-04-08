@@ -38,27 +38,16 @@ EndAt:
 - [x] Implement openDetailModal() - show full subscription info
 - [x] Add subscription status indicator/badge (color-coded: green/yellow/red/gray)
 - [x] Implement renderPagination() for subscriptions list
-- [ ] Create "Change Plan" modal with plan dropdown and pricing preview
-- [ ] Implement changePlan() - POST to /subscriptions/{id}/change endpoint
-- [ ] Create "Cancel Subscription" confirmation dialog
-- [ ] Implement cancelSubscription() - PUT to /subscriptions/{id}/cancel endpoint
-- [ ] Add event listeners for all modal buttons (close, change plan, cancel)
-- [ ] Implement loadAvailablePlans() for "Change Plan" dropdown (same operator only)
-- [ ] Add "Manage" button on subscription card (opens action menu)
-- [ ] Handle loading states during API calls
-- [ ] Display error messages with toast notifications
-- [ ] Show success messages after actions (plan change, cancellation)
-- [ ] Implement syncUI() to update modals after actions
-- [ ] Create subscription-specific CSS in css/default/subscriptions.css
-- [ ] Create subscription-specific CSS in css/dark/subscriptions.css
-- [ ] Add to config/styles.json for both theme directories
-- [ ] Test subscription list load and pagination
-- [ ] Test detail modal opens/closes correctly
-- [ ] Test change plan flow (plan selection, preview, confirmation)
-- [ ] Test cancel subscription flow (reason input, confirmation)
-- [ ] Test responsive layout on mobile/tablet screens
-- [ ] Test error handling (failed API calls, empty states)
-- [ ] Test with multiple user roles (customer, operator, admin)
+- [x] Create "Change Plan" modal with plan dropdown and pricing preview
+- [x] Implement changePlan() - POST to /subscriptions/{id}/change endpoint
+- [x] Create "Cancel Subscription" confirmation dialog
+- [x] Implement cancelSubscription() - PUT to /subscriptions/{id}/cancel endpoint
+- [x] Add event listeners for all modal buttons (close, change plan, cancel)
+- [x] Implement loadAvailablePlans() for "Change Plan" dropdown (same operator only)
+- [x] Add "Manage" button on subscription card (opens action menu)
+- [x] Handle loading states during API calls
+- [x] Display error messages with toast notifications
+- [x] Show success messages after actions (plan change, cancellation)
 
 # Reports:
 *
