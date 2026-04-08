@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/subscriptions")
 @RequiredArgsConstructor
@@ -25,7 +28,15 @@ public class SubscriptionController {
     
     private final SubscriptionService subscriptionService;
     private final UserRepository userRepository;
-    
+
+    @GetMapping("/subscription-statuses")
+    public ResponseEntity<List<String>> getSubscriptionStatuses() {
+        List<String> statuses = Arrays.stream(SubscriptionStatus.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(statuses);
+    }
+
     /**
      * Create new subscription (CUSTOMER only)
      */
@@ -160,5 +171,35 @@ public class SubscriptionController {
             @RequestParam(required = false) String reason) {
         SubscriptionResponseDTO subscription = subscriptionService.cancelSubscription(id, reason);
         return ResponseEntity.ok(subscription);
+    }
+
+    @GetMapping("/my-subscriptions/search")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Page<SubscriptionResponseDTO>> searchMySubscriptions(
+            @RequestParam String q,
+            Pageable pageable) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        Long userId = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"))
+                .getId();
+        
+        Page<SubscriptionResponseDTO> subscriptions = subscriptionService.searchUserSubscriptions(userId, q, pageable);
+        return ResponseEntity.ok(subscriptions);
+    }
+
+    @GetMapping("/my-subscriptions/filter")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Page<SubscriptionResponseDTO>> filterMySubscriptionsByServiceType(
+            @RequestParam String serviceType,
+            Pageable pageable) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        Long userId = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"))
+                .getId();
+        
+        Page<SubscriptionResponseDTO> subscriptions = subscriptionService.filterUserSubscriptionsByServiceType(userId, serviceType, pageable);
+        return ResponseEntity.ok(subscriptions);
     }
 }

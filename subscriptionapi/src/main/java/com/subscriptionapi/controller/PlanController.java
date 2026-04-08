@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/plans")
 @RequiredArgsConstructor
@@ -27,6 +30,14 @@ public class PlanController {
     
     private final PlanService planService;
     private final UserRepository userRepository;
+
+    @GetMapping("/service-types")
+    public ResponseEntity<List<String>> getServiceTypes() {
+        List<String> serviceTypes = Arrays.stream(ServiceType.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(serviceTypes);
+    }
     
     /**
      * Get all active plans with pagination

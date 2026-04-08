@@ -31,7 +31,7 @@ public class Billing {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Subscription subscription;
-    
+
     @Column(nullable = false)
     @NotNull(message = "Amount cannot be null")
     @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than 0")

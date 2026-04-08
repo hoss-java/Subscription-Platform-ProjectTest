@@ -1,6 +1,7 @@
 /* Modal Overlay - Default Theme */
 
 .modal-overlay {
+  overflow-y: auto;
   display: none;
   position: fixed;
   top: 0;
@@ -114,4 +115,12 @@
   .modal-footer .btn {
     width: 100%;
   }
+}
+
+.modal-view {
+  display: none;
+}
+
+.modal-view.active {
+  display: block;
 }

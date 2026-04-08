@@ -64,3 +64,8 @@ button {
   padding: 5px 10px;
   font-size: 12px;
 }
+
+.action-separator {
+  margin: 0 8px;
+  color: #ccc;
+}

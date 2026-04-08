@@ -2,12 +2,39 @@ const OperatorSection = {
   currentPlanId: null,
   plans: [],
   isEditMode: false,
+  serviceTypes: [],
+  billingPeriods: [],
+
 
   init() {
     setTimeout(() => {
       this.attachEventListeners();
+      this.loadServiceTypes();
+      this.loadBillingPeriods();
       this.loadPlans();
     }, 100);
+  },
+
+  async loadServiceTypes() {
+    try {
+      const response = await apiClient.get('/plans/service-types');
+      if (Array.isArray(response)) {
+        this.serviceTypes = response;
+      }
+    } catch (error) {
+      console.error('Error loading service types:', error);
+    }
+  },
+
+  async loadBillingPeriods() {
+    try {
+      const response = await apiClient.get('/billings/billing-periods');
+      if (Array.isArray(response)) {
+        this.billingPeriods = response;
+      }
+    } catch (error) {
+      console.error('Error loading billing periods:', error);
+    }
   },
 
   attachEventListeners() {
@@ -70,83 +97,83 @@ const OperatorSection = {
     }
   },
 
-renderPlans() {
-  const container = document.getElementById('operator-plans-container');
-  const table = document.createElement('table');
-  table.className = 'operator-plans-table';
-  
-  const thead = document.createElement('thead');
-  const headerRow = document.createElement('tr');
-  
-  const headers = ['Name', 'Description', 'Service Type', 'Base Price', 'Billing Period', 'Status', 'Created', 'Actions'];
-  headers.forEach(headerText => {
-    const th = document.createElement('th');
-    th.textContent = headerText;
-    headerRow.appendChild(th);
-  });
-  
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-  
-  const tbody = document.createElement('tbody');
-  
-  this.plans.forEach(plan => {
-    const row = document.createElement('tr');
+  renderPlans() {
+    const container = document.getElementById('operator-plans-container');
+    const table = document.createElement('table');
+    table.className = 'operator-plans-table';
     
-    const createdDate = new Date(plan.createdAt).toLocaleDateString();
-    const statusClass = plan.status === 'ACTIVE' ? 'badge-success' : 'badge-danger';
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
     
-    const nameCell = document.createElement('td');
-    nameCell.textContent = this.escapeHtml(plan.name);
-    row.appendChild(nameCell);
-    
-    const descCell = document.createElement('td');
-    descCell.textContent = this.escapeHtml(plan.description || 'N/A');
-    row.appendChild(descCell);
-    
-    const serviceTypeCell = document.createElement('td');
-    serviceTypeCell.textContent = plan.serviceType || 'N/A';
-    row.appendChild(serviceTypeCell);
-    
-    const priceCell = document.createElement('td');
-    priceCell.textContent = `$${plan.basePrice}`;
-    row.appendChild(priceCell);
-    
-    const billingCell = document.createElement('td');
-    billingCell.textContent = plan.billingPeriod || 'N/A';
-    row.appendChild(billingCell);
-    
-    const statusCell = document.createElement('td');
-    const statusBadge = document.createElement('span');
-    statusBadge.className = `badge ${statusClass}`;
-    statusBadge.textContent = plan.status || 'N/A';
-    statusCell.appendChild(statusBadge);
-    row.appendChild(statusCell);
-    
-    const createdCell = document.createElement('td');
-    createdCell.textContent = createdDate;
-    row.appendChild(createdCell);
-    
-    const actionsCell = document.createElement('td');
-    
-    const editBtn = document.createElement('button');
-    editBtn.className = 'btn btn-sm btn-primary';
-    editBtn.textContent = 'Edit';
-    editBtn.dataset.planId = plan.id;
-    editBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.openPlanModal(plan.id);
+    const headers = ['Name', 'Description', 'Service Type', 'Base Price', 'Billing Period', 'Status', 'Created', 'Actions'];
+    headers.forEach(headerText => {
+      const th = document.createElement('th');
+      th.textContent = headerText;
+      headerRow.appendChild(th);
     });
-    actionsCell.appendChild(editBtn);
     
-    row.appendChild(actionsCell);
-    tbody.appendChild(row);
-  });
-  
-  table.appendChild(tbody);
-  container.innerHTML = '';
-  container.appendChild(table);
-},
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    const tbody = document.createElement('tbody');
+    
+    this.plans.forEach(plan => {
+      const row = document.createElement('tr');
+      
+      const createdDate = new Date(plan.createdAt).toLocaleDateString();
+      const statusClass = plan.status === 'ACTIVE' ? 'badge-success' : 'badge-danger';
+      
+      const nameCell = document.createElement('td');
+      nameCell.textContent = this.escapeHtml(plan.name);
+      row.appendChild(nameCell);
+      
+      const descCell = document.createElement('td');
+      descCell.textContent = this.escapeHtml(plan.description || 'N/A');
+      row.appendChild(descCell);
+      
+      const serviceTypeCell = document.createElement('td');
+      serviceTypeCell.textContent = plan.serviceType || 'N/A';
+      row.appendChild(serviceTypeCell);
+      
+      const priceCell = document.createElement('td');
+      priceCell.textContent = `$${plan.basePrice}`;
+      row.appendChild(priceCell);
+      
+      const billingCell = document.createElement('td');
+      billingCell.textContent = plan.billingPeriod || 'N/A';
+      row.appendChild(billingCell);
+      
+      const statusCell = document.createElement('td');
+      const statusBadge = document.createElement('span');
+      statusBadge.className = `badge ${statusClass}`;
+      statusBadge.textContent = plan.status || 'N/A';
+      statusCell.appendChild(statusBadge);
+      row.appendChild(statusCell);
+      
+      const createdCell = document.createElement('td');
+      createdCell.textContent = createdDate;
+      row.appendChild(createdCell);
+      
+      const actionsCell = document.createElement('td');
+      
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn btn-sm btn-primary';
+      editBtn.textContent = 'Edit';
+      editBtn.dataset.planId = plan.id;
+      editBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openPlanModal(plan.id);
+      });
+      actionsCell.appendChild(editBtn);
+      
+      row.appendChild(actionsCell);
+      tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    container.innerHTML = '';
+    container.appendChild(table);
+  },
 
   openPlanModal(planId) {
     const plan = planId ? this.plans.find(p => p.id === planId) : null;
@@ -199,8 +226,7 @@ renderPlans() {
     serviceTypeSelect.className = 'form-control';
     serviceTypeSelect.required = true;
     
-    const serviceTypes = ['INTERNET', 'MOBILE', 'BUNDLE'];
-    serviceTypes.forEach(type => {
+    this.serviceTypes.forEach(type => {
       const option = document.createElement('option');
       option.value = type;
       option.textContent = type;
@@ -239,8 +265,7 @@ renderPlans() {
     billingSelect.className = 'form-control';
     billingSelect.required = true;
     
-    const billingPeriods = ['MONTHLY', 'QUARTERLY', 'YEARLY'];
-    billingPeriods.forEach(period => {
+    this.billingPeriods.forEach(period => {
       const option = document.createElement('option');
       option.value = period;
       option.textContent = period;

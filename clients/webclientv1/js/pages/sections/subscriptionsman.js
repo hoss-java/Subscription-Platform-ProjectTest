@@ -20,8 +20,13 @@ const SubscriptionsmanSection = {
       const statusDropdown = document.getElementById('subscriptions-manager-status-filter');
       if (!statusDropdown) return;
 
-      const statuses = ['PENDING', 'ACTIVE', 'SUSPENDED', 'CANCELED', 'EXPIRED'];
+      const response = await apiClient.get('/subscriptions/subscription-statuses');
       
+      let statuses = [];
+      if (Array.isArray(response)) {
+        statuses = response;
+      }
+
       statusDropdown.innerHTML = '<option value="">All Statuses</option>';
       statuses.forEach(status => {
         const option = document.createElement('option');

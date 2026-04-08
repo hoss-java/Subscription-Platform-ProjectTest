@@ -55,18 +55,14 @@ const PlansSection = {
 
   async loadServiceTypes() {
     try {
-      const response = await apiClient.get('/plans?page=0&size=1000');
+      const response = await apiClient.get('/plans/service-types');
       
-      let plans = [];
-      if (response.content && Array.isArray(response.content)) {
-        plans = response.content;
-      } else if (Array.isArray(response)) {
-        plans = response;
+      let serviceTypes = [];
+      if (Array.isArray(response)) {
+        serviceTypes = response;
       }
 
-      const serviceTypes = [...new Set(plans.map(p => p.serviceType).filter(Boolean))];
       serviceTypes.sort();
-
       this.populateServiceTypeDropdown(serviceTypes);
     } catch (error) {
       console.error('Error loading service types:', error);

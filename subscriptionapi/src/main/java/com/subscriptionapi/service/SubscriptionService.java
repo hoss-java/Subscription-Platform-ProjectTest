@@ -151,6 +151,16 @@ public class SubscriptionService {
         
         return mapToDTO(updatedSubscription);
     }
+
+    public Page<SubscriptionResponseDTO> searchUserSubscriptions(Long userId, String query, Pageable pageable) {
+        return subscriptionRepository.findByUserIdAndPlanNameContainingIgnoreCase(userId, query, pageable)
+                .map(this::mapToDTO);
+    }
+
+    public Page<SubscriptionResponseDTO> filterUserSubscriptionsByServiceType(Long userId, String serviceType, Pageable pageable) {
+        return subscriptionRepository.findByUserIdAndPlanServiceType(userId, serviceType, pageable)
+                .map(this::mapToDTO);
+    }
     
     private SubscriptionResponseDTO mapToDTO(Subscription subscription) {
         return SubscriptionResponseDTO.builder()

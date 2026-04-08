@@ -1,0 +1,47 @@
+---
+# Billing/Invoices Management Section - Operator Frontend
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Frontend: Operator Billing/Invoices Management Section
+Tags: Phase2, Frontend, Billing, Operator
+Creator:
+AssignedTo:
+StartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Billing section HTML file created in pages/sections/
+- Billing section JS file created in js/pages/sections/
+- Section registered in config.json with operator role access
+- Invoice list displays all invoices for logged-in operator
+- Invoice detail modal shows full invoice information
+- Invoice status change functionality works correctly
+- Loading states displayed during data fetch
+- Error handling with toast notifications
+- CSS files created in both default/ and dark/ theme directories
+- Responsive design tested on mobile/tablet/desktop
+- All API calls use apiClient without /api prefix
+- Section follows existing dashboard section pattern
+
+# TODO:
+- [x] Create billing.html in pages/sections/
+- [x] Create billing.js in js/pages/sections/ with init() and cleanup() methods
+- [x] Register billing section in config.json (operator role only)
+- [x] Implement invoice list table with columns (ID, Date, Amount, Status, Actions)
+- [x] Implement GET /invoices endpoint call to fetch operator invoices
+- [x] Add loading state during invoice fetch
+- [x] Create invoice detail modal window component
+- [x] Implement modal trigger on "View" action button
+- [x] Display invoice details in modal (ID, Date, Amount, Status, Items, Description)
+- [x] Add "Change Status" dropdown in modal
+- [x] Implement PUT /invoices/{id}/status endpoint call
+- [x] Add success/error toast notifications for status changes
+- [x] Create CSS for billing section in css/default/
+- [x] Create CSS for billing section in css/dark/
+- [x] Add billing.css to config/styles.json
+- [x] Verify theme switching works for billing section
+
+# Reports:
+*

@@ -53,6 +53,14 @@
       "roles": ["operator"]
     },
     {
+      "name": "billmanager",
+      "path": "pages/sections/billmanager.html",
+      "title": "Bill Manager",
+      "script": "BillmanagerSection",
+      "icon": "file-invoice",
+      "roles": ["operator"]
+    },
+    {
       "name": "plans",
       "path": "pages/sections/plans.html",
       "title": "Available Plans",

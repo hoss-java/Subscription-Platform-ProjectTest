@@ -39,4 +39,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     
     // Find pending subscriptions for operator with pagination
     Page<Subscription> findByOperatorIdAndStatus(Long operatorId, SubscriptionStatus status, Pageable pageable);
+
+    Page<Subscription> findByUserIdAndPlanNameContainingIgnoreCase(Long userId, String planName, Pageable pageable);
+
+    Page<Subscription> findByUserIdAndPlanServiceType(Long userId, String serviceType, Pageable pageable);
 }

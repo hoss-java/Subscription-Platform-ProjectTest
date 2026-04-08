@@ -7,13 +7,19 @@ const MysubscriptionsSection = {
   currentServiceType: '',
   currentSearchQuery: '',
   currentSubscriptionId: null,
+  // Add these properties to the object at the top
+  currentBillsStatusFilter: '',
+  billingStatuses: ['PENDING', 'PAID', 'FAILED', 'REFUNDED', 'CANCELLED'],
+
 
   async init() {
     setTimeout(async () => {
       this.attachEventListeners();
       await this.loadServiceTypes();
-      await this.loadPlans();  // ← ADD THIS LINE
+      await this.loadBillingStatuses();
+      await this.loadPlans();
       await this.loadSubscriptions();
+      await this.initAllBillsSection();
     }, 100);
   },
 
@@ -42,18 +48,14 @@ const MysubscriptionsSection = {
 
   async loadServiceTypes() {
     try {
-      const response = await apiClient.get('/subscriptions/my-subscriptions?page=0&size=1000');
+      const response = await apiClient.get('/plans/service-types');
       
-      let subscriptions = [];
-      if (response.content && Array.isArray(response.content)) {
-        subscriptions = response.content;
-      } else if (Array.isArray(response)) {
-        subscriptions = response;
+      let serviceTypes = [];
+      if (Array.isArray(response)) {
+        serviceTypes = response;
       }
 
-      const serviceTypes = [...new Set(subscriptions.map(s => s.serviceType).filter(Boolean))];
       serviceTypes.sort();
-
       this.populateServiceTypeDropdown(serviceTypes);
     } catch (error) {
       console.error('Error loading service types:', error);
@@ -79,6 +81,7 @@ const MysubscriptionsSection = {
     const refreshBtn = document.getElementById('mysubscriptions-refresh-btn');
     const detailCloseBtn = document.getElementById('mysubscriptions-detail-close-btn');
     const detailCloseBtnFooter = document.getElementById('mysubscriptions-detail-close-footer-btn');
+    const billsStatusFilter = document.getElementById('mysubscriptions-bills-status-filter');
 
     if (serviceTypeFilter) {
       serviceTypeFilter.addEventListener('change', (e) => {
@@ -121,6 +124,15 @@ const MysubscriptionsSection = {
         this.closeDetailModal();
       });
     }
+
+
+    if (billsStatusFilter) {
+      billsStatusFilter.addEventListener('change', (e) => {
+        this.currentBillsStatusFilter = e.target.value;
+        this.loadUnpaidBills(document.getElementById('mysubscriptions-bills-section'));
+      });
+    }
+
   },
 
   populateServiceTypeDropdown(serviceTypes) {
@@ -345,101 +357,280 @@ const MysubscriptionsSection = {
     paginationContainer.appendChild(nextBtn);
   },
 
-  async openDetailModal(subscriptionId) {
-    console.debug('[MySubscriptionsSection] openDetailModal called with subscriptionId:', subscriptionId);
-    
-    this.currentSubscriptionId = subscriptionId;
-    const modal = document.getElementById('mysubscriptions-detail-modal');
-    const detailContent = document.getElementById('mysubscriptions-detail-content');
-    const billsSection = document.getElementById('mysubscriptions-bills-section');
+async openDetailModal(subscriptionId) {
+  console.debug('[MySubscriptionsSection] openDetailModal called with subscriptionId:', subscriptionId);
+  
+  this.currentSubscriptionId = subscriptionId;
+  const modal = document.getElementById('mysubscriptions-detail-modal');
+  const detailContent = document.getElementById('mysubscriptions-detail-content');
+  const billsSection = document.getElementById('mysubscriptions-bills-section');
 
-    if (!modal || !detailContent) {
-      return;
+  if (!modal || !detailContent) {
+    return;
+  }
+
+  detailContent.innerHTML = '<p class="loading-message">Loading subscription details...</p>';
+  modal.classList.add('active');
+  
+  // Make sure we're on the subscription detail view
+  this.switchModalView('subscription-detail');
+
+  try {
+    const response = await apiClient.get(`/subscriptions/${subscriptionId}`);
+    
+    let subscription = response;
+    if (response.data) {
+      subscription = response.data;
     }
 
-    detailContent.innerHTML = '<p class="loading-message">Loading subscription details...</p>';
-    modal.classList.add('active');
+    // Fetch plan details if not already cached
+    let plan = this.plansMap[subscription.planId];
+    if (!plan && subscription.planId) {
+      await this.fetchPlanData(subscription.planId);
+      plan = this.plansMap[subscription.planId];
+    }
 
-    try {
-      const response = await apiClient.get(`/subscriptions/${subscriptionId}`);
-      
-      let subscription = response;
-      if (response.data) {
-        subscription = response.data;
+    const operatorName = subscription.operatorName || plan?.operatorName || 'N/A';
+    const serviceType = subscription.serviceType || plan?.serviceType || 'N/A';
+
+    document.getElementById('mysubscriptions-detail-title').textContent = `${subscription.planName} - ${operatorName}`;
+
+    let featuresList = [];
+    if (plan && plan.features) {
+      try {
+        const parsed = JSON.parse(plan.features);
+        featuresList = Array.isArray(parsed) ? parsed : [plan.features];
+      } catch {
+        featuresList = plan.features.split(',').map(f => f.trim());
       }
+    }
 
-      // Fetch plan details if not already cached
-      let plan = this.plansMap[subscription.planId];
-      if (!plan && subscription.planId) {
-        await this.fetchPlanData(subscription.planId);
-        plan = this.plansMap[subscription.planId];
-      }
+    detailContent.innerHTML = `
+      <div class="plan-detail-info">
+        <p><strong>Operator:</strong> ${this.escapeHtml(operatorName)}</p>
+        <p><strong>Plan:</strong> ${this.escapeHtml(subscription.planName || 'N/A')}</p>
+        <p><strong>Service Type:</strong> ${this.escapeHtml(serviceType)}</p>
+        <p><strong>Status:</strong> ${subscription.status || 'N/A'}</p>
+        <p><strong>Price:</strong> ${plan && plan.basePrice ? `$${plan.basePrice} / ${plan.billingPeriod || 'N/A'}` : 'N/A'}</p>
+        <p><strong>Description:</strong> ${this.escapeHtml(plan?.description || subscription.description || 'No description')}</p>
+        <p><strong>Start Date:</strong> ${subscription.startDate || 'N/A'}</p>
+        <p><strong>Next Billing Date:</strong> ${subscription.nextBillingDate || 'N/A'}</p>
+        <div class="plan-detail-features">
+          <strong>Features:</strong>
+          <ul id="subscription-detail-features-list"></ul>
+        </div>
+      </div>
+    `;
 
-      // Get operator name and service type from subscription or plan
-      const operatorName = subscription.operatorName || plan?.operatorName || 'N/A';
-      const serviceType = subscription.serviceType || plan?.serviceType || 'N/A';
+    const featuresList_element = document.getElementById('subscription-detail-features-list');
+    if (featuresList.length > 0) {
+      featuresList.forEach(feature => {
+        const li = document.createElement('li');
+        li.textContent = this.escapeHtml(feature);
+        featuresList_element.appendChild(li);
+      });
+    } else {
+      featuresList_element.innerHTML = '<li>No features listed</li>';
+    }
 
-      document.getElementById('mysubscriptions-detail-title').textContent = `${subscription.planName} - ${operatorName}`;
+    // Load unpaid bills
+    this.loadUnpaidBills(billsSection);
 
-      // Build features list from plan data
-      let featuresList = [];
-      if (plan && plan.features) {
-        try {
-          const parsed = JSON.parse(plan.features);
-          featuresList = Array.isArray(parsed) ? parsed : [plan.features];
-        } catch {
-          featuresList = plan.features.split(',').map(f => f.trim());
-        }
-      }
+  } catch (error) {
+    console.error('[MySubscriptionsSection] Error loading subscription details:', error);
+    detailContent.innerHTML = `<p class="error-message">Error loading subscription details: ${error.message}</p>`;
+    
+    const uiController = UIController.getInstance();
+    uiController.showMessage(`Error loading subscription details: ${error.message}`, 'error');
+  }
+},
 
-      detailContent.innerHTML = `
-        <div class="plan-detail-info">
-          <p><strong>Operator:</strong> ${this.escapeHtml(operatorName)}</p>
-          <p><strong>Plan:</strong> ${this.escapeHtml(subscription.planName || 'N/A')}</p>
-          <p><strong>Service Type:</strong> ${this.escapeHtml(serviceType)}</p>
-          <p><strong>Status:</strong> ${subscription.status || 'N/A'}</p>
-          <p><strong>Price:</strong> ${plan && plan.basePrice ? `$${plan.basePrice} / ${plan.billingPeriod || 'N/A'}` : 'N/A'}</p>
-          <p><strong>Description:</strong> ${this.escapeHtml(plan?.description || subscription.description || 'No description')}</p>
-          <p><strong>Start Date:</strong> ${subscription.startDate || 'N/A'}</p>
-          <p><strong>Next Billing Date:</strong> ${subscription.nextBillingDate || 'N/A'}</p>
-          <div class="plan-detail-features">
-            <strong>Features:</strong>
-            <ul id="subscription-detail-features-list"></ul>
+// New method to switch between views
+switchModalView(viewName) {
+  const subscriptionDetailView = document.getElementById('mysubscriptions-detail-view');
+  const billDetailView = document.getElementById('mysubscriptions-bill-detail-view');
+
+  if (viewName === 'subscription-detail') {
+    subscriptionDetailView.classList.add('active');
+    billDetailView.classList.remove('active');
+  } else if (viewName === 'bill-detail') {
+    subscriptionDetailView.classList.remove('active');
+    billDetailView.classList.add('active');
+  }
+},
+
+showBillDetail(bill) {
+  const billDetailContent = document.getElementById('mysubscriptions-bill-detail-content');
+  
+  billDetailContent.innerHTML = `
+    <div class="invoice-document">
+      <div class="invoice-top">
+        <div class="invoice-title">
+          <h2>INVOICE</h2>
+          <p class="invoice-number">Invoice #${bill.id}</p>
+        </div>
+        <div class="invoice-status">
+          <span class="bill-status-badge bill-status-${bill.status.toLowerCase()}">${bill.status}</span>
+        </div>
+      </div>
+
+      <div class="invoice-dates">
+        <div class="date-item">
+          <span class="date-label">Invoice Date:</span>
+          <span class="date-value">${this.formatDate(bill.billingDate)}</span>
+        </div>
+        <div class="date-item">
+          <span class="date-label">Due Date:</span>
+          <span class="date-value">${this.formatDate(bill.dueDate)}</span>
+        </div>
+        <div class="date-item">
+          <span class="date-label">Paid Date:</span>
+          <span class="date-value">${bill.paidDate ? this.formatDate(bill.paidDate) : 'Not paid yet'}</span>
+        </div>
+      </div>
+
+      <div class="invoice-totals">
+        <div class="totals-summary">
+          <div class="total-row total-amount">
+            <span class="total-label">TOTAL DUE:</span>
+            <span class="total-value">$${parseFloat(bill.amount).toFixed(2)}</span>
           </div>
         </div>
-      `;
+      </div>
 
-      // Populate features list
-      const featuresList_element = document.getElementById('subscription-detail-features-list');
-      if (featuresList.length > 0) {
-        featuresList.forEach(feature => {
-          const li = document.createElement('li');
-          li.textContent = this.escapeHtml(feature);
-          featuresList_element.appendChild(li);
-        });
-      } else {
-        featuresList_element.innerHTML = '<li>No features listed</li>';
+      <div class="bill-customer-actions">
+        ${bill.status === 'PENDING' ? `
+          <button id="claim-paid-btn" class="btn btn-success">Mark as Paid</button>
+          <p class="help-text">Click this button if you have already paid this bill</p>
+        ` : `
+          <p class="info-message">This bill has been ${bill.status.toLowerCase()}</p>
+        `}
+      </div>
+
+      <button id="back-to-bills-btn" class="btn btn-secondary">Back to Bills</button>
+    </div>
+  `;
+
+  // Switch to bill detail view
+  this.switchModalView('bill-detail');
+
+  if (bill.status === 'PENDING') {
+    const claimBtn = document.getElementById('claim-paid-btn');
+    claimBtn.addEventListener('click', () => this.claimBillAsPaid(bill.id));
+  }
+
+  const backBtn = document.getElementById('back-to-bills-btn');
+  backBtn.addEventListener('click', () => this.backToBills());
+},
+
+// New method to return from bill detail to subscription detail
+backToBills() {
+  this.switchModalView('subscription-detail');
+},
+
+async claimBillAsPaid(billId) {
+  try {
+    await apiClient.put(`/billings/${billId}`, { status: 'PAYMENT_CLAIMED' });
+    this.backToBills();
+    
+    // Reload the bills list
+    const billsSection = document.getElementById('mysubscriptions-bills-section');
+    this.loadUnpaidBills(billsSection);
+    
+    const uiController = UIController.getInstance();
+    uiController.showMessage('Bill marked as paid. Awaiting operator approval.', 'success');
+  } catch (error) {
+    console.error('Error claiming payment:', error);
+    const uiController = UIController.getInstance();
+    uiController.showMessage(`Error: ${error.message}`, 'error');
+  }
+},
+
+
+  // Update loadUnpaidBills method
+  async loadUnpaidBills() {
+    const billsList = document.getElementById('mysubscriptions-bills-list');
+    
+    try {
+      const endpoint = `/billings/my-billings?subscriptionId=${this.currentSubscriptionId}`;
+      const response = await apiClient.get(endpoint);
+      
+      let bills = [];
+      if (response.content && Array.isArray(response.content)) {
+        bills = response.content;
+      } else if (Array.isArray(response)) {
+        bills = response;
       }
 
-      // Load unpaid bills
-      this.loadUnpaidBills(billsSection);
+      // Filter only PENDING bills
+      const unpaidBills = bills.filter(bill => bill.status === 'PENDING');
+
+      if (unpaidBills.length === 0) {
+        billsList.innerHTML = '<p class="empty-message">No unpaid bills found.</p>';
+      } else {
+        this.renderBillsList(unpaidBills, billsList);
+      }
 
     } catch (error) {
-      console.error('[MySubscriptionsSection] Error loading subscription details:', error);
-      detailContent.innerHTML = `<p class="error-message">Error loading subscription details: ${error.message}</p>`;
-      
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error loading subscription details: ${error.message}`, 'error');
+      console.error('[MySubscriptionsSection] Error loading bills:', error);
+      billsList.innerHTML = `<p class="error-message">Error loading bills: ${error.message}</p>`;
     }
   },
 
-  loadUnpaidBills(billsSection) {
-    const billsList = document.getElementById('mysubscriptions-bills-list');
+renderBillsList(bills, container) {
+  container.innerHTML = '';
+
+  const table = document.createElement('table');
+  table.className = 'bills-table';
+
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  ['Bill ID', 'Amount', 'Billing Date', 'Due Date', 'Status'].forEach(header => {
+    const th = document.createElement('th');
+    th.textContent = header;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  bills.forEach(bill => {
+    const row = document.createElement('tr');
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', () => this.showBillDetail(bill));
     
-    billsList.innerHTML = `
-      <p class="coming-soon-message">Bills feature coming soon</p>
-    `;
-    billsSection.style.display = 'block';
+    const idCell = document.createElement('td');
+    idCell.textContent = bill.id;
+    row.appendChild(idCell);
+
+    const amountCell = document.createElement('td');
+    amountCell.textContent = `$${bill.amount}`;
+    row.appendChild(amountCell);
+
+    const billingDateCell = document.createElement('td');
+    billingDateCell.textContent = this.formatDate(bill.billingDate);
+    row.appendChild(billingDateCell);
+
+    const dueDateCell = document.createElement('td');
+    dueDateCell.textContent = this.formatDate(bill.dueDate);
+    row.appendChild(dueDateCell);
+
+    const statusCell = document.createElement('td');
+    statusCell.innerHTML = `<span class="bill-status-badge bill-status-${bill.status.toLowerCase()}">${bill.status}</span>`;
+    row.appendChild(statusCell);
+
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+
+  container.appendChild(table);
+},
+
+  // Add date formatter
+  formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
   },
 
   closeDetailModal() {
@@ -458,7 +649,412 @@ const MysubscriptionsSection = {
 
   cleanup() {
     // Optional: cleanup when section is unloaded
+  },
+
+//------
+async loadBillingStatuses() {
+  try {
+    const response = await apiClient.get('/billings/billing-statuses');
+    
+    let billingStatuses = [];
+    if (Array.isArray(response)) {
+      billingStatuses = response;
+    }
+
+    this.billingStatuses = billingStatuses;
+  } catch (error) {
+    console.error('Error loading billing statuses:', error);
   }
+},
+
+// Add these properties to MySubscriptionsSection at the top with your other properties
+allBillsCurrentPage: 0,
+allBillsPageSize: 12,
+allBillsTotalPages: 0,
+allBills: [],
+allBillsCurrentStatusFilter: '',
+allBillsCurrentBillId: null,
+billingStatuses: [],
+
+// Add this to your existing init() method
+initAllBillsSection() {
+  setTimeout(async () => {
+    this.attachAllBillsEventListeners();
+    this.populateAllBillsStatusDropdown();
+    this.loadAllBills();
+  }, 100);
+},
+
+attachAllBillsEventListeners() {
+  const statusFilter = document.getElementById('mysubscriptions-all-bills-status-filter');
+  const refreshBtn = document.getElementById('mysubscriptions-all-bills-refresh-btn');
+  const detailCloseBtn = document.getElementById('mysubscriptions-all-bills-detail-close-btn');
+  const detailCloseBtnFooter = document.getElementById('mysubscriptions-all-bills-detail-close-footer-btn');
+
+  if (statusFilter) {
+    statusFilter.addEventListener('change', (e) => {
+      this.allBillsCurrentStatusFilter = e.target.value;
+      this.allBillsCurrentPage = 0;
+      this.loadAllBills();
+    });
+  }
+
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.allBillsCurrentPage = 0;
+      this.allBillsCurrentStatusFilter = '';
+      if (statusFilter) statusFilter.value = '';
+      this.loadAllBills();
+    });
+  }
+
+  if (detailCloseBtn) {
+    detailCloseBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.closeAllBillsDetailModal();
+    });
+  }
+
+  if (detailCloseBtnFooter) {
+    detailCloseBtnFooter.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.closeAllBillsDetailModal();
+    });
+  }
+},
+
+populateAllBillsStatusDropdown() {
+  const dropdown = document.getElementById('mysubscriptions-all-bills-status-filter');
+  if (!dropdown) return;
+
+  dropdown.innerHTML = '<option value="">All Statuses</option>';
+  this.billingStatuses.forEach(status => {
+    const option = document.createElement('option');
+    option.value = status;
+    option.textContent = status;
+    dropdown.appendChild(option);
+  });
+},
+
+async loadAllBills() {
+  const container = document.getElementById('mysubscriptions-all-bills-container');
+  if (!container) return;
+
+  container.innerHTML = '<p class="loading-message">Loading bills...</p>';
+
+  try {
+    let endpoint = `/billings/customer?page=${this.allBillsCurrentPage}&size=${this.allBillsPageSize}`;
+
+    if (this.allBillsCurrentStatusFilter) {
+      endpoint += `&status=${this.allBillsCurrentStatusFilter}`;
+    }
+
+    const response = await apiClient.get(endpoint);
+
+    let bills = [];
+    let totalPages = 0;
+
+    if (response.content && Array.isArray(response.content)) {
+      bills = response.content;
+      totalPages = response.totalPages || 0;
+    } else if (Array.isArray(response)) {
+      bills = response;
+      totalPages = 1;
+    }
+
+    this.allBills = bills;
+    this.allBillsTotalPages = totalPages;
+
+    if (this.allBills.length === 0) {
+      container.innerHTML = '<p class="empty-message">No bills found.</p>';
+    } else {
+      this.renderAllBills();
+    }
+
+    this.renderAllBillsPagination();
+
+  } catch (error) {
+    container.innerHTML = `<p class="error-message">Error loading bills: ${error.message}</p>`;
+    
+    const uiController = UIController.getInstance();
+    uiController.showMessage(`Error loading bills: ${error.message}`, 'error');
+  }
+},
+
+renderAllBills() {
+  const container = document.getElementById('mysubscriptions-all-bills-container');
+  container.innerHTML = '';
+
+  const table = document.createElement('table');
+  table.className = 'bills-table';
+
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  ['ID', 'Plan', 'Amount', 'Billing Date', 'Due Date', 'Status', 'Actions'].forEach(header => {
+    const th = document.createElement('th');
+    th.textContent = header;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  this.allBills.forEach(bill => {
+    const row = document.createElement('tr');
+
+    const idCell = document.createElement('td');
+    idCell.textContent = bill.id;
+    row.appendChild(idCell);
+
+    const planCell = document.createElement('td');
+    planCell.textContent = bill.plan?.name || 'N/A';
+    row.appendChild(planCell);
+
+    const amountCell = document.createElement('td');
+    amountCell.textContent = `$${parseFloat(bill.amount).toFixed(2)}`;
+    row.appendChild(amountCell);
+
+    const billingDateCell = document.createElement('td');
+    billingDateCell.textContent = this.formatDate(bill.billingDate);
+    row.appendChild(billingDateCell);
+
+    const dueDateCell = document.createElement('td');
+    dueDateCell.textContent = this.formatDate(bill.dueDate);
+    row.appendChild(dueDateCell);
+
+    const statusCell = document.createElement('td');
+    statusCell.innerHTML = `<span class="bill-status-badge bill-status-${bill.status.toLowerCase()}">${bill.status}</span>`;
+    row.appendChild(statusCell);
+
+    const actionsCell = document.createElement('td');
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'btn btn-sm btn-secondary';
+    viewBtn.textContent = 'View';
+    viewBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openAllBillsDetailModal(bill.id);
+    });
+    actionsCell.appendChild(viewBtn);
+    row.appendChild(actionsCell);
+
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+
+  container.appendChild(table);
+},
+
+renderAllBillsPagination() {
+  const paginationContainer = document.getElementById('mysubscriptions-all-bills-pagination');
+  if (!paginationContainer) return;
+
+  paginationContainer.innerHTML = '';
+
+  if (this.allBillsTotalPages <= 1) return;
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn btn-sm btn-secondary';
+  prevBtn.textContent = 'Previous';
+  prevBtn.disabled = this.allBillsCurrentPage === 0;
+  prevBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (this.allBillsCurrentPage > 0) {
+      this.allBillsCurrentPage--;
+      this.loadAllBills();
+    }
+  });
+  paginationContainer.appendChild(prevBtn);
+
+  const pageInfo = document.createElement('span');
+  pageInfo.className = 'pagination-info';
+  pageInfo.textContent = `Page ${this.allBillsCurrentPage + 1} of ${this.allBillsTotalPages}`;
+  paginationContainer.appendChild(pageInfo);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-sm btn-secondary';
+  nextBtn.textContent = 'Next';
+  nextBtn.disabled = this.allBillsCurrentPage >= this.allBillsTotalPages - 1;
+  nextBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (this.allBillsCurrentPage < this.allBillsTotalPages - 1) {
+      this.allBillsCurrentPage++;
+      this.loadAllBills();
+    }
+  });
+  paginationContainer.appendChild(nextBtn);
+},
+
+async openAllBillsDetailModal(billId) {
+  this.allBillsCurrentBillId = billId;
+  const modal = document.getElementById('mysubscriptions-all-bills-detail-modal');
+  const detailContent = document.getElementById('mysubscriptions-all-bills-detail-content');
+
+  if (!modal || !detailContent) return;
+
+  detailContent.innerHTML = '<p class="loading-message">Loading bill details...</p>';
+  modal.style.display = 'flex';
+  modal.classList.add('active');
+
+  try {
+    const response = await apiClient.get(`/billings/${billId}`);
+    const bill = response.data || response;
+
+    document.getElementById('mysubscriptions-all-bills-detail-title').textContent = `Invoice #${bill.id}`;
+
+    detailContent.innerHTML = `
+      <div class="invoice-document">
+        <!-- Invoice Top Header -->
+        <div class="invoice-top">
+          <div class="invoice-title">
+            <h2>INVOICE</h2>
+            <p class="invoice-number">Invoice #${bill.id}</p>
+          </div>
+          <div class="invoice-status">
+            <span class="bill-status-badge bill-status-${bill.status.toLowerCase()}">${bill.status}</span>
+          </div>
+        </div>
+
+        <!-- Two Column Layout: From/To -->
+        <div class="invoice-addresses">
+          <div class="invoice-from">
+            <h5>FROM (Service Provider)</h5>
+            <div class="address-block">
+              <p class="name">${bill.operator?.firstName} ${bill.operator?.lastName}</p>
+              <p class="email">${bill.operator?.email}</p>
+            </div>
+          </div>
+
+          <div class="invoice-to">
+            <h5>BILL TO (Customer)</h5>
+            <div class="address-block">
+              <p class="name">${bill.customer?.firstName} ${bill.customer?.lastName}</p>
+              <p class="email">${bill.customer?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates and Details -->
+        <div class="invoice-dates">
+          <div class="date-item">
+            <span class="date-label">Invoice Date:</span>
+            <span class="date-value">${this.formatDate(bill.billingDate)}</span>
+          </div>
+          <div class="date-item">
+            <span class="date-label">Due Date:</span>
+            <span class="date-value">${this.formatDate(bill.dueDate)}</span>
+          </div>
+          <div class="date-item">
+            <span class="date-label">Paid Date:</span>
+            <span class="date-value">${bill.paidDate ? this.formatDate(bill.paidDate) : 'Not paid yet'}</span>
+          </div>
+        </div>
+
+        <!-- Service Details Table -->
+        <div class="invoice-items">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Description</th>
+                <th>Billing Period</th>
+                <th class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${bill.plan?.name || 'N/A'}</td>
+                <td>${bill.plan?.description || 'N/A'}</td>
+                <td>${bill.plan?.billingPeriod || 'N/A'}</td>
+                <td class="text-right amount">$${parseFloat(bill.amount).toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Totals Section -->
+        <div class="invoice-totals">
+          <div class="totals-spacer"></div>
+          <div class="totals-summary">
+            <div class="total-row">
+              <span class="total-label">Subtotal:</span>
+              <span class="total-value">$${parseFloat(bill.amount).toFixed(2)}</span>
+            </div>
+            <div class="total-row total-amount">
+              <span class="total-label">TOTAL DUE:</span>
+              <span class="total-value">$${parseFloat(bill.amount).toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="invoice-meta">
+          <div class="meta-column">
+            <h5>Plan Information</h5>
+            <p><strong>Plan:</strong> ${bill.plan?.name || 'N/A'}</p>
+            <p><strong>Service Type:</strong> ${bill.plan?.serviceType || 'N/A'}</p>
+          </div>
+          <div class="meta-column">
+            <h5>Subscription Information</h5>
+            <p><strong>Subscription ID:</strong> ${bill.subscription?.id || 'N/A'}</p>
+            <p><strong>Status:</strong> ${bill.subscription?.status || 'N/A'}</p>
+            <p><strong>Auto Renewal:</strong> ${bill.subscription?.autoRenewal ? 'Yes' : 'No'}</p>
+          </div>
+        </div>
+
+        <!-- Customer Actions -->
+        <div class="bill-customer-actions">
+          ${bill.status === 'PENDING' ? `
+            <button id="mysubscriptions-claim-paid-btn" class="btn btn-success">Mark as Paid</button>
+            <p class="help-text">Click this button if you have already paid this bill</p>
+          ` : `
+            <p class="info-message">This bill has been ${bill.status.toLowerCase()}</p>
+          `}
+        </div>
+      </div>
+    `;
+
+    if (bill.status === 'PENDING') {
+      const claimBtn = document.getElementById('mysubscriptions-claim-paid-btn');
+      claimBtn.addEventListener('click', () => this.claimAllBillAsPaid(bill.id));
+    }
+
+  } catch (error) {
+    detailContent.innerHTML = `<p class="error-message">Error loading bill details: ${error.message}</p>`;
+    
+    const uiController = UIController.getInstance();
+    uiController.showMessage(`Error loading bill details: ${error.message}`, 'error');
+  }
+},
+
+async claimAllBillAsPaid(billId) {
+  try {
+    await apiClient.put(`/billings/${billId}`, { status: 'PAYMENT_CLAIMED' });
+    
+    const uiController = UIController.getInstance();
+    uiController.showMessage('Bill marked as paid. Awaiting operator approval.', 'success');
+
+    setTimeout(() => {
+      this.closeAllBillsDetailModal();
+      this.loadAllBills();
+    }, 1500);
+
+  } catch (error) {
+    console.error('Error claiming payment:', error);
+    const uiController = UIController.getInstance();
+    uiController.showMessage(`Error: ${error.message}`, 'error');
+  }
+},
+
+closeAllBillsDetailModal() {
+  const modal = document.getElementById('mysubscriptions-all-bills-detail-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  this.allBillsCurrentBillId = null;
+}
 };
 window.MysubscriptionsSection = MysubscriptionsSection;
+
 

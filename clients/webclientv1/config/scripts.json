@@ -19,6 +19,7 @@
     "js/pages/sections/subscriptionsman.js",
     "js/pages/sections/mysubscriptions.js",
     "js/pages/sections/settings.js",
+    "js/pages/sections/billmanager.js",
     "js/pages/dashboard.js",
     "js/app.js"
   ]

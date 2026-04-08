@@ -148,3 +148,8 @@
 .list-container table td {
   white-space: nowrap;
 }
+
+.action-separator {
+  margin: 0 8px;
+  color: #ccc;
+}
