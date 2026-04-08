@@ -4130,43 +4130,55 @@ gantt
 > </details>
 
 ## 001-0021
-> **Frontend: Create Plan Detail Modal** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> **Backend: Create Billing Entity, Repository, and Controller** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
-> - Plan detail modal displays full plan information
-> - Plan name, description, all features shown
-> - Pricing details (monthly/yearly options) displayed
-> - Terms and conditions section included
-> - Subscribe Now button present and functional
-> - Related plans from same operator shown
-> - Modal closes on background click or close button
-> - Loading state displayed during data fetch
-> - Error handling with toast notifications
-> - Responsive design (mobile, tablet, desktop)
-> - Accessibility features implemented (focus management, keyboard navigation)
-> - CSS added to both default/ and dark/ theme directories
+> - Billing entity created with all required fields
+> - BillingStatus enum defined (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
+> - BillingPeriod enum extended for billing context if needed
+> - BillingRepository created with custom query methods
+> - BillingController created with CRUD and query endpoints
+> - Service layer (BillingService) created for business logic
+> - All endpoints return consistent JSON response structure
+> - Input validation on all request DTOs
+> - Error handling with appropriate HTTP status codes
+> - Role-based access control (customers see own billing, admins see all)
+> - Database migration/schema created
+> - Unit tests for repository and service layer
+> - Integration tests for controller endpoints
+> - API documentation/comments added
+> - Pagination implemented for list endpoints
+> - Filtering/sorting implemented for billing records
 > 
 > # TODO:
-> - [ ] Create plan-detail-modal.html component
-> - [ ] Create plan-detail-modal.js with show(), hide(), init() methods
-> - [ ] Implement API call using apiClient to GET /plans/{id}
-> - [ ] Display plan full description and all features
-> - [ ] Display pricing tiers (monthly/yearly with prices)
-> - [ ] Display terms and conditions section
-> - [ ] Add Subscribe Now button (link to Phase 4 subscription flow)
-> - [ ] Implement related plans section (fetch from same operator)
-> - [ ] Add modal open/close functionality
-> - [ ] Implement background click to close
-> - [ ] Add close button (X icon)
-> - [ ] Implement loading state (skeleton loaders)
-> - [ ] Implement error handling with toast notifications
-> - [ ] Create modal-specific CSS in css/default/ and css/dark/
-> - [ ] Add responsive modal sizing for mobile/tablet/desktop
-> - [ ] Implement keyboard navigation (Escape to close)
-> - [ ] Test modal opening/closing behavior
-> - [ ] Test on multiple screen sizes
+> - [ ] Create Billing entity with fields: id, subscriptionId, amount, currency, billingDate, dueDate, paidDate, status, invoiceNumber, notes, createdAt, updatedAt
+> - [ ] Create BillingStatus enum (PENDING, PAID, FAILED, REFUNDED, CANCELLED)
+> - [ ] Create BillingDTO classes (BillingCreateRequest, BillingResponseDTO, BillingUpdateRequest)
+> - [ ] Create BillingRepository interface with custom query methods
+> - [ ] Implement custom queries: findBySubscriptionId(), findByUserId(), findByStatus(), findByDateRange()
+> - [ ] Create BillingService interface with business logic methods
+> - [ ] Implement BillingServiceImpl with create, retrieve, update, delete, search operations
+> - [ ] Create BillingController with endpoints: POST, GET (by ID), GET (list with filters), PUT, DELETE
+> - [ ] Implement role-based access control in controller (customer = own records, admin = all records)
+> - [ ] Add input validation to BillingCreateRequest and BillingUpdateRequest DTOs
+> - [ ] Implement pagination for GET /billings endpoint
+> - [ ] Implement filtering by status, date range, subscription
+> - [ ] Implement sorting by date, amount, status
+> - [ ] Add exception handling (BillingNotFoundException, InvalidBillingStatusException)
+> - [ ] Create database schema/migration for billings table
+> - [ ] Add foreign key constraint to subscriptions table
+> - [ ] Add indexes on frequently queried columns (subscriptionId, userId, status, billingDate)
+> - [ ] Write unit tests for BillingRepository
+> - [ ] Write unit tests for BillingService
+> - [ ] Write integration tests for BillingController endpoints
+> - [ ] Add API documentation/JavaDoc comments to all public methods
+> - [ ] Test pagination with various page sizes
+> - [ ] Test filtering by single and multiple criteria
+> - [ ] Test sorting accuracy
+> - [ ] Test role-based access control (verify customer isolation)
+> - [ ] Test error responses and HTTP status codes
 > 
 > # Reports:
 > *
