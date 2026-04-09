@@ -1,0 +1,61 @@
+---
+#...
+# Git-deck card header
+# OBS! DON'T REMOVE CARD HEADERS
+#...
+Title: Testing: Phase 2 Frontend Unit Tests
+Tags: Phase2, Frontend, Testing
+Creator:
+AssignedTo:
+tartAt:
+EndAt:
+---
+
+# DOD (definition of done):
+- Unit tests for operators section pass
+- Unit tests for plans section pass
+- Unit tests for filtering/search functionality pass
+- Unit tests for plan detail modal pass
+- Unit tests for plan comparison view pass
+- Test coverage minimum 70% for Phase 2 frontend code
+- All API calls mocked with test data
+- Loading states tested
+- Error handling tested with toast notifications
+- Responsive layout tested on multiple screen sizes
+- All tests run successfully in CI/CD pipeline
+
+# TODO:
+- [x] Create test suite for operators.js
+- [x] Test init() method loads operators correctly
+- [x] Test API call to GET /operators with pagination
+- [x] Test operator card rendering with mock data
+- [x] Test loading state display
+- [x] Test error handling and toast notifications
+- [x] Test navigation to plan catalog on operator click
+- [x] Test cleanup() method removes event listeners
+- [x] Create test suite for plans.js
+- [x] Test init() method loads plans for operator
+- [x] Test API call to GET /operators/{id}/plans
+- [x] Test plan card rendering with mock data
+- [x] Test plan detail modal opens on click
+- [x] Test loading state and error handling
+- [x] Create test suite for filtering/search functionality
+- [x] Test service_type filter changes results
+- [x] Test search query with debouncing
+- [x] Test sort functionality (price, newest)
+- [x] Test filter state in URL hash parameters
+- [x] Create test suite for plan-detail-modal.js
+- [x] Test modal opens/closes correctly
+- [x] Test API call to GET /plans/{id}
+- [x] Test plan details render correctly
+- [x] Test Subscribe Now button functionality
+- [x] Test related plans display
+- [x] Create test suite for comparison.js
+- [x] Test plan selection and comparison table rendering
+- [x] Test add/remove plan functionality
+- [x] Test responsive table layout on mobile
+- [x] Test all responsive layouts (mobile, tablet, desktop)
+- [x] Run all tests and verify 70%+ code coverage
+
+# Reports:
+*
