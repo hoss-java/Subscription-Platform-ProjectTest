@@ -2492,6 +2492,61 @@ gantt
 > *
 > </details>
 
+## 001-0024
+> **Testing: Phase 2 Frontend Unit Tests** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - Unit tests for operators section pass
+> - Unit tests for plans section pass
+> - Unit tests for filtering/search functionality pass
+> - Unit tests for plan detail modal pass
+> - Unit tests for plan comparison view pass
+> - Test coverage minimum 70% for Phase 2 frontend code
+> - All API calls mocked with test data
+> - Loading states tested
+> - Error handling tested with toast notifications
+> - Responsive layout tested on multiple screen sizes
+> - All tests run successfully in CI/CD pipeline
+> 
+> # TODO:
+> - [x] Create test suite for operators.js
+> - [x] Test init() method loads operators correctly
+> - [x] Test API call to GET /operators with pagination
+> - [x] Test operator card rendering with mock data
+> - [x] Test loading state display
+> - [x] Test error handling and toast notifications
+> - [x] Test navigation to plan catalog on operator click
+> - [x] Test cleanup() method removes event listeners
+> - [x] Create test suite for plans.js
+> - [x] Test init() method loads plans for operator
+> - [x] Test API call to GET /operators/{id}/plans
+> - [x] Test plan card rendering with mock data
+> - [x] Test plan detail modal opens on click
+> - [x] Test loading state and error handling
+> - [x] Create test suite for filtering/search functionality
+> - [x] Test service_type filter changes results
+> - [x] Test search query with debouncing
+> - [x] Test sort functionality (price, newest)
+> - [x] Test filter state in URL hash parameters
+> - [x] Create test suite for plan-detail-modal.js
+> - [x] Test modal opens/closes correctly
+> - [x] Test API call to GET /plans/{id}
+> - [x] Test plan details render correctly
+> - [x] Test Subscribe Now button functionality
+> - [x] Test related plans display
+> - [x] Create test suite for comparison.js
+> - [x] Test plan selection and comparison table rendering
+> - [x] Test add/remove plan functionality
+> - [x] Test responsive table layout on mobile
+> - [x] Test all responsive layouts (mobile, tablet, desktop)
+> - [x] Run all tests and verify 70%+ code coverage
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2523,8 +2578,8 @@ gantt
 > </details>
 
 ## 001-0025
-> **Backend: Fix BillingControllerIntegrationTest and Add Missing Tests** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
+> **Backend: Fix BillingControllerIntegrationTest and Add Missing Tests** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
@@ -2549,107 +2604,6 @@ gantt
 > - [ ] Run full test suite to ensure all 18 tests pass
 > - [ ] Identify any missing test coverage gaps based on file map
 > - [ ] Add additional tests if needed for uncovered scenarios
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0023
-> **Testing: Phase 2 Backend Integration Tests** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Integration tests for all operator endpoints pass
-> - Integration tests for all plan endpoints pass
-> - Test coverage minimum 80% for Phase 2 code
-> - Operator isolation tests verify only ACTIVE operators returned
-> - Plan isolation tests verify only ACTIVE plans returned
-> - Pagination tests verify correct page/size handling
-> - Filtering tests verify service_type, status, billing_period filters work correctly
-> - Search tests verify name/description search accuracy
-> - Cache invalidation tests verify cache updates on data changes
-> - Error handling tests verify proper HTTP status codes and error messages
-> - All tests run successfully in CI/CD pipeline
-> 
-> # TODO:
-> - [ ] Create OperatorControllerIntegrationTest class
-> - [ ] Test GET /operators returns paginated list of ACTIVE operators
-> - [ ] Test GET /operators with pagination parameters (page, size)
-> - [ ] Test GET /operators with serviceType filter
-> - [ ] Test GET /operators with status filter
-> - [ ] Test GET /operators/{id} returns operator details with plan count
-> - [ ] Test GET /operators/{id} with invalid ID returns 404
-> - [ ] Test operator isolation (INACTIVE operators not returned)
-> - [ ] Create PlanControllerIntegrationTest class
-> - [ ] Test GET /plans returns paginated list of ACTIVE plans
-> - [ ] Test GET /operators/{id}/plans returns only plans for that operator
-> - [ ] Test GET /plans with serviceType filter
-> - [ ] Test GET /plans with billingPeriod filter
-> - [ ] Test GET /plans with status filter
-> - [ ] Test GET /plans/search?q={query} returns correct results
-> - [ ] Test search with special characters and edge cases
-> - [ ] Test GET /plans/{id} returns full plan details
-> - [ ] Test GET /plans/{id} with invalid ID returns 404
-> - [ ] Test plan isolation (INACTIVE plans not returned)
-> - [ ] Test cache behavior (data cached and invalidated correctly)
-> - [ ] Test error handling (invalid parameters, missing fields)
-> - [ ] Run all tests and verify 80%+ code coverage
-> 
-> # Reports:
-> *
-> </details>
-
-## 001-0024
-> **Testing: Phase 2 Frontend Unit Tests** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Unit tests for operators section pass
-> - Unit tests for plans section pass
-> - Unit tests for filtering/search functionality pass
-> - Unit tests for plan detail modal pass
-> - Unit tests for plan comparison view pass
-> - Test coverage minimum 70% for Phase 2 frontend code
-> - All API calls mocked with test data
-> - Loading states tested
-> - Error handling tested with toast notifications
-> - Responsive layout tested on multiple screen sizes
-> - All tests run successfully in CI/CD pipeline
-> 
-> # TODO:
-> - [ ] Create test suite for operators.js
-> - [ ] Test init() method loads operators correctly
-> - [ ] Test API call to GET /operators with pagination
-> - [ ] Test operator card rendering with mock data
-> - [ ] Test loading state display
-> - [ ] Test error handling and toast notifications
-> - [ ] Test navigation to plan catalog on operator click
-> - [ ] Test cleanup() method removes event listeners
-> - [ ] Create test suite for plans.js
-> - [ ] Test init() method loads plans for operator
-> - [ ] Test API call to GET /operators/{id}/plans
-> - [ ] Test plan card rendering with mock data
-> - [ ] Test plan detail modal opens on click
-> - [ ] Test loading state and error handling
-> - [ ] Create test suite for filtering/search functionality
-> - [ ] Test service_type filter changes results
-> - [ ] Test search query with debouncing
-> - [ ] Test sort functionality (price, newest)
-> - [ ] Test filter state in URL hash parameters
-> - [ ] Create test suite for plan-detail-modal.js
-> - [ ] Test modal opens/closes correctly
-> - [ ] Test API call to GET /plans/{id}
-> - [ ] Test plan details render correctly
-> - [ ] Test Subscribe Now button functionality
-> - [ ] Test related plans display
-> - [ ] Create test suite for comparison.js
-> - [ ] Test plan selection and comparison table rendering
-> - [ ] Test add/remove plan functionality
-> - [ ] Test responsive table layout on mobile
-> - [ ] Test all responsive layouts (mobile, tablet, desktop)
-> - [ ] Run all tests and verify 70%+ code coverage
 > 
 > # Reports:
 > *
