@@ -2451,6 +2451,47 @@ gantt
 > Ready to see your subscription and invoice entities to write the code?
 > </details>
 
+## 001-0023
+> **Frontend: Operator Billing/Invoices Management Section** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - Billing section HTML file created in pages/sections/
+> - Billing section JS file created in js/pages/sections/
+> - Section registered in config.json with operator role access
+> - Invoice list displays all invoices for logged-in operator
+> - Invoice detail modal shows full invoice information
+> - Invoice status change functionality works correctly
+> - Loading states displayed during data fetch
+> - Error handling with toast notifications
+> - CSS files created in both default/ and dark/ theme directories
+> - Responsive design tested on mobile/tablet/desktop
+> - All API calls use apiClient without /api prefix
+> - Section follows existing dashboard section pattern
+> 
+> # TODO:
+> - [x] Create billing.html in pages/sections/
+> - [x] Create billing.js in js/pages/sections/ with init() and cleanup() methods
+> - [x] Register billing section in config.json (operator role only)
+> - [x] Implement invoice list table with columns (ID, Date, Amount, Status, Actions)
+> - [x] Implement GET /invoices endpoint call to fetch operator invoices
+> - [x] Add loading state during invoice fetch
+> - [x] Create invoice detail modal window component
+> - [x] Implement modal trigger on "View" action button
+> - [x] Display invoice details in modal (ID, Date, Amount, Status, Items, Description)
+> - [x] Add "Change Status" dropdown in modal
+> - [x] Implement PUT /invoices/{id}/status endpoint call
+> - [x] Add success/error toast notifications for status changes
+> - [x] Create CSS for billing section in css/default/
+> - [x] Create CSS for billing section in css/dark/
+> - [x] Add billing.css to config/styles.json
+> - [x] Verify theme switching works for billing section
+> 
+> # Reports:
+> *
+> </details>
+
 ## 001-0012
 > **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
 > <details >
@@ -2479,61 +2520,6 @@ gantt
 > 
 > # Reports:
 > * (to be filled during development)
-> </details>
-
-## 001-0024
-> **Testing: Phase 2 Frontend Unit Tests** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - Unit tests for operators section pass
-> - Unit tests for plans section pass
-> - Unit tests for filtering/search functionality pass
-> - Unit tests for plan detail modal pass
-> - Unit tests for plan comparison view pass
-> - Test coverage minimum 70% for Phase 2 frontend code
-> - All API calls mocked with test data
-> - Loading states tested
-> - Error handling tested with toast notifications
-> - Responsive layout tested on multiple screen sizes
-> - All tests run successfully in CI/CD pipeline
-> 
-> # TODO:
-> - [ ] Create test suite for operators.js
-> - [ ] Test init() method loads operators correctly
-> - [ ] Test API call to GET /operators with pagination
-> - [ ] Test operator card rendering with mock data
-> - [ ] Test loading state display
-> - [ ] Test error handling and toast notifications
-> - [ ] Test navigation to plan catalog on operator click
-> - [ ] Test cleanup() method removes event listeners
-> - [ ] Create test suite for plans.js
-> - [ ] Test init() method loads plans for operator
-> - [ ] Test API call to GET /operators/{id}/plans
-> - [ ] Test plan card rendering with mock data
-> - [ ] Test plan detail modal opens on click
-> - [ ] Test loading state and error handling
-> - [ ] Create test suite for filtering/search functionality
-> - [ ] Test service_type filter changes results
-> - [ ] Test search query with debouncing
-> - [ ] Test sort functionality (price, newest)
-> - [ ] Test filter state in URL hash parameters
-> - [ ] Create test suite for plan-detail-modal.js
-> - [ ] Test modal opens/closes correctly
-> - [ ] Test API call to GET /plans/{id}
-> - [ ] Test plan details render correctly
-> - [ ] Test Subscribe Now button functionality
-> - [ ] Test related plans display
-> - [ ] Create test suite for comparison.js
-> - [ ] Test plan selection and comparison table rendering
-> - [ ] Test add/remove plan functionality
-> - [ ] Test responsive table layout on mobile
-> - [ ] Test all responsive layouts (mobile, tablet, desktop)
-> - [ ] Run all tests and verify 70%+ code coverage
-> 
-> # Reports:
-> *
 > </details>
 
 ## 001-0025
@@ -4185,6 +4171,61 @@ gantt
 > - [ ] Test cache behavior (data cached and invalidated correctly)
 > - [ ] Test error handling (invalid parameters, missing fields)
 > - [ ] Run all tests and verify 80%+ code coverage
+> 
+> # Reports:
+> *
+> </details>
+
+## 001-0024
+> **Testing: Phase 2 Frontend Unit Tests** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> <details open>
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - Unit tests for operators section pass
+> - Unit tests for plans section pass
+> - Unit tests for filtering/search functionality pass
+> - Unit tests for plan detail modal pass
+> - Unit tests for plan comparison view pass
+> - Test coverage minimum 70% for Phase 2 frontend code
+> - All API calls mocked with test data
+> - Loading states tested
+> - Error handling tested with toast notifications
+> - Responsive layout tested on multiple screen sizes
+> - All tests run successfully in CI/CD pipeline
+> 
+> # TODO:
+> - [ ] Create test suite for operators.js
+> - [ ] Test init() method loads operators correctly
+> - [ ] Test API call to GET /operators with pagination
+> - [ ] Test operator card rendering with mock data
+> - [ ] Test loading state display
+> - [ ] Test error handling and toast notifications
+> - [ ] Test navigation to plan catalog on operator click
+> - [ ] Test cleanup() method removes event listeners
+> - [ ] Create test suite for plans.js
+> - [ ] Test init() method loads plans for operator
+> - [ ] Test API call to GET /operators/{id}/plans
+> - [ ] Test plan card rendering with mock data
+> - [ ] Test plan detail modal opens on click
+> - [ ] Test loading state and error handling
+> - [ ] Create test suite for filtering/search functionality
+> - [ ] Test service_type filter changes results
+> - [ ] Test search query with debouncing
+> - [ ] Test sort functionality (price, newest)
+> - [ ] Test filter state in URL hash parameters
+> - [ ] Create test suite for plan-detail-modal.js
+> - [ ] Test modal opens/closes correctly
+> - [ ] Test API call to GET /plans/{id}
+> - [ ] Test plan details render correctly
+> - [ ] Test Subscribe Now button functionality
+> - [ ] Test related plans display
+> - [ ] Create test suite for comparison.js
+> - [ ] Test plan selection and comparison table rendering
+> - [ ] Test add/remove plan functionality
+> - [ ] Test responsive table layout on mobile
+> - [ ] Test all responsive layouts (mobile, tablet, desktop)
+> - [ ] Run all tests and verify 70%+ code coverage
 > 
 > # Reports:
 > *
