@@ -3,45 +3,36 @@
 # Git-deck card header
 # OBS! DON'T REMOVE CARD HEADERS
 #...
-Title: Backend: Create Dashboard Statistics Endpoints
-Tags: Phase3, Backend, API
+Title: Backend: Fix BillingControllerIntegrationTest and Add Missing Tests
+Tags: Phase2, Backend, Testing
 Creator:
 AssignedTo:
-tartAt:
+StartAt:
 EndAt:
 ---
 
 # DOD (definition of done):
-- GET /dashboard/user-stats returns user statistics (total, active, new this month)
-- GET /dashboard/subscription-stats returns subscription statistics (active, pending, canceled)
-- GET /dashboard/revenue returns revenue data (total, by operator, monthly trends)
-- GET /dashboard/operator-performance returns operator metrics (popular plans, subscription rate)
-- All endpoints support date range filtering (last 7/30/90 days, custom)
-- Response structure consistent with project standards
-- Admin-only endpoints properly secured with RBAC
-- Input validation for date range parameters
-- Integration tests pass for all endpoints
-- Performance acceptable for large datasets
+- BillingControllerIntegrationTest: 18/18 tests passing
+- All billing-related endpoints covered with integration tests
+- Billing service layer fully tested with unit tests
+- Billing scheduler functionality validated
+- Response DTOs properly tested
+- Error handling and edge cases covered
+- Input validation tested for all billing operations
+- Authorization/RBAC properly enforced and tested
 
 # TODO:
-- [ ] Create DashboardController.java with @RestController annotation
-- [ ] Implement GET /dashboard/user-stats endpoint
-- [ ] Add user count aggregations (total, active, new this month)
-- [ ] Implement GET /dashboard/subscription-stats endpoint
-- [ ] Add subscription count aggregations (active, pending, canceled)
-- [ ] Implement GET /dashboard/revenue endpoint
-- [ ] Add revenue calculations (total, by operator, monthly trends)
-- [ ] Implement GET /dashboard/operator-performance endpoint
-- [ ] Add operator metrics (popular plans, subscription rate)
-- [ ] Create DashboardService layer with business logic
-- [ ] Add date range filtering logic (last 7/30/90 days, custom)
-- [ ] Add @RequestParam for dateRange and customStartDate/endDate
-- [ ] Create response DTOs (UserStatsDTO, SubscriptionStatsDTO, RevenueDTO, OperatorPerformanceDTO)
-- [ ] Add @PreAuthorize for admin-only access
-- [ ] Optimize database queries using aggregations (GROUP BY, COUNT, SUM)
-- [ ] Write integration tests for all endpoints
-- [ ] Test date range filtering accuracy
-- [ ] Test admin-only access control
+- [ ] Analyze failing 15 tests in BillingControllerIntegrationTest
+- [ ] Fix failing test cases
+- [ ] Add missing billing endpoint tests
+- [ ] Verify billing request/response DTOs validation
+- [ ] Test billing status transitions
+- [ ] Test billing period calculations
+- [ ] Add authorization tests for billing endpoints
+- [ ] Test error scenarios (invalid data, unauthorized access)
+- [ ] Run full test suite to ensure all 18 tests pass
+- [ ] Identify any missing test coverage gaps based on file map
+- [ ] Add additional tests if needed for uncovered scenarios
 
 # Reports:
 *
