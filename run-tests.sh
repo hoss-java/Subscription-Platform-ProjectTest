@@ -11,7 +11,6 @@ if [ ! -f "$CONTAINER_RUN_SCRIPT" ]; then
     exit 1
 fi
 
-# Source the container-run script
 source "$CONTAINER_RUN_SCRIPT"
 
 # Color codes
@@ -19,17 +18,39 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+CYAN='\033[0;36m'
+NC='\033[0m'
 
-# Arrays to store results
+# File type configuration - easily extensible
+declare -A FILE_PATTERNS=(
+    ["java"]="*Test.java|*Tests.java"
+    ["js"]="*.test.js|*.spec.js"
+)
+
+declare -A TEST_DIRECTORIES=(
+    ["java"]="subscriptionapi/src/test"
+    ["js"]="src/tests"
+)
+
+declare -A TEST_RUNNERS=(
+    ["java"]="run_maven_test"
+    ["js"]="run_jest_test"
+)
+
+declare -A TEST_METHODS_EXTRACTORS=(
+    ["java"]="extract_java_test_methods"
+    ["js"]="extract_js_test_methods"
+)
+
+# Runtime variables
 declare -a PASSED_TESTS
 declare -a FAILED_TESTS
 declare -a ALL_TESTS
 declare -A TEST_COUNTS
 declare -A TEST_FAILURES
+declare -A TEST_METHODS
 
 # Configuration variables
-TEST_DIR="subscriptionapi/src/test"
 VERBOSE_MODE=false
 STOP_ON_FAILURE=false
 PARALLEL_THREADS=1
@@ -38,7 +59,8 @@ EXCLUDE_PATTERN=""
 TEST_TYPE=""
 FAILED_ONLY=false
 FAILED_TESTS_FILE=".failed_tests"
-TEMP_TEST_OUTPUT=".test_output"
+DETECTED_FILE_TYPE=""
+SHOW_TEST_METHODS=false
 
 # Function to display help
 show_help() {
@@ -55,9 +77,9 @@ show_help() {
     echo -e "${GREEN}Options:${NC}"
     echo "  --filter <pattern>        Run only tests matching a pattern (e.g., --filter \"User\")"
     echo "  --exclude <pattern>       Exclude tests matching a pattern (e.g., --exclude \"Integration\")"
-    echo "  --unit-only               Run only unit tests (*UnitTest.java)"
-    echo "  --integration-only        Run only integration tests (*IntegrationTest.java)"
-    echo "  --verbose, -v             Show full Maven output instead of suppressing it"
+    echo "  --unit-only               Run only unit tests"
+    echo "  --integration-only        Run only integration tests"
+    echo "  --verbose, -v             Show full output instead of suppressing it"
     echo "  --failed-only             Re-run only tests that failed in the previous run"
     echo "  --stop-on-failure         Stop running tests on first failure"
     echo -e "  --parallel <n>            Run tests in parallel with n threads (default: 1)\n"
@@ -67,8 +89,6 @@ show_help() {
     echo "  ./run-tests.sh --filter \"User\" --verbose"
     echo "  ./run-tests.sh --unit-only"
     echo "  ./run-tests.sh --integration-only --parallel 4"
-    echo "  ./run-tests.sh --exclude \"Integration\" --stop-on-failure"
-    echo "  ./run-tests.sh --failed-only"
     echo ""
 }
 
@@ -78,6 +98,7 @@ parse_arguments() {
         case $1 in
             --list)
                 LIST_ONLY=true
+                SHOW_TEST_METHODS=true
                 shift
                 ;;
             --count)
@@ -86,6 +107,7 @@ parse_arguments() {
                 ;;
             --filter)
                 FILTER_PATTERN="$2"
+                SHOW_TEST_METHODS=true
                 shift 2
                 ;;
             --exclude)
@@ -129,42 +151,117 @@ parse_arguments() {
     done
 }
 
-# Function to discover test classes
-discover_tests() {
-    if [ ! -d "$TEST_DIR" ]; then
-        echo "❌ Error: Test directory '$TEST_DIR' not found."
-        echo "Please ensure you are running this script from the project root."
-        exit 1
+# Function to detect file type from test file
+detect_file_type() {
+    local test_file=$1
+    
+    if [[ "$test_file" == *.java ]]; then
+        echo "java"
+    elif [[ "$test_file" == *.js ]]; then
+        echo "js"
+    else
+        echo ""
     fi
+}
 
+# Function to discover tests
+discover_tests() {
     declare -a discovered_tests
-    while IFS= read -r test_file; do
-        class_name=$(basename "$test_file" .java)
-        discovered_tests+=("$class_name")
-    done < <(find "$TEST_DIR" -type f \( -name "*Test.java" -o -name "*Tests.java" \) | sort)
+    local file_count=0
 
-    if [ ${#discovered_tests[@]} -eq 0 ]; then
-        echo "❌ Error: No test classes found in '$TEST_DIR'"
-        echo "Expected test files matching pattern: *Test.java or *Tests.java"
+    # Try each file type
+    for file_type in "${!FILE_PATTERNS[@]}"; do
+        local test_dir="${TEST_DIRECTORIES[$file_type]}"
+        
+        if [ ! -d "$test_dir" ]; then
+            continue
+        fi
+
+        local patterns="${FILE_PATTERNS[$file_type]}"
+        local IFS='|'
+        
+        for pattern in $patterns; do
+            while IFS= read -r test_file; do
+                local class_name=$(basename "$test_file")
+                discovered_tests+=("$class_name:$file_type")
+                ((file_count++))
+            done < <(find "$test_dir" -type f -name "$pattern" | sort)
+        done
+    done
+
+    if [ $file_count -eq 0 ]; then
+        echo "❌ Error: No test files found in any test directory"
+        echo "Expected:"
+        for file_type in "${!FILE_PATTERNS[@]}"; do
+            echo "  - ${FILE_PATTERNS[$file_type]} in ${TEST_DIRECTORIES[$file_type]}"
+        done
         exit 1
     fi
 
     echo "${discovered_tests[@]}"
 }
 
+# Extract test methods from Java test file
+extract_java_test_methods() {
+    local test_file=$1
+    
+    # Remove .java extension if present
+    test_file="${test_file%.java}"
+    
+    local test_dir="${TEST_DIRECTORIES[java]}"
+    
+    # Search for the file recursively in the test directory
+    local full_path=$(find "$test_dir" -name "${test_file}.java" -type f | head -1)
+    
+    if [ -z "$full_path" ] || [ ! -f "$full_path" ]; then
+        return
+    fi
+
+    # Extract method names: find @Test or @ParameterizedTest, then look ahead for void method
+    grep -A 20 "@Test\|@ParameterizedTest" "$full_path" \
+    | grep "void" \
+    | sed 's/.*void \([a-zA-Z0-9_]*\).*/\1/' \
+    | sort -u
+}
+
+# Extract test methods from JavaScript test file
+extract_js_test_methods() {
+    local test_file=$1
+    # Remove file extensions
+    test_file="${test_file%.test.js}"
+    test_file="${test_file%.spec.js}"
+    test_file="${test_file%.js}"
+    
+    local test_dir="${TEST_DIRECTORIES[js]}"
+    
+    # Try both extensions
+    local full_path=""
+    [ -f "$test_dir/${test_file}.test.js" ] && full_path="$test_dir/${test_file}.test.js"
+    [ -f "$test_dir/${test_file}.spec.js" ] && full_path="$test_dir/${test_file}.spec.js"
+
+    if [ -z "$full_path" ]; then
+        return
+    fi
+
+    # Extract test names from it() and test() functions
+    grep -E "^\s*(it|test)\(" "$full_path" | sed "s/.*['\"]([^'\"]*)['\"].*/\1/" | sort -u
+}
+
+
 # Function to filter tests based on criteria
 filter_tests() {
     local -n tests_array=$1
     local -a filtered_tests
 
-    for test in "${tests_array[@]}"; do
+    for test_entry in "${tests_array[@]}"; do
+        local test="${test_entry%:*}"
+        local file_type="${test_entry##*:}"
+
         # Apply test type filter
         if [ -n "$TEST_TYPE" ]; then
-            if [ "$TEST_TYPE" = "unit" ] && [[ ! "$test" =~ IntegrationTest$ ]]; then
-                :  # Keep unit tests (those NOT ending with IntegrationTest)
-            elif [ "$TEST_TYPE" = "integration" ] && [[ "$test" =~ IntegrationTest$ ]]; then
-                :  # Keep integration tests
-            else
+            if [ "$TEST_TYPE" = "unit" ] && [[ "$test" =~ Integration ]]; then
+                continue
+            elif [ "$TEST_TYPE" = "integration" ] && [[ ! "$test" =~ Integration ]]; then
                 continue
             fi
         fi
@@ -179,13 +276,13 @@ filter_tests() {
             continue
         fi
 
-        filtered_tests+=("$test")
+        filtered_tests+=("$test_entry")
     done
 
     echo "${filtered_tests[@]}"
 }
 
-# Function to load previously failed tests
+# Load previously failed tests
 load_failed_tests() {
     if [ -f "$FAILED_TESTS_FILE" ]; then
         mapfile -t failed_tests < "$FAILED_TESTS_FILE"
@@ -193,89 +290,277 @@ load_failed_tests() {
     fi
 }
 
-# Function to save failed tests to file
+# Save failed tests to file
 save_failed_tests() {
-    > "$FAILED_TESTS_FILE"  # Clear the file
+    > "$FAILED_TESTS_FILE"
     for test in "${FAILED_TESTS[@]}"; do
         echo "$test" >> "$FAILED_TESTS_FILE"
     done
 }
 
-# Function to parse Maven test output and extract test details
-parse_test_output() {
+parse_maven_output() {
     local test_class=$1
     local output=$2
     local passed=0
     local failed=0
-    local failures=""
+    
+    local class_name="${test_class%.java}"
 
-    # Extract test counts from Maven output
-    # Pattern: "Tests run: X, Failures: Y, Errors: Z"
     if [[ $output =~ Tests\ run:\ ([0-9]+),\ Failures:\ ([0-9]+),\ Errors:\ ([0-9]+) ]]; then
         passed=$((${BASH_REMATCH[1]} - ${BASH_REMATCH[2]} - ${BASH_REMATCH[3]}))
         failed=$((${BASH_REMATCH[2]} + ${BASH_REMATCH[3]}))
     fi
-
-    # Extract failed test names
-    # Pattern: "testMethodName(ClassName) Time elapsed: X s <<< FAILURE!"
-    while IFS= read -r line; do
-        if [[ $line =~ ^[[:space:]]*-[[:space:]]([a-zA-Z0-9_]+)\( ]]; then
-            failures="${failures}${BASH_REMATCH[1]}, "
-        fi
-    done < <(echo "$output" | grep -E "^\s*-\s+[a-zA-Z0-9_]+\(")
-
-    # Remove trailing comma and space
-    failures="${failures%, }"
+    
+    # Extract failed test method names
+    local failures=$(echo "$output" | grep "Failures:" -A 100 | grep "${class_name}" | grep -oP "\.\K[a-zA-Z0-9_]+(?=:)" | tr '\n' ',' | sed 's/,$//')
 
     TEST_COUNTS["$test_class"]="$passed/$((passed + failed))"
     if [ -n "$failures" ]; then
         TEST_FAILURES["$test_class"]="$failures"
     fi
+    
+    echo "$failures"
 }
 
-# Function to run a single test
-run_test() {
+
+# Parse Jest test output
+parse_jest_output() {
+    local test_class=$1
+    local output=$2
+    
+    # Extract test counts from Jest output
+    # Jest outputs: "Tests: X passed, Y failed, Z total"
+    if [[ $output =~ Tests:[[:space:]]+([0-9]+)[[:space:]]passed ]]; then
+        local passed=${BASH_REMATCH[1]}
+        local total=0
+        if [[ $output =~ ([0-9]+)[[:space:]]total ]]; then
+            total=${BASH_REMATCH[1]}
+        fi
+        local failed=$((total - passed))
+        TEST_COUNTS["$test_class"]="$passed/$total"
+    fi
+}
+
+# Run Maven test
+run_maven_test() {
     local test=$1
     local output
-
+    
     output=$(mvn test -Dspring.profiles.active=test -Dtest=$test -DparallelForks=$PARALLEL_THREADS 2>&1)
     local exit_code=$?
-
-    # Parse the output for test details
-    parse_test_output "$test" "$output"
-
-    # Save output if verbose mode is on
+    
+    parse_maven_output "$test" "$output"
+    
     if [ "$VERBOSE_MODE" = true ]; then
         echo "$output"
     fi
-
+    
     return $exit_code
 }
 
-# Function to display test list
+
+# Run Jest test
+run_jest_test() {
+    local test=$1
+    local test_name="${test%.test.js}"
+    test_name="${test_name%.spec.js}"
+    local test_dir="${TEST_DIRECTORIES[js]}"
+    local output
+    
+    # Try to find the test file
+    local test_file=""
+    [ -f "$test_dir/${test_name}.test.js" ] && test_file="$test_dir/${test_name}.test.js"
+    [ -f "$test_dir/${test_name}.spec.js" ] && test_file="$test_dir/${test_name}.spec.js"
+    
+    if [ -z "$test_file" ]; then
+        echo "Test file not found: $test"
+        return 1
+    fi
+    
+    output=$(jest "$test_file" 2>&1)
+    local exit_code=$?
+    
+    parse_jest_output "$test" "$output"
+    
+    if [ "$VERBOSE_MODE" = true ]; then
+        echo "$output"
+    fi
+    
+    return $exit_code
+}
+
+# Run a single test (dispatches to appropriate runner)
+run_test() {
+    local test_entry=$1
+    local test="${test_entry%:*}"
+    local file_type="${test_entry##*:}"
+    
+    # Get the appropriate test runner function
+    local runner_func="${TEST_RUNNERS[$file_type]}"
+    
+    if [ -z "$runner_func" ]; then
+        echo "❌ Unknown file type: $file_type"
+        return 1
+    fi
+    
+    # Call the appropriate runner
+    $runner_func "$test"
+}
+
+# Display test list with methods
 display_test_list() {
     local -a tests=($1)
     
     echo ""
-    printf "%-50s | %-5s\n" "Test Name" "Type"
-    printf "%s\n" "$(printf '=%.0s' {1..60})"
+    printf "%-50s | %-6s\n" "Test Name" "Type"
+    printf "%s\n" "$(printf '=%.0s' {1..62})"
 
-    for test in "${tests[@]}"; do
-        if [[ "$test" =~ IntegrationTest$ ]]; then
+    for test_entry in "${tests[@]}"; do
+        local test="${test_entry%:*}"
+        local file_type="${test_entry##*:}"
+        
+        if [[ "$test" =~ Integration ]]; then
             test_type="INT"
         else
             test_type="UNIT"
         fi
-        printf "%-50s | %-5s\n" "$test" "$test_type"
+        
+        printf "%-50s | %-6s\n" "$test" "$test_type"
+        
+        # Show test methods if we should
+        if [ "$SHOW_TEST_METHODS" = true ]; then
+            local extractor="${TEST_METHODS_EXTRACTORS[$file_type]}"
+            if [ -n "$extractor" ]; then
+                while IFS= read -r method; do
+                    if [ -n "$method" ]; then
+                        printf "  ${CYAN}├─ %s${NC}\n" "$method"
+                    fi
+                done < <($extractor "$test")
+            fi
+        fi
     done
 
     echo ""
-    printf "Total: ${#tests[@]} test(s)\n"
+    printf "Total: ${#tests[@]} test class(es)\n"
 }
+
+# Display test results with dynamic column sizing and test methods
+display_results() {
+    local -a passed_tests=("${!1}")
+    local -a failed_tests=("${!2}")
+    local total=$3
+    
+    # Calculate the longest test name for proper column width
+    local max_name_length=10
+    for test_entry in "${passed_tests[@]}" "${failed_tests[@]}"; do
+        local test="${test_entry%:*}"
+        local file_type="${test_entry##*:}"
+        local display_name="$test [$file_type]"
+        if [ ${#display_name} -gt $max_name_length ]; then
+            max_name_length=${#display_name}
+        fi
+    done
+    
+    # Add some padding
+    ((max_name_length += 2))
+    
+    # Create header
+    printf "%-${max_name_length}s | %-15s | %-10s\n" "Test Name" "Count (P/T)" "Status"
+    
+    # Create separator line
+    local separator_length=$((max_name_length + 15 + 10 + 8))
+    printf "%s\n" "$(printf '=%.0s' $(seq 1 $separator_length))"
+
+    # Print passed tests
+    for test_entry in "${passed_tests[@]}"; do
+        local test="${test_entry%:*}"
+        local file_type="${test_entry##*:}"
+        count=${TEST_COUNTS[$test]:-"?"}
+        printf "%-${max_name_length}s | %-15s | ${GREEN}%-10s${NC}\n" "$test [$file_type]" "$count" "PASSED"
+        
+        # Show individual test methods if filter was used
+        if [ -n "$FILTER_PATTERN" ]; then
+            show_test_methods "$test" "$file_type"
+        fi
+    done
+
+    # Print failed tests
+    for test_entry in "${failed_tests[@]}"; do
+        local test="${test_entry%:*}"
+        local file_type="${test_entry##*:}"
+        count=${TEST_COUNTS[$test]:-"?"}
+        printf "%-${max_name_length}s | %-15s | ${RED}%-10s${NC}\n" "$test [$file_type]" "$count" "FAILED"
+        
+        # Show individual test methods if filter was used
+        if [ -n "$FILTER_PATTERN" ]; then
+            show_test_methods "$test" "$file_type"
+        fi
+        
+        # Show which tests failed within the class
+        if [ -n "${TEST_FAILURES[$test]}" ]; then
+            echo -e "  ${RED}Failed methods:${NC} ${TEST_FAILURES[$test]}"
+        fi
+    done
+
+    echo ""
+    printf "%s\n" "$(printf '=%.0s' $(seq 1 $separator_length))"
+    printf "%-${max_name_length}s | %-15s | %-10s\n" "TOTAL" "$total" ""
+    printf "%-${max_name_length}s | %-15s | ${GREEN}%-10s${NC}\n" "PASSED" "${#passed_tests[@]}" ""
+    printf "%-${max_name_length}s | %-15s | ${RED}%-10s${NC}\n" "FAILED" "${#failed_tests[@]}" ""
+    echo ""
+}
+
+# Display individual test methods for a test class
+show_test_methods() {
+    local test=$1
+    local file_type=$2
+    
+    local extractor="${TEST_METHODS_EXTRACTORS[$file_type]}"
+    if [ -z "$extractor" ]; then
+        return
+    fi
+    
+    # Get the list of failed methods for this test
+    local failed_methods_str="${TEST_FAILURES[$test]}"
+    
+    declare -a failed_methods
+    
+    # Parse failed methods into an array
+    if [ -n "$failed_methods_str" ]; then
+        IFS=', ' read -ra failed_methods <<< "$failed_methods_str"
+    fi
+    
+    local method_count=0
+    while IFS= read -r method; do
+        if [ -n "$method" ]; then
+            # Check if this method is in the failed methods list
+            local is_failed=false
+            for failed_method in "${failed_methods[@]}"; do
+                if [ "$method" = "$failed_method" ]; then
+                    is_failed=true
+                    break
+                fi
+            done
+            
+            # Display with appropriate color and symbol
+            if [ "$is_failed" = true ]; then
+                printf "  ${RED}✗ %s${NC}\n" "$method"
+            else
+                printf "  ${GREEN}✓ %s${NC}\n" "$method"
+            fi
+            ((method_count++))
+        fi
+    done < <($extractor "$test")
+    
+    if [ $method_count -eq 0 ]; then
+        printf "  ${YELLOW}(no test methods found)${NC}\n"
+    fi
+}
+
+
 
 # Main script execution
 main() {
-    # Parse command line arguments
     parse_arguments "$@"
 
     # Check if the maven container is running
@@ -331,16 +616,20 @@ main() {
     current=1
 
     # Run each test
-    for test in "${FILTERED_TESTS[@]}"; do
-        echo -ne "[$current/$total_tests] Running $test... "
+    for test_entry in "${FILTERED_TESTS[@]}"; do
+        local test="${test_entry%:*}"
+        local file_type="${test_entry##*:}"
+        
+        echo -ne "[$current/$total_tests] Running $test [$file_type]... "
         
         # Run test and capture exit code
-        if run_test "$test" > /dev/null 2>&1; then
+        #if run_test "$test_entry" > /dev/null 2>&1; then
+        if run_test "$test_entry"; then
             echo -e "${GREEN}✓ PASSED${NC}"
-            PASSED_TESTS+=("$test")
+            PASSED_TESTS+=("$test_entry")
         else
             echo -e "${RED}✗ FAILED${NC}"
-            FAILED_TESTS+=("$test")
+            FAILED_TESTS+=("$test_entry")
             
             if [ "$STOP_ON_FAILURE" = true ]; then
                 echo ""
@@ -358,33 +647,8 @@ main() {
     echo "=========================================="
     echo ""
 
-    # Create table with test counts
-    printf "%-40s | %-15s | %-10s\n" "Test Name" "Count (P/T)" "Status"
-    printf "%s\n" "$(printf '=%.0s' {1..70})"
-
-    # Print passed tests
-    for test in "${PASSED_TESTS[@]}"; do
-        count=${TEST_COUNTS[$test]:-"?"}
-        printf "%-40s | %-15s | ${GREEN}%-8s${NC}\n" "$test" "$count" "PASSED"
-    done
-
-    # Print failed tests
-    for test in "${FAILED_TESTS[@]}"; do
-        count=${TEST_COUNTS[$test]:-"?"}
-        printf "%-40s | %-15s | ${RED}%-8s${NC}\n" "$test" "$count" "FAILED"
-        
-        # Show which tests failed within the class
-        if [ -n "${TEST_FAILURES[$test]}" ]; then
-            echo -e "  ${RED}Failed methods:${NC} ${TEST_FAILURES[$test]}"
-        fi
-    done
-
-    echo ""
-    printf "%s\n" "$(printf '=%.0s' {1..70})"
-    printf "%-40s | %-15s | %-10s\n" "TOTAL" "$total_tests" ""
-    printf "%-40s | %-15s | ${GREEN}%-10s${NC}\n" "PASSED" "${#PASSED_TESTS[@]}" ""
-    printf "%-40s | %-15s | ${RED}%-10s${NC}\n" "FAILED" "${#FAILED_TESTS[@]}" ""
-    echo ""
+    # Display results with dynamic column sizing
+    display_results PASSED_TESTS[@] FAILED_TESTS[@] "$total_tests"
 
     # Save failed tests for --failed-only mode
     if [ ${#FAILED_TESTS[@]} -gt 0 ]; then
@@ -400,3 +664,4 @@ main() {
 
 # Run main function with all arguments
 main "$@"
+

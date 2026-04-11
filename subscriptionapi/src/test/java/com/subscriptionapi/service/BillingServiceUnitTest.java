@@ -192,7 +192,7 @@ public class BillingServiceUnitTest {
         when(billingRepository.findById(BILLING_ID)).thenReturn(Optional.of(testBilling));
         when(billingRepository.save(any(Billing.class))).thenReturn(updatedBilling);
         
-        BillingResponseDTO result = billingService.updateBillingStatus(BILLING_ID, newStatus);
+        BillingResponseDTO result = billingService.updateBillingStatus(BILLING_ID, newStatus, testBilling.getSubscription().getUser().getId());
         
         assertNotNull(result);
         assertEquals(newStatus, result.getStatus());
@@ -203,7 +203,7 @@ public class BillingServiceUnitTest {
         verify(billingRepository).findById(BILLING_ID);
         verify(billingRepository).save(any(Billing.class));
     }
-    
+
     @DisplayName("Should get billing by ID")
     @org.junit.jupiter.api.Test
     public void testGetBillingById() {
@@ -248,7 +248,7 @@ public class BillingServiceUnitTest {
     public void testDeleteBilling() {
         when(billingRepository.findById(BILLING_ID)).thenReturn(Optional.of(testBilling));
         
-        billingService.deleteBilling(BILLING_ID);
+        billingService.deleteBilling(BILLING_ID, testCustomer.getId());
         
         verify(billingRepository).findById(BILLING_ID);
         verify(billingRepository).delete(testBilling);

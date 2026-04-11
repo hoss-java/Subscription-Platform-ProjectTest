@@ -26,6 +26,7 @@ public class BillingController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/billing-statuses")
+    @PreAuthorize("isAuthenticated()") 
     public ResponseEntity<List<String>> getBillingStatuses() {
         List<String> billingStatuses = Arrays.stream(BillingStatus.values())
                 .map(Enum::name)
@@ -34,6 +35,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing-periods")
+    @PreAuthorize("isAuthenticated()") 
     public ResponseEntity<List<String>> getBillingPeriods() {
         List<String> billingPeriods = Arrays.stream(BillingPeriod.values())
                 .map(Enum::name)
@@ -104,15 +106,20 @@ public class BillingController {
     @PreAuthorize("hasAnyRole('CUSTOMER', 'OPERATOR')")
     public ResponseEntity<BillingResponseDTO> updateBillingStatus(
             @PathVariable Long id,
-            @Valid @RequestBody BillingUpdateRequest request) {
-        BillingResponseDTO billing = billingService.updateBillingStatus(id, request.getStatus());
+            @Valid @RequestBody BillingUpdateRequest request,
+            @RequestHeader("Authorization") String token) {
+        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        BillingResponseDTO billing = billingService.updateBillingStatus(id, request.getStatus(), userId);
         return ResponseEntity.ok(billing);
     }
     
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'OPERATOR')")
-    public ResponseEntity<Void> deleteBilling(@PathVariable Long id) {
-        billingService.deleteBilling(id);
+    public ResponseEntity<Void> deleteBilling(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        billingService.deleteBilling(id, userId);
         return ResponseEntity.noContent().build();
     }
 

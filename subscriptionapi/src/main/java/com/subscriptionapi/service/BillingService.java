@@ -23,9 +23,9 @@ public interface BillingService {
     
     List<BillingResponseDTO> getBillingsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     
-    BillingResponseDTO updateBillingStatus(Long id, BillingStatus status);
+    BillingResponseDTO updateBillingStatus(Long id, BillingStatus status, Long userId);
     
-    void deleteBilling(Long id);
+    void deleteBilling(Long id, Long userId);
 
     List<BillingResponseDTO> getBillingIssuedByOperator(Long operatorId, String status);
 

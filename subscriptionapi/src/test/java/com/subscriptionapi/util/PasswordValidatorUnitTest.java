@@ -82,7 +82,7 @@ public class PasswordValidatorUnitTest {
     public void testDisallowedSpecialCharacters(String password) {
         assertFalse(passwordValidator.isValidPassword(password));
     }
-    
+
     // ===== Password Requirements Message =====
     
     @Test

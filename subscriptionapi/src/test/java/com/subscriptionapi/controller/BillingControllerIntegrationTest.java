@@ -278,7 +278,7 @@ public class BillingControllerIntegrationTest {
                 .build();
 
         // Act & Assert
-        mockMvc.perform(post("/billings")
+        mockMvc.perform(post("/api/billings")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRequest)))
@@ -313,7 +313,7 @@ public class BillingControllerIntegrationTest {
                 .build();
 
         // Act & Assert
-        mockMvc.perform(post("/billings")
+        mockMvc.perform(post("/api/billings")
                 .header("Authorization", "Bearer " + customerToken1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRequest)))
@@ -349,7 +349,7 @@ public class BillingControllerIntegrationTest {
                 .build();
 
         // Act & Assert
-        mockMvc.perform(post("/billings")
+        mockMvc.perform(post("/api/billings")
                 .header("Authorization", "Bearer " + customerToken1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRequest)))
@@ -383,7 +383,7 @@ public class BillingControllerIntegrationTest {
         String token = getTokenByField(tokenField);
 
         // Act & Assert
-        mockMvc.perform(get("/billings/" + testBilling.getId())
+        mockMvc.perform(get("/api/billings/" + testBilling.getId())
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
     }
@@ -406,7 +406,7 @@ public class BillingControllerIntegrationTest {
     @DisplayName("CUSTOMER can retrieve their billing (200 OK)")
     void testGetBillingSuccess() throws Exception {
         // Act & Assert
-        mockMvc.perform(get("/billings/" + testBilling.getId())
+        mockMvc.perform(get("/api/billings/" + testBilling.getId())
                 .header("Authorization", "Bearer " + customerToken1))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testBilling.getId()))
@@ -434,7 +434,7 @@ public class BillingControllerIntegrationTest {
     @DisplayName("CUSTOMER can retrieve all their billings (200 OK)")
     void testGetBillingsByUserSuccess() throws Exception {
         // Act & Assert
-        mockMvc.perform(get("/billings")
+        mockMvc.perform(get("/api/billings")
                 .header("Authorization", "Bearer " + customerToken1))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(testBilling.getId()))
@@ -464,7 +464,7 @@ public class BillingControllerIntegrationTest {
         String token = getTokenByField(tokenField);
 
         // Act & Assert
-        mockMvc.perform(get("/billings")
+        mockMvc.perform(get("/api/billings")
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
     }
@@ -505,7 +505,7 @@ public class BillingControllerIntegrationTest {
         updateRequest.setStatus(newStatus);
 
         // Act & Assert
-        mockMvc.perform(put("/billings/" + testBilling.getId())
+        mockMvc.perform(put("/api/billings/" + testBilling.getId())
                 .header("Authorization", "Bearer " + customerToken1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)))
@@ -538,7 +538,7 @@ public class BillingControllerIntegrationTest {
         updateRequest.setStatus(BillingStatus.PAID);
 
         // Act & Assert
-        mockMvc.perform(put("/billings/" + testBilling.getId())
+        mockMvc.perform(put("/api/billings/" + testBilling.getId())
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)))
@@ -566,7 +566,7 @@ public class BillingControllerIntegrationTest {
         updateRequest.setStatus(BillingStatus.PAID);
 
         // Act & Assert
-        mockMvc.perform(put("/billings/9999")
+        mockMvc.perform(put("/api/billings/9999")
                 .header("Authorization", "Bearer " + customerToken1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)))
@@ -600,7 +600,7 @@ public class BillingControllerIntegrationTest {
         String token = getTokenByField(tokenField);
 
         // Act & Assert
-        mockMvc.perform(delete("/billings/" + testBilling.getId())
+        mockMvc.perform(delete("/api/billings/" + testBilling.getId())
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
     }
@@ -623,7 +623,7 @@ public class BillingControllerIntegrationTest {
     @DisplayName("CUSTOMER can delete their billing (204 No Content)")
     void testDeleteBillingSuccess() throws Exception {
         // Act & Assert
-        mockMvc.perform(delete("/billings/" + testBilling.getId())
+        mockMvc.perform(delete("/api/billings/" + testBilling.getId())
                 .header("Authorization", "Bearer " + customerToken1))
             .andExpect(status().isNoContent());
 
@@ -647,7 +647,7 @@ public class BillingControllerIntegrationTest {
     @DisplayName("Cannot delete non-existent billing (404 Not Found)")
     void testDeleteBillingNotFound() throws Exception {
         // Act & Assert
-        mockMvc.perform(delete("/billings/9999")
+        mockMvc.perform(delete("/api/billings/9999")
                 .header("Authorization", "Bearer " + customerToken1))
             .andExpect(status().isNotFound());
     }

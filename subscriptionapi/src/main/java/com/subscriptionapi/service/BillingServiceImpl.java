@@ -19,6 +19,7 @@ import com.subscriptionapi.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,9 +97,14 @@ public class BillingServiceImpl implements BillingService {
 
     @Override
     @Transactional
-    public BillingResponseDTO updateBillingStatus(Long id, BillingStatus status) {
+    public BillingResponseDTO updateBillingStatus(Long id, BillingStatus status, Long userId) {
         Billing billing = billingRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Billing not found"));
+        
+        // Check if user owns this billing
+        if (!billing.getSubscription().getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You cannot update this billing");
+        }
         
         billing.setStatus(status);
         if (status == BillingStatus.PAID) {
@@ -111,11 +117,19 @@ public class BillingServiceImpl implements BillingService {
 
     @Override
     @Transactional
-    public void deleteBilling(Long id) {
+    public void deleteBilling(Long id, Long userId) {
         Billing billing = billingRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Billing not found"));
+        
+        // Check if user owns the subscription or is the operator
+        if (!billing.getSubscription().getUser().getId().equals(userId) && 
+            !billing.getSubscription().getOperator().getId().equals(userId)) {
+            throw new AccessDeniedException("You cannot delete this billing");
+        }
+        
         billingRepository.delete(billing);
     }
+
 
     private BillingResponseDTO mapToResponseDTO(Billing billing) {
         return BillingResponseDTO.builder()
