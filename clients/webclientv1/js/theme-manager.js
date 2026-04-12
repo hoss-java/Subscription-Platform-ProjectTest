@@ -1,107 +1,37 @@
 /**
- * Theme Manager
- * Handles theme switching and persistence
+ * Theme Manager - Handles theme switching and persistence
  */
-
 class ThemeManager {
-  static instance = null; // Static property to hold the singleton instance
+  static #instance;
+  static #CONFIG_URL = 'config/styles.json';
 
-  constructor() {
-    this.storageKey = 'selectedTheme';
-    this.defaultTheme = 'default';
-    this.availableThemes = ['default', 'dark'];
-    this.currentTheme = null;
-  }
+  #storageKey = 'selectedTheme';
+  #themes = ['default', 'dark'];
+  #currentTheme = null;
 
-  // Static method to get or create instance (singleton)
+  constructor() {}
+
   static getInstance() {
-    if (ThemeManager.instance === null) {
-      console.log('Creating new ThemeManager instance');
-      ThemeManager.instance = new ThemeManager();
-    } else {
-      console.log('Returning existing ThemeManager instance');
-    }
-    return ThemeManager.instance;
+    return this.#instance ??= new ThemeManager();
   }
 
-  /**
-   * Initialize theme manager
-   */
-
-  init() {
-    console.log('🎨 Initializing Theme Manager');
-    
-    // Load saved theme or use default
-    const savedTheme = this.getSavedTheme();
-    this.setTheme(savedTheme);
-    
-    // Create theme switcher UI
-    this.createThemeSwitcher();
-    
-    console.log('✅ Theme Manager initialized');
+  async init() {
+    this.#currentTheme = this.#getSavedTheme();
+    await this.setTheme(this.#currentTheme);
+    this.#createSwitcher();
   }
 
-  /**
-   * Get saved theme from localStorage
-   */
-  getSavedTheme() {
-    const saved = localStorage.getItem(this.storageKey);
+  #getSavedTheme() {
+    const saved = localStorage.getItem(this.#storageKey);
+    return saved && this.#themes.includes(saved) ? saved : this.#themes[0];
+  }
+
+  async setTheme(themeName) {
+    if (!this.#themes.includes(themeName)) themeName = this.#themes[0];
+
+    document.querySelectorAll('link[data-theme]').forEach(el => el.remove());
     
-    if (saved && this.availableThemes.includes(saved)) {
-      console.log(`📖 Restored theme: ${saved}`);
-      return saved;
-    }
-    
-    console.log(`📖 Using default theme: ${this.defaultTheme}`);
-    return this.defaultTheme;
-  }
-
-  /**
-   * Set active theme by dynamically loading CSS
-   */
-  setTheme(themeName) {
-    if (!this.availableThemes.includes(themeName)) {
-      console.warn(`⚠️  Theme not found: ${themeName}, using default`);
-      themeName = this.defaultTheme;
-    }
-
-    console.log(`🎨 Switching to theme: ${themeName}`);
-
-    // Remove old theme stylesheets
-    this.removeThemeStylesheets();
-
-    // Load new theme stylesheets
-    this.loadThemeStylesheets(themeName);
-
-    // Save preference
-    this.currentTheme = themeName;
-    localStorage.setItem(this.storageKey, themeName);
-
-    // Update switcher UI
-    this.updateSwitcherUI();
-
-    console.log(`✅ Theme changed to: ${themeName}`);
-  }
-
-  /**
-   * Remove all theme stylesheets (keep base.css)
-   */
-  removeThemeStylesheets() {
-    const links = document.querySelectorAll('link[data-theme]');
-    links.forEach(link => {
-      link.remove();
-      console.log(`  🗑️  Removed: ${link.href}`);
-    });
-  }
-
-  /**
-   * Load theme stylesheets dynamically
-   */
-  async loadThemeStylesheets(themeName) {
-    const response = await fetch('config/styles.json');
-    const config = await response.json();
-
-    // Load theme files from config
+    const config = await fetch(ThemeManager.#CONFIG_URL).then(r => r.json());
     config.theme.forEach(file => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -109,94 +39,62 @@ class ThemeManager {
       link.setAttribute('data-theme', themeName);
       document.head.appendChild(link);
     });
+
+    this.#currentTheme = themeName;
+    localStorage.setItem(this.#storageKey, themeName);
+    this.#updateUI();
   }
 
-  /**
-   * Create theme switcher UI in header
-   */
-  createThemeSwitcher() {
+  #createSwitcher() {
     const container = document.getElementById('theme-switcher-container');
-    
-    if (!container) {
-      console.warn('⚠️ Theme switcher container not found');
-      return;
-    }
+    if (!container) return;
 
-    const switcher = document.createElement('div');
-    switcher.className = 'theme-switcher';
-    switcher.innerHTML = `
-      <div class="custom-select">
-        <button class="select-button" id="theme-button">${this.capitalize(this.currentTheme)}</button>
-        <div class="select-dropdown" id="theme-dropdown" style="display: none;">
-          ${this.availableThemes
-            .map(theme => 
-              `<div class="select-option" data-value="${theme}" ${theme === this.currentTheme ? 'selected' : ''}>
-                ${this.capitalize(theme)}
-              </div>`
-            )
-            .join('')}
+    container.innerHTML = `
+      <div class="theme-switcher">
+        <button class="select-button" id="theme-button">${this.#capitalize(this.#currentTheme)}</button>
+        <div class="select-dropdown" id="theme-dropdown" hidden>
+          ${this.#themes.map(theme => 
+            `<div class="select-option" data-value="${theme}" ${theme === this.#currentTheme ? 'selected' : ''}>
+              ${this.#capitalize(theme)}
+            </div>`
+          ).join('')}
         </div>
       </div>
     `;
 
-    container.appendChild(switcher);
-
     const button = document.getElementById('theme-button');
     const dropdown = document.getElementById('theme-dropdown');
-    const options = document.querySelectorAll('.select-option');
 
-    button.addEventListener('click', () => {
-      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    });
-
-    options.forEach(option => {
-      option.addEventListener('click', (e) => {
-        const theme = e.target.dataset.value;
-        this.setTheme(theme);
-        dropdown.style.display = 'none';
-      });
+    button.addEventListener('click', () => dropdown.hidden = !dropdown.hidden);
+    
+    document.getElementById('theme-dropdown').addEventListener('click', (e) => {
+      if (e.target.classList.contains('select-option')) {
+        this.setTheme(e.target.dataset.value);
+        dropdown.hidden = true;
+      }
     });
 
     document.addEventListener('click', (e) => {
-      if (!switcher.contains(e.target)) {
-        dropdown.style.display = 'none';
-      }
+      if (!container.contains(e.target)) dropdown.hidden = true;
     });
   }
 
-
-  /**
-   * Update switcher UI to reflect current theme
-   */
-  updateSwitcherUI() {
-    const select = document.getElementById('theme-select');
-    if (select) {
-      select.value = this.currentTheme;
-    }
+  #updateUI() {
+    const button = document.getElementById('theme-button');
+    if (button) button.textContent = this.#capitalize(this.#currentTheme);
   }
 
-  /**
-   * Get list of available themes
-   */
+  #capitalize(str) {
+    return str[0].toUpperCase() + str.slice(1);
+  }
+
   getAvailableThemes() {
-    return this.availableThemes;
+    return this.#themes;
   }
 
-  /**
-   * Get current active theme
-   */
   getCurrentTheme() {
-    return this.currentTheme;
+    return this.#currentTheme;
   }
-
-  /**
-   * Helper: capitalize string
-   */
-  capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
 }
 
-// EXPORT TO WINDOW
 window.ThemeManager = ThemeManager;

@@ -1,46 +1,35 @@
 class Initializer {
   static async init() {
     console.log('Initializing app components...');
-    
-    // Initialize HeaderComponent FIRST and WAIT for it to complete
-    console.log('Initializing headerInstance...');
+
+    // Initialize HeaderComponent first
     try {
       const headerInstance = window.HeaderComponent.getInstance();
       window.headerInstance = headerInstance;
-      await headerInstance.init(); // AWAIT THIS
+      await headerInstance.init();
       console.log('✓ headerInstance initialized and HTML loaded');
     } catch (error) {
       console.error('Error initializing headerInstance:', error);
     }
 
-    // NOW initialize other components (header HTML is definitely loaded)
+    // Initialize other components
     const components = [
-      { name: 'themeManager', getInstance: () => window.ThemeManager.getInstance() },
-      { name: 'consoleWindowInstance', getInstance: () => window.ConsoleWindow.getInstance() },
-      { name: 'consoleLoggerInstance', getInstance: () => window.ConsoleLogger.getInstance() },
-      { name: 'uiController', getInstance: () => window.UIController.getInstance() },
+      { name: 'themeManager', cls: 'ThemeManager' },
+      { name: 'consoleWindowInstance', cls: 'ConsoleWindow' },
+      { name: 'consoleLoggerInstance', cls: 'ConsoleLogger' },
+      { name: 'uiController', cls: 'UIController' },
     ];
 
-    for (const component of components) {
-      console.log(`Initializing ${component.name}...`);
-      
+    for (const { name, cls } of components) {
       try {
-        const instance = component.getInstance();
-        window[component.name] = instance;
-        
-        if (typeof instance.init === 'function') {
-          console.log(`✓ Calling ${component.name}.init()`);
-          instance.init();
-        } else {
-          console.warn(`⚠️ ${component.name} has no init() method`);
-        }
+        const instance = (window[name] = window[cls].getInstance());
+        typeof instance.init === 'function' && instance.init();
       } catch (error) {
-        console.error(`Error initializing ${component.name}:`, error);
+        console.error(`Error initializing ${name}:`, error);
       }
     }
 
     // Initialize auth services
-    console.log('Initializing auth services...');
     try {
       apiClient.setAuthService(authService);
       authService.setApiClient(apiClient);
@@ -49,24 +38,13 @@ class Initializer {
       console.error('Error initializing auth services:', error);
     }
 
-    // Check authentication and guard routes
-    console.log('Checking authentication...');
+    // Check authentication and set router
     try {
-      const initialPage = await authGuard.initialize();
-      console.log(`[Initializer] Initial page: ${initialPage}`);
-      window.initialPage = initialPage;
+      window.initialPage = await authGuard.initialize();
+      router.setAuthService(authService);
+      window.initApp?.();
     } catch (error) {
       console.error('Error in auth guard:', error);
-    }
-
-    // Set authService on router so it can check auth status
-    router.setAuthService(authService);
-    console.log('✓ Router auth service set');
-
-    // Initialize app router
-    if (window.initApp && typeof window.initApp === 'function') {
-      console.log('Initializing app router...');
-      window.initApp();
     }
 
     console.log('✓ All components initialized');

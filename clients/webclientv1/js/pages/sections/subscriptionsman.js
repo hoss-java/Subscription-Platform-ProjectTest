@@ -7,6 +7,20 @@ const SubscriptionsmanSection = {
   currentSearchQuery: '',
   currentSubscriptionId: null,
 
+  statusMap: {
+    'PENDING': 'warning',
+    'ACTIVE': 'success',
+    'SUSPENDED': 'danger',
+    'CANCELED': 'dark',
+    'EXPIRED': 'secondary'
+  },
+
+  endpointMap: {
+    'ACTIVE': 'approve',
+    'SUSPENDED': 'suspend',
+    'CANCELED': 'cancel'
+  },
+
   init() {
     setTimeout(() => {
       this.attachEventListeners();
@@ -20,18 +34,11 @@ const SubscriptionsmanSection = {
       const statusDropdown = document.getElementById('subscriptions-manager-status-filter');
       if (!statusDropdown) return;
 
-      const response = await apiClient.get('/subscriptions/subscription-statuses');
-      
-      let statuses = [];
-      if (Array.isArray(response)) {
-        statuses = response;
-      }
-
+      const statuses = await apiClient.get('/subscriptions/subscription-statuses');
       statusDropdown.innerHTML = '<option value="">All Statuses</option>';
-      statuses.forEach(status => {
+      (Array.isArray(statuses) ? statuses : []).forEach(status => {
         const option = document.createElement('option');
-        option.value = status;
-        option.textContent = status;
+        option.value = option.textContent = status;
         statusDropdown.appendChild(option);
       });
     } catch (error) {
@@ -40,53 +47,47 @@ const SubscriptionsmanSection = {
   },
 
   attachEventListeners() {
-    const statusFilter = document.getElementById('subscriptions-manager-status-filter');
-    const searchInput = document.getElementById('subscriptions-manager-search-input');
-    const refreshBtn = document.getElementById('subscriptions-manager-refresh-btn');
-    const detailCloseBtn = document.getElementById('subscriptions-manager-detail-close-btn');
-    const detailCloseBtnFooter = document.getElementById('subscriptions-manager-detail-close-footer-btn');
+    const elements = {
+      filter: 'subscriptions-manager-status-filter',
+      search: 'subscriptions-manager-search-input',
+      refresh: 'subscriptions-manager-refresh-btn',
+      closeBtn: 'subscriptions-manager-detail-close-btn',
+      closeFooter: 'subscriptions-manager-detail-close-footer-btn'
+    };
 
-    if (statusFilter) {
-      statusFilter.addEventListener('change', (e) => {
-        this.currentStatusFilter = e.target.value;
-        this.currentPage = 0;
-        this.loadSubscriptions();
-      });
-    }
+    const [statusFilter, searchInput, refreshBtn, detailCloseBtn, detailCloseBtnFooter] = 
+      Object.values(elements).map(id => document.getElementById(id));
 
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        this.currentSearchQuery = e.target.value;
-        this.currentPage = 0;
-        this.loadSubscriptions();
-      });
-    }
+    const resetFilters = () => {
+      this.currentPage = this.currentStatusFilter = this.currentSearchQuery = 0;
+      if (statusFilter) statusFilter.value = '';
+      if (searchInput) searchInput.value = '';
+      this.loadSubscriptions();
+    };
 
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.currentPage = 0;
-        this.currentStatusFilter = '';
-        this.currentSearchQuery = '';
-        if (statusFilter) statusFilter.value = '';
-        if (searchInput) searchInput.value = '';
-        this.loadSubscriptions();
-      });
-    }
+    statusFilter?.addEventListener('change', (e) => {
+      this.currentStatusFilter = e.target.value;
+      this.currentPage = 0;
+      this.loadSubscriptions();
+    });
 
-    if (detailCloseBtn) {
-      detailCloseBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.closeDetailModal();
-      });
-    }
+    searchInput?.addEventListener('input', (e) => {
+      this.currentSearchQuery = e.target.value;
+      this.currentPage = 0;
+      this.loadSubscriptions();
+    });
 
-    if (detailCloseBtnFooter) {
-      detailCloseBtnFooter.addEventListener('click', (e) => {
+    refreshBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      resetFilters();
+    });
+
+    [detailCloseBtn, detailCloseBtnFooter].forEach(btn => 
+      btn?.addEventListener('click', (e) => {
         e.preventDefault();
         this.closeDetailModal();
-      });
-    }
+      })
+    );
   },
 
   async loadSubscriptions() {
@@ -96,68 +97,47 @@ const SubscriptionsmanSection = {
     container.innerHTML = '<p class="loading-message">Loading subscriptions...</p>';
 
     try {
-      // Build the API endpoint
       let endpoint = `/subscriptions/operator/subscriptions?page=${this.currentPage}&size=${this.pageSize}`;
-
-      // Add status filter if selected
-      if (this.currentStatusFilter) {
-        endpoint += `&status=${this.currentStatusFilter}`;
-      }
+      if (this.currentStatusFilter) endpoint += `&status=${this.currentStatusFilter}`;
 
       const response = await apiClient.get(endpoint);
+      let { content = response, totalPages = 1 } = response;
+      
+      if (!Array.isArray(content)) content = [];
 
-      let subscriptions = [];
-      let totalPages = 0;
-
-      if (response.content && Array.isArray(response.content)) {
-        subscriptions = response.content;
-        totalPages = response.totalPages || 0;
-      } else if (Array.isArray(response)) {
-        subscriptions = response;
-        totalPages = 1;
-      }
-
-      // Apply client-side search filter
       if (this.currentSearchQuery) {
         const query = this.currentSearchQuery.toLowerCase();
-        subscriptions = subscriptions.filter(sub => {
-          const customerMatch = (sub.customerName || '').toLowerCase().includes(query);
-          const planMatch = (sub.planName || '').toLowerCase().includes(query);
-          return customerMatch || planMatch;
-        });
+        content = content.filter(sub => 
+          (sub.customerName || '').toLowerCase().includes(query) ||
+          (sub.planName || '').toLowerCase().includes(query)
+        );
       }
 
-      this.subscriptions = subscriptions;
-      this.totalPages = totalPages;
+      this.subscriptions = content;
+      this.totalPages = response.totalPages || totalPages;
 
-      if (this.subscriptions.length === 0) {
-        container.innerHTML = '<p class="empty-message">No subscriptions found.</p>';
-      } else {
-        this.renderSubscriptions();
-      }
+      container.innerHTML = this.subscriptions.length 
+        ? '' 
+        : '<p class="empty-message">No subscriptions found.</p>';
 
+      if (this.subscriptions.length) this.renderSubscriptions();
       this.renderPagination();
       this.syncFilterUI();
 
     } catch (error) {
       container.innerHTML = `<p class="error-message">Error loading subscriptions: ${error.message}</p>`;
-      
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error loading subscriptions: ${error.message}`, 'error');
+      UIController.getInstance().showMessage(`Error loading subscriptions: ${error.message}`, 'error');
     }
   },
 
   renderSubscriptions() {
     const container = document.getElementById('subscriptions-manager-container');
-    container.innerHTML = '';
-
     const table = document.createElement('table');
     table.className = 'subscriptions-table';
 
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    const headers = ['Customer', 'Plan', 'Status', 'Created', 'End Date', 'Next Renewal', 'Actions'];
-    headers.forEach(header => {
+    ['Customer', 'Plan', 'Status', 'Created', 'End Date', 'Next Renewal', 'Actions'].forEach(header => {
       const th = document.createElement('th');
       th.textContent = header;
       headerRow.appendChild(th);
@@ -166,92 +146,77 @@ const SubscriptionsmanSection = {
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    this.subscriptions.forEach(subscription => {
+    this.subscriptions.forEach(sub => {
       const row = document.createElement('tr');
       
-      const customerCell = document.createElement('td');
-      customerCell.textContent = this.escapeHtml(subscription.customerName || 'N/A');
-      row.appendChild(customerCell);
+      const createCell = (content) => {
+        const cell = document.createElement('td');
+        if (typeof content === 'string') cell.textContent = content;
+        else cell.appendChild(content);
+        return cell;
+      };
 
-      const planCell = document.createElement('td');
-      planCell.textContent = this.escapeHtml(subscription.planName || 'N/A');
-      row.appendChild(planCell);
-
-      const statusCell = document.createElement('td');
+      row.appendChild(createCell(this.escapeHtml(sub.customerName || 'N/A')));
+      row.appendChild(createCell(this.escapeHtml(sub.planName || 'N/A')));
+      
       const statusBadge = document.createElement('span');
-      statusBadge.className = `status-badge status-${subscription.status.toLowerCase()}`;
-      statusBadge.textContent = subscription.status;
-      statusCell.appendChild(statusBadge);
-      row.appendChild(statusCell);
+      statusBadge.className = `status-badge status-${sub.status.toLowerCase()}`;
+      statusBadge.textContent = sub.status;
+      row.appendChild(createCell(statusBadge));
 
-      const createdCell = document.createElement('td');
-      createdCell.textContent = this.formatDate(subscription.createdAt);
-      row.appendChild(createdCell);
+      row.appendChild(createCell(this.formatDate(sub.createdAt)));
+      row.appendChild(createCell(sub.endDate ? this.formatDate(sub.endDate) : 'N/A'));
+      row.appendChild(createCell(sub.nextRenewalDate ? this.formatDate(sub.nextRenewalDate) : 'N/A'));
 
-      const endDateCell = document.createElement('td');
-      endDateCell.textContent = subscription.endDate ? this.formatDate(subscription.endDate) : 'N/A';
-      row.appendChild(endDateCell);
-
-      const renewalCell = document.createElement('td');
-      renewalCell.textContent = subscription.nextRenewalDate ? this.formatDate(subscription.nextRenewalDate) : 'N/A';
-      row.appendChild(renewalCell);
-
-      const actionsCell = document.createElement('td');
       const viewBtn = document.createElement('button');
       viewBtn.className = 'btn btn-sm btn-secondary';
       viewBtn.textContent = 'Manage';
-      viewBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.openDetailModal(subscription.id);
-      });
-      actionsCell.appendChild(viewBtn);
-      row.appendChild(actionsCell);
+      viewBtn.addEventListener('click', () => this.openDetailModal(sub.id));
+      row.appendChild(createCell(viewBtn));
 
       tbody.appendChild(row);
     });
 
     table.appendChild(tbody);
+    container.innerHTML = '';
     container.appendChild(table);
   },
 
   renderPagination() {
-    const paginationContainer = document.getElementById('subscriptions-manager-pagination');
-    if (!paginationContainer) return;
+    const container = document.getElementById('subscriptions-manager-pagination');
+    if (!container || this.totalPages <= 1) return;
 
-    paginationContainer.innerHTML = '';
+    container.innerHTML = '';
+    const createBtn = (text, disabled, callback) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-sm btn-secondary';
+      btn.textContent = text;
+      btn.disabled = disabled;
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        callback();
+      });
+      return btn;
+    };
 
-    if (this.totalPages <= 1) return;
-
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'btn btn-sm btn-secondary';
-    prevBtn.textContent = 'Previous';
-    prevBtn.disabled = this.currentPage === 0;
-    prevBtn.addEventListener('click', (e) => {
-      e.preventDefault();
+    container.appendChild(createBtn('Previous', this.currentPage === 0, () => {
       if (this.currentPage > 0) {
         this.currentPage--;
         this.loadSubscriptions();
       }
-    });
-    paginationContainer.appendChild(prevBtn);
+    }));
 
     const pageInfo = document.createElement('span');
     pageInfo.className = 'pagination-info';
     pageInfo.textContent = `Page ${this.currentPage + 1} of ${this.totalPages}`;
-    paginationContainer.appendChild(pageInfo);
+    container.appendChild(pageInfo);
 
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'btn btn-sm btn-secondary';
-    nextBtn.textContent = 'Next';
-    nextBtn.disabled = this.currentPage >= this.totalPages - 1;
-    nextBtn.addEventListener('click', (e) => {
-      e.preventDefault();
+    container.appendChild(createBtn('Next', this.currentPage >= this.totalPages - 1, () => {
       if (this.currentPage < this.totalPages - 1) {
         this.currentPage++;
         this.loadSubscriptions();
       }
-    });
-    paginationContainer.appendChild(nextBtn);
+    }));
   },
 
   async openDetailModal(subscriptionId) {
@@ -265,12 +230,8 @@ const SubscriptionsmanSection = {
     modal.classList.add('active');
 
     try {
-      const response = await apiClient.get(`/subscriptions/${subscriptionId}`);
-      
-      let subscription = response;
-      if (response.data) {
-        subscription = response.data;
-      }
+      const subscription = (await apiClient.get(`/subscriptions/${subscriptionId}`)).data || 
+                          await apiClient.get(`/subscriptions/${subscriptionId}`);
 
       document.getElementById('subscriptions-manager-detail-title').textContent = 
         `${subscription.customerName} - ${subscription.planName}`;
@@ -289,13 +250,10 @@ const SubscriptionsmanSection = {
       `;
 
       this.updateDetailModalActions(subscription);
-
     } catch (error) {
       console.error('Error loading subscription details:', error);
       detailContent.innerHTML = `<p class="error-message">Error loading details: ${error.message}</p>`;
-      
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error loading details: ${error.message}`, 'error');
+      UIController.getInstance().showMessage(`Error loading details: ${error.message}`, 'error');
     }
   },
 
@@ -310,14 +268,13 @@ const SubscriptionsmanSection = {
       { value: 'CANCELED', char: 'CA', full: 'Cancel subscription permanently' }
     ];
     
-    // Create left actions container
     const leftActionsDiv = document.createElement('div');
     leftActionsDiv.className = 'status-actions-left';
     
     statuses.forEach(status => {
       if (status.value !== subscription.status) {
         const btn = document.createElement('button');
-        btn.className = `btn btn-sm btn-${this.getStatusButtonClass(status.value)} status-action-btn`;
+        btn.className = `btn btn-sm btn-${this.statusMap[status.value]} status-action-btn`;
         btn.textContent = status.char;
         btn.title = status.full;
         btn.setAttribute('data-tooltip', status.full);
@@ -332,38 +289,18 @@ const SubscriptionsmanSection = {
     actionsContainer.appendChild(leftActionsDiv);
   },
 
-  getStatusButtonClass(status) {
-    const classMap = {
-      'PENDING': 'warning',
-      'ACTIVE': 'success',
-      'SUSPENDED': 'danger',
-      'CANCELED': 'dark',
-      'EXPIRED': 'secondary'
-    };
-    return classMap[status] || 'secondary';
-  },
-
   async changeSubscriptionStatus(subscriptionId, newStatus) {
     try {
-      let endpoint;
-      
-      if (newStatus === 'ACTIVE') {
-        endpoint = `/subscriptions/${subscriptionId}/approve`;
-      } else if (newStatus === 'SUSPENDED') {
-        endpoint = `/subscriptions/${subscriptionId}/suspend`;
-      } else if (newStatus === 'CANCELED') {
-        endpoint = `/subscriptions/${subscriptionId}/cancel`;
-      } else if (newStatus === 'PENDING') {
-        // No endpoint exists for setting to PENDING
+      if (newStatus === 'PENDING') {
         throw new Error('Cannot change status to PENDING. Use approval workflow instead.');
-      } else {
-        throw new Error(`Unknown status: ${newStatus}`);
       }
 
-      const response = await apiClient.put(endpoint, {});
+      const endpoint = this.endpointMap[newStatus];
+      if (!endpoint) throw new Error(`Unknown status: ${newStatus}`);
 
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Subscription status changed to ${newStatus}`, 'success');
+      await apiClient.put(`/subscriptions/${subscriptionId}/${endpoint}`, {});
+
+      UIController.getInstance().showMessage(`Subscription status changed to ${newStatus}`, 'success');
 
       setTimeout(() => {
         this.loadSubscriptions();
@@ -372,47 +309,30 @@ const SubscriptionsmanSection = {
 
     } catch (error) {
       console.error('Error changing subscription status:', error);
-      
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error changing status: ${error.message}`, 'error');
+      UIController.getInstance().showMessage(`Error changing status: ${error.message}`, 'error');
     }
   },
 
   closeDetailModal() {
-    const modal = document.getElementById('subscriptions-manager-detail-modal');
-    if (modal) {
-      modal.classList.remove('active');
-    }
+    document.getElementById('subscriptions-manager-detail-modal')?.classList.remove('active');
     this.currentSubscriptionId = null;
   },
 
   syncFilterUI() {
     const statusFilter = document.getElementById('subscriptions-manager-status-filter');
     const searchInput = document.getElementById('subscriptions-manager-search-input');
-
-    if (statusFilter) {
-      statusFilter.value = this.currentStatusFilter;
-    }
-
-    if (searchInput) {
-      searchInput.value = this.currentSearchQuery;
-    }
+    if (statusFilter) statusFilter.value = this.currentStatusFilter;
+    if (searchInput) searchInput.value = this.currentSearchQuery;
   },
 
   formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
   },
 
   escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-  },
-
-  cleanup() {
-    // Optional: cleanup when section is unloaded
   }
 };
 

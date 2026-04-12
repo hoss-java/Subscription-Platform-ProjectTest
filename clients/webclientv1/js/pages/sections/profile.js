@@ -2,517 +2,236 @@ const ProfileSection = {
   isEditMode: false,
   isPasswordEditMode: false,
   originalData: {},
+  _domCache: {},
 
   init() {
-    console.debug('[ProfileSection] Page initialized');
-    
     setTimeout(() => {
-      console.debug('[ProfileSection] Starting profile section initialization');
-      
-      // Load and display user data from backend
       this.loadUserData();
-      
-      // Attach event listeners
       this.attachEventListeners();
-      
-      console.debug('[ProfileSection] Profile section initialization complete');
     }, 100);
   },
 
   async loadUserData() {
-    console.debug('[ProfileSection] loadUserData() called');
-    
     try {
-      // Call backend /profile endpoint
       const response = await apiClient.get('/user/profile');
-      console.debug('[ProfileSection] User data fetched from backend:', response);
-      
-      const user = response;
-      
-      // Store original data for cancel functionality
-      this.originalData = { ...user };
-      
-      // Display user info in view mode
-      this.displayUserInfo(user);
-      
-      // Populate edit form
-      this.populateEditForm(user);
-      
+      this.originalData = { ...response };
+      this.displayUserInfo(response);
+      this.populateEditForm(response);
     } catch (error) {
-      console.error('[ProfileSection] Error loading user data:', error.message);
       this.showError('Failed to load user data');
     }
   },
 
   displayUserInfo(user) {
-    console.debug('[ProfileSection] displayUserInfo() called');
-    
-    const profileCard = document.getElementById('profile-card');
-    profileCard.innerHTML = '';  // Clear existing content
-    
     const fields = [
       { label: 'First Name', value: user.firstName },
       { label: 'Last Name', value: user.lastName },
       { label: 'Email', value: user.email },
       { label: 'Status', value: user.isActive ? 'Active' : 'Inactive', className: `status-${user.isActive ? 'active' : 'inactive'}` },
-      { label: 'Roles', value: user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'N/A' }
+      { label: 'Roles', value: user.roles?.length > 0 ? user.roles.join(', ') : 'N/A' }
     ];
     
-    fields.forEach(field => {
+    const fragment = document.createDocumentFragment();
+    fields.forEach(({ label, value, className }) => {
       const fieldDiv = document.createElement('div');
       fieldDiv.className = 'section-field';
-      
-      const label = document.createElement('label');
-      label.textContent = field.label;
-      
-      const value = document.createElement('p');
-      value.className = `section-value ${field.className || ''}`;
-      value.textContent = field.value || 'N/A';
-      
-      fieldDiv.appendChild(label);
-      fieldDiv.appendChild(value);
-      profileCard.appendChild(fieldDiv);
-      
-      console.debug(`[ProfileSection] ${field.label} displayed:`, field.value);
+      fieldDiv.innerHTML = `<label>${label}</label><p class="section-value ${className || ''}">${value || 'N/A'}</p>`;
+      fragment.appendChild(fieldDiv);
     });
+    
+    this.getElement('profile-card').innerHTML = '';
+    this.getElement('profile-card').appendChild(fragment);
   },
 
   populateEditForm(user) {
-    console.debug('[ProfileSection] populateEditForm() called');
-    
-    const profileForm = document.getElementById('profile-form');
-    profileForm.innerHTML = '';  // Clear existing content
-    
-    const editableFields = [
+    const fields = [
       { id: 'edit-firstName', label: 'First Name', value: user.firstName, type: 'text' },
       { id: 'edit-lastName', label: 'Last Name', value: user.lastName, type: 'text' },
       { id: 'edit-email', label: 'Email', value: user.email, type: 'email' }
     ];
     
-    editableFields.forEach(field => {
-      const formGroup = document.createElement('div');
-      formGroup.className = 'form-group';
-      
-      const label = document.createElement('label');
-      label.htmlFor = field.id;
-      label.textContent = field.label;
-      
-      const input = document.createElement('input');
-      input.id = field.id;
-      input.type = field.type;
-      input.value = field.value || '';
-      input.required = true;
-      
-      formGroup.appendChild(label);
-      formGroup.appendChild(input);
-      profileForm.appendChild(formGroup);
-      
-      console.debug(`[ProfileSection] ${field.label} input created:`, field.value);
-    });
+    const fragment = document.createDocumentFragment();
+    fields.forEach(field => fragment.appendChild(this.createFormGroup(field.id, field.label, field.type, field.value)));
+    fragment.appendChild(this.createButtonGroup('Save Changes', 'profile-cancel-btn', 'Cancel', () => this.toggleEditMode(false)));
     
-    // Add button group
-    const buttonGroup = document.createElement('div');
-    buttonGroup.className = 'form-group button-group';
-    
-    const submitBtn = document.createElement('button');
-    submitBtn.type = 'submit';
-    submitBtn.textContent = 'Save Changes';
-    
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.id = 'profile-cancel-btn';
-    cancelBtn.textContent = 'Cancel';
-    
-    buttonGroup.appendChild(submitBtn);
-    buttonGroup.appendChild(cancelBtn);
-    profileForm.appendChild(buttonGroup);
-    
-    // Re-attach cancel button listener
-    cancelBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.debug('[ProfileSection] Cancel button clicked');
-      this.toggleEditMode(false);
-    });
+    this.getElement('profile-form').innerHTML = '';
+    this.getElement('profile-form').appendChild(fragment);
   },
 
-  // ← NEW: Populate password change form
   populatePasswordForm() {
-    console.debug('[ProfileSection] populatePasswordForm() called');
-    
-    const passwordForm = document.getElementById('password-form');
-    passwordForm.innerHTML = '';  // Clear existing content
-    
-    const passwordFields = [
-      { id: 'current-password', label: 'Current Password', type: 'password' },
-      { id: 'new-password', label: 'New Password', type: 'password' },
-      { id: 'confirm-password', label: 'Confirm Password', type: 'password' }
+    const fields = [
+      { id: 'current-password', label: 'Current Password', type: 'password', autocomplete: 'current-password' },
+      { id: 'new-password', label: 'New Password', type: 'password', autocomplete: 'new-password' },
+      { id: 'confirm-password', label: 'Confirm Password', type: 'password', autocomplete: 'new-password' }
     ];
     
-    passwordFields.forEach(field => {
-      const formGroup = document.createElement('div');
-      formGroup.className = 'form-group';
-      
-      const label = document.createElement('label');
-      label.htmlFor = field.id;
-      label.textContent = field.label;
-      
-      const input = document.createElement('input');
-      input.id = field.id;
-      input.type = field.type;
-      input.required = true;
-      input.autocomplete = field.id === 'current-password' ? 'current-password' : 'new-password';
-      
-      formGroup.appendChild(label);
-      formGroup.appendChild(input);
-      
-      // ← ADD THIS: Real-time validation for new password
+    const fragment = document.createDocumentFragment();
+    fields.forEach(field => {
+      const formGroup = this.createFormGroup(field.id, field.label, field.type);
+      const input = formGroup.querySelector('input');
+      input.autocomplete = field.autocomplete;
       if (field.id === 'new-password') {
-        input.addEventListener('input', (e) => {
-          const strengthCheck = this.validatePasswordStrength(e.target.value);
-          
-          console.debug('[ProfileSection] Password strength:', strengthCheck);
-          
-          // Remove existing helper text if it exists
-          let existingHelper = document.getElementById('password-strength-helper');
-          if (existingHelper) {
-            existingHelper.remove();
-          }
-          
-          // Show helper text if user has typed something
-          if (e.target.value.length > 0) {
-            const helperText = document.createElement('small');
-            helperText.id = 'password-strength-helper';
-            helperText.style.color = strengthCheck.isValid ? 'green' : 'orange';
-            helperText.style.display = 'block';
-            helperText.style.marginTop = '4px';
-            helperText.style.fontSize = '12px';
-            helperText.textContent = strengthCheck.message;
-            formGroup.appendChild(helperText);
-          }
-        });
+        input.addEventListener('input', (e) => this.handlePasswordStrengthInput(e, formGroup));
       }
-      
-      passwordForm.appendChild(formGroup);
-      
-      console.debug(`[ProfileSection] ${field.label} input created`);
+      fragment.appendChild(formGroup);
     });
     
-    // Add button group
-    const buttonGroup = document.createElement('div');
-    buttonGroup.className = 'form-group button-group';
-    
-    const submitBtn = document.createElement('button');
-    submitBtn.type = 'submit';
-    submitBtn.textContent = 'Change Password';
-    
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.id = 'password-cancel-btn';
-    cancelBtn.textContent = 'Cancel';
-    
-    buttonGroup.appendChild(submitBtn);
-    buttonGroup.appendChild(cancelBtn);
-    passwordForm.appendChild(buttonGroup);
-    
-    // Re-attach cancel button listener
-    cancelBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.debug('[ProfileSection] Password cancel button clicked');
-      this.togglePasswordEditMode(false);
-    });
+    fragment.appendChild(this.createButtonGroup('Change Password', 'password-cancel-btn', 'Cancel', () => this.togglePasswordEditMode(false)));
+    this.getElement('password-form').innerHTML = '';
+    this.getElement('password-form').appendChild(fragment);
   },
 
+  handlePasswordStrengthInput(e, formGroup) {
+    const strengthCheck = this.validatePasswordStrength(e.target.value);
+    const existingHelper = formGroup.querySelector('#password-strength-helper');
+    if (existingHelper) existingHelper.remove();
+    
+    if (e.target.value.length > 0) {
+      const helperText = document.createElement('small');
+      helperText.id = 'password-strength-helper';
+      helperText.style.cssText = `color: ${strengthCheck.isValid ? 'green' : 'orange'}; display: block; margin-top: 4px; font-size: 12px;`;
+      helperText.textContent = strengthCheck.message;
+      formGroup.appendChild(helperText);
+    }
+  },
+
+  createFormGroup(id, label, type, value = '') {
+    const formGroup = document.createElement('div');
+    formGroup.className = 'form-group';
+    formGroup.innerHTML = `<label for="${id}">${label}</label><input id="${id}" type="${type}" value="${value}" required>`;
+    return formGroup;
+  },
+
+  createButtonGroup(submitText, cancelId, cancelText, cancelCallback) {
+    const buttonGroup = document.createElement('div');
+    buttonGroup.className = 'form-group button-group';
+    buttonGroup.innerHTML = `<button type="submit">${submitText}</button><button type="button" id="${cancelId}">${cancelText}</button>`;
+    buttonGroup.querySelector(`#${cancelId}`).addEventListener('click', (e) => {
+      e.preventDefault();
+      cancelCallback();
+    });
+    return buttonGroup;
+  },
 
   attachEventListeners() {
-    console.debug('[ProfileSection] attachEventListeners() called');
+    const listeners = [
+      { id: 'profile-edit-btn', event: 'click', handler: () => this.toggleEditMode(true) },
+      { id: 'password-change-btn', event: 'click', handler: () => this.togglePasswordEditMode(true) },
+      { id: 'profile-form', event: 'submit', handler: (e) => this.handleProfileSubmit(e) },
+      { id: 'password-form', event: 'submit', handler: (e) => this.handlePasswordSubmit(e) }
+    ];
     
-    // Edit Profile button
-    const editBtn = document.getElementById('profile-edit-btn');
-    if (editBtn) {
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.debug('[ProfileSection] Edit button clicked');
-        this.toggleEditMode(true);
-      });
-      console.debug('[ProfileSection] Edit button listener attached');
-    }
-
-    // Change Password button
-    const passwordChangeBtn = document.getElementById('password-change-btn');
-    if (passwordChangeBtn) {
-      passwordChangeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.debug('[ProfileSection] Change password button clicked');
-        this.togglePasswordEditMode(true);
-      });
-      console.debug('[ProfileSection] Change password button listener attached');
-    }
-
-    // Profile Form submit
-    const profileForm = document.getElementById('profile-form');
-    if (profileForm) {
-      profileForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        console.debug('[ProfileSection] Profile form submitted');
-        this.handleProfileSubmit(e);
-      });
-      console.debug('[ProfileSection] Profile form submit listener attached');
-    }
-
-    // Password Form submit
-    const passwordForm = document.getElementById('password-form');
-    if (passwordForm) {
-      passwordForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        console.debug('[ProfileSection] Password form submitted');
-        this.handlePasswordSubmit(e);
-      });
-      console.debug('[ProfileSection] Password form submit listener attached');
-    }
+    listeners.forEach(({ id, event, handler }) => {
+      const element = this.getElement(id, false);
+      if (element) {
+        element.addEventListener(event, (e) => {
+          if (event === 'submit') e.preventDefault();
+          handler(e);
+        });
+      }
+    });
   },
 
   toggleEditMode(isEdit) {
-    console.debug('[ProfileSection] toggleEditMode() called with:', isEdit);
-    
-    const viewMode = document.getElementById('profile-view');
-    const editMode = document.getElementById('profile-edit');
-    const editBtn = document.getElementById('profile-edit-btn');
-    const passwordChangeBtn = document.getElementById('password-change-btn');
-
-    if (isEdit) {
-      console.debug('[ProfileSection] Switching to profile edit mode');
-      viewMode.style.display = 'none';
-      editMode.style.display = 'block';
-      editBtn.style.display = 'none';
-      passwordChangeBtn.style.display = 'none';
-      this.isEditMode = true;
-    } else {
-      console.debug('[ProfileSection] Switching to profile view mode');
-      viewMode.style.display = 'block';
-      editMode.style.display = 'none';
-      editBtn.style.display = 'inline-block';
-      passwordChangeBtn.style.display = 'inline-block';
-      this.isEditMode = false;
-      
-      // Reset form to original data
-      this.populateEditForm(this.originalData);
-    }
+    this.toggleMode('profile-view', 'profile-edit', isEdit, 'isEditMode');
+    if (!isEdit) this.populateEditForm(this.originalData);
   },
 
-  // ← NEW: Toggle password edit mode
   togglePasswordEditMode(isEdit) {
-    console.debug('[ProfileSection] togglePasswordEditMode() called with:', isEdit);
-    
-    const viewMode = document.getElementById('profile-view');
-    const passwordEditMode = document.getElementById('password-edit');
-    const editBtn = document.getElementById('profile-edit-btn');
-    const passwordChangeBtn = document.getElementById('password-change-btn');
+    this.toggleMode('profile-view', 'password-edit', isEdit, 'isPasswordEditMode');
+    this.getElement('password-form').innerHTML = isEdit ? '' : '';
+    if (isEdit) this.populatePasswordForm();
+  },
 
-    if (isEdit) {
-      console.debug('[ProfileSection] Switching to password edit mode');
-      viewMode.style.display = 'none';
-      passwordEditMode.style.display = 'block';
-      editBtn.style.display = 'none';
-      passwordChangeBtn.style.display = 'none';
-      this.isPasswordEditMode = true;
-      
-      // Populate password form
-      this.populatePasswordForm();
-    } else {
-      console.debug('[ProfileSection] Switching to password view mode');
-      viewMode.style.display = 'block';
-      passwordEditMode.style.display = 'none';
-      editBtn.style.display = 'inline-block';
-      passwordChangeBtn.style.display = 'inline-block';
-      this.isPasswordEditMode = false;
-      
-      // Clear password form
-      document.getElementById('password-form').innerHTML = '';
-    }
+  toggleMode(viewId, editId, isEdit, stateKey) {
+    const displayStyle = isEdit ? 'none' : 'block';
+    const editDisplayStyle = isEdit ? 'block' : 'none';
+    const btnDisplayStyle = isEdit ? 'none' : 'inline-block';
+    
+    this.getElement(viewId).style.display = displayStyle;
+    this.getElement(editId).style.display = editDisplayStyle;
+    ['profile-edit-btn', 'password-change-btn'].forEach(id => {
+      this.getElement(id).style.display = btnDisplayStyle;
+    });
+    
+    this[stateKey] = isEdit;
   },
 
   async handleProfileSubmit(e) {
-    console.debug('[ProfileSection] handleProfileSubmit() called');
+    const [firstName, lastName, email] = ['edit-firstName', 'edit-lastName', 'edit-email'].map(id => this.getElement(id).value);
     
-    const firstNameInput = document.getElementById('edit-firstName');
-    const lastNameInput = document.getElementById('edit-lastName');
-    const emailInput = document.getElementById('edit-email');
-    const submitBtn = document.querySelector('#profile-form button[type="submit"]');
+    if (!this.validateFormInputs([
+      { value: firstName, message: 'First name is required' },
+      { value: lastName, message: 'Last name is required' },
+      { value: email, message: 'Email is required' }
+    ])) return;
 
-    // Validate inputs
-    if (!firstNameInput.value.trim()) {
-      console.error('[ProfileSection] First name is empty');
-      this.showError('First name is required');
-      return;
-    }
-
-    if (!lastNameInput.value.trim()) {
-      console.error('[ProfileSection] Last name is empty');
-      this.showError('Last name is required');
-      return;
-    }
-
-    if (!emailInput.value.trim()) {
-      console.error('[ProfileSection] Email is empty');
-      this.showError('Email is required');
-      return;
-    }
-
-    // Prepare update data
-    const updateData = {
-      firstName: firstNameInput.value.trim(),
-      lastName: lastNameInput.value.trim(),
-      email: emailInput.value.trim()
-    };
-
-    console.debug('[ProfileSection] Preparing to update profile with:', updateData);
-
-    // Show loading state
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving...';
-
-    try {
-      console.debug('[ProfileSection] Calling API to update profile');
-      
-      const response = await apiClient.put('/user/profile', updateData);
-      console.debug('[ProfileSection] Profile update successful:', response);
-
-      this.showSuccess('Profile updated successfully');
-
-      setTimeout(() => {
-        this.loadUserData();
-        this.toggleEditMode(false);
-      }, 1000);
-
-    } catch (error) {
-      console.error('[ProfileSection] Profile update failed:', {
-        message: error.message,
-        status: error.status
-      });
-
-      let errorMessage = 'Failed to update profile';
-      if (error.message) {
-        errorMessage = error.message;
-      }
-
-      this.showError(errorMessage);
-
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
-    }
+    await this.handleAsyncAction(
+      () => apiClient.put('/user/profile', { firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim() }),
+      this.getElement('profile-form').querySelector('button[type="submit"]'),
+      'Saving...',
+      'Profile updated successfully',
+      () => { this.loadUserData(); this.toggleEditMode(false); }
+    );
   },
 
-  // ← NEW: Handle password form submission
   async handlePasswordSubmit(e) {
-    console.debug('[ProfileSection] handlePasswordSubmit() called');
+    const [currentPass, newPass, confirmPass] = ['current-password', 'new-password', 'confirm-password'].map(id => this.getElement(id).value);
     
-    const currentPasswordInput = document.getElementById('current-password');
-    const newPasswordInput = document.getElementById('new-password');
-    const confirmPasswordInput = document.getElementById('confirm-password');
-    const submitBtn = document.querySelector('#password-form button[type="submit"]');
+    if (!this.validateFormInputs([
+      { value: currentPass, message: 'Current password is required' },
+      { value: newPass, message: 'New password is required' },
+      { value: confirmPass, message: 'Please confirm your new password' }
+    ])) return;
 
-    // Validate inputs
-    if (!currentPasswordInput.value.trim()) {
-      console.error('[ProfileSection] Current password is empty');
-      this.showError('Current password is required');
-      return;
-    }
-
-    if (!newPasswordInput.value.trim()) {
-      console.error('[ProfileSection] New password is empty');
-      this.showError('New password is required');
-      return;
-    }
-
-    if (!confirmPasswordInput.value.trim()) {
-      console.error('[ProfileSection] Confirm password is empty');
-      this.showError('Please confirm your new password');
-      return;
-    }
-
-    // Validate passwords match
-    if (newPasswordInput.value !== confirmPasswordInput.value) {
-      console.error('[ProfileSection] Passwords do not match');
+    if (newPass !== confirmPass) {
       this.showError('New passwords do not match');
       return;
     }
 
-    // ← ADD THIS: Validate password strength
-    const passwordStrengthCheck = this.validatePasswordStrength(newPasswordInput.value);
-    if (!passwordStrengthCheck.isValid) {
-      console.error('[ProfileSection] Password does not meet strength requirements');
-      this.showError(passwordStrengthCheck.message);
+    const strengthCheck = this.validatePasswordStrength(newPass);
+    if (!strengthCheck.isValid) {
+      this.showError(strengthCheck.message);
       return;
     }
 
-    // Prepare password change data
-    const passwordData = {
-      oldPassword: currentPasswordInput.value,
-      newPassword: newPasswordInput.value
-    };
+    await this.handleAsyncAction(
+      () => apiClient.post('/auth/change-password', { oldPassword: currentPass, newPassword: newPass }),
+      this.getElement('password-form').querySelector('button[type="submit"]'),
+      'Changing...',
+      'Password changed successfully',
+      () => this.togglePasswordEditMode(false)
+    );
+  },
 
-    console.debug('[ProfileSection] Preparing to change password');
-
-    // Show loading state
+  async handleAsyncAction(apiCall, submitBtn, loadingText, successMessage, onSuccess) {
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Changing...';
+    submitBtn.textContent = loadingText;
 
     try {
-      console.debug('[ProfileSection] Calling API to change password');
-      
-      const response = await apiClient.post('/auth/change-password', passwordData);
-      console.debug('[ProfileSection] Password change successful:', response);
-
-      this.showSuccess('Password changed successfully');
-
-      setTimeout(() => {
-        this.togglePasswordEditMode(false);
-      }, 1000);
-
+      await apiCall();
+      this.showSuccess(successMessage);
+      setTimeout(onSuccess, 1000);
     } catch (error) {
-      console.error('[ProfileSection] Password change failed:', {
-        message: error.message,
-        status: error.status
-      });
-
-      let errorMessage = 'Failed to change password';
-      if (error.message) {
-        errorMessage = error.message;
-      }
-
-      this.showError(errorMessage);
-
+      this.showError(error.message || 'Operation failed');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
     }
   },
 
-
-  showError(message) {
-    console.debug('[ProfileSection] showError() called:', message);
-    const uiController = UIController.getInstance();
-    uiController.showMessage(message, 'error');
-  },
-
-  showSuccess(message) {
-    console.debug('[ProfileSection] showSuccess() called:', message);
-    const uiController = UIController.getInstance();
-    uiController.showMessage(message, 'success');
-  },
-
-  cleanup() {
-    console.debug('[ProfileSection] cleanup() called');
-    this.isEditMode = false;
-    this.isPasswordEditMode = false;
+  validateFormInputs(inputs) {
+    return inputs.every(input => {
+      if (!input.value.trim()) {
+        this.showError(input.message);
+        return false;
+      }
+      return true;
+    });
   },
 
   validatePasswordStrength(password) {
-    console.debug('[ProfileSection] validatePasswordStrength() called');
-    
     const requirements = {
       minLength: password.length >= 8,
       hasUppercase: /[A-Z]/.test(password),
@@ -521,31 +240,48 @@ const ProfileSection = {
       hasSpecialChar: /[@$!%*?&]/.test(password)
     };
     
-    const allMet = Object.values(requirements).every(req => req === true);
-    
     return {
-      isValid: allMet,
-      requirements: requirements,
+      isValid: Object.values(requirements).every(req => req),
+      requirements,
       message: this.getPasswordStrengthMessage(requirements)
     };
   },
 
   getPasswordStrengthMessage(requirements) {
     const missing = [];
+    const checks = [
+      [requirements.minLength, 'at least 8 characters'],
+      [requirements.hasUppercase, 'one uppercase letter'],
+      [requirements.hasLowercase, 'one lowercase letter'],
+      [requirements.hasDigit, 'one digit'],
+      [requirements.hasSpecialChar, 'one special character (@$!%*?&)']
+    ];
     
-    if (!requirements.minLength) missing.push('at least 8 characters');
-    if (!requirements.hasUppercase) missing.push('one uppercase letter');
-    if (!requirements.hasLowercase) missing.push('one lowercase letter');
-    if (!requirements.hasDigit) missing.push('one digit');
-    if (!requirements.hasSpecialChar) missing.push('one special character (@$!%*?&)');
-    
-    if (missing.length === 0) {
-      return 'Password is strong';
-    }
-    
-    return `Password must contain: ${missing.join(', ')}`;
-  }
+    checks.forEach(([met, text]) => !met && missing.push(text));
+    return missing.length === 0 ? 'Password is strong' : `Password must contain: ${missing.join(', ')}`;
+  },
 
+  getElement(id, throwError = true) {
+    if (!this._domCache[id]) {
+      this._domCache[id] = document.getElementById(id);
+      if (!this._domCache[id] && throwError) console.warn(`Element with id "${id}" not found`);
+    }
+    return this._domCache[id];
+  },
+
+  showError(message) {
+    UIController.getInstance().showMessage(message, 'error');
+  },
+
+  showSuccess(message) {
+    UIController.getInstance().showMessage(message, 'success');
+  },
+
+  cleanup() {
+    this.isEditMode = false;
+    this.isPasswordEditMode = false;
+    this._domCache = {};
+  }
 };
 
 window.ProfileSection = ProfileSection;

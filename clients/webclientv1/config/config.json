@@ -61,20 +61,20 @@
       "roles": ["operator"]
     },
     {
-      "name": "plans",
-      "path": "pages/sections/plans.html",
-      "title": "Available Plans",
-      "script": "PlansSection",
-      "icon": "list",
-      "roles": ["customer", "admin", "operator"]
-    },
-    {
       "name": "admin",
       "path": "pages/sections/admin.html",
       "title": "User Management",
       "script": "AdminSection",
       "icon": "settings",
       "roles": ["admin"]
+    },
+    {
+      "name": "plans",
+      "path": "pages/sections/plans.html",
+      "title": "Available Plans",
+      "script": "PlansSection",
+      "icon": "list",
+      "roles": ["customer", "admin", "operator"]
     },
     {
       "name": "operator",

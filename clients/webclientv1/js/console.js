@@ -1,28 +1,28 @@
 // console.js
 class ConsoleWindow {
-  static instance = null; // Static property to hold the singleton instance
+  static instance = null;
+  
   constructor() {
-    this.consoleWindow = document.querySelector('.console-window');
-    this.consoleHeader = document.querySelector('.console-header');
-    this.consoleOutput = document.querySelector('.console-output');
-    this.consoleControls = document.querySelector('.console-controls');
-    this.isDragging = false;
-    this.isResizing = false;
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.isHidden = false;
+    const sel = (s) => document.querySelector(s);
+    this.consoleWindow = sel('.console-window');
+    this.consoleHeader = sel('.console-header');
+    this.consoleOutput = sel('.console-output');
+    this.consoleControls = sel('.console-controls');
+    
+    this.isDragging = this.isResizing = this.isHidden = false;
+    this.offsetX = this.offsetY = 0;
     this.minWidth = 250;
     this.minHeight = 150;
-    this.sourceCache = {}; // Cache for source files
-    
+    this.sourceCache = {};
     this.storageKey = 'consoleWindowState';
     
-    this.setupToggleIcon();
-    this.restoreWindowState();
-    this.setupDragging();
-    this.setupResizing();
-    this.setupControls();
-    this.setupSourceViewer();
+    [this.setupToggleIcon, this.restoreWindowState, this.setupDragging, 
+     this.setupResizing, this.setupControls, this.setupSourceViewer]
+      .forEach(fn => fn.call(this));
+  }
+
+  static getInstance() {
+    return ConsoleWindow.instance ||= new ConsoleWindow();
   }
 
   setupControls() {
@@ -31,133 +31,99 @@ class ConsoleWindow {
     this.setupClearButton();
   }
 
-  // Static method to get or create instance (singleton)
-  static getInstance() {
-    if (ConsoleWindow.instance === null) {
-      console.log('Creating new ConsoleWindow instance');
-      ConsoleWindow.instance = new ConsoleWindow();
-    } else {
-      console.log('Returning existing ConsoleWindow instance');
-    }
-    return ConsoleWindow.instance;
+  setupToggleIcon() {
+    let toggleIcon = document.querySelector('.console-toggle-icon') || 
+      (() => {
+        const btn = document.createElement('button');
+        btn.className = 'console-toggle-icon';
+        btn.title = 'Toggle Console';
+        btn.innerHTML = '📋';
+        document.body.appendChild(btn);
+        return btn;
+      })();
+    
+    this.toggleIcon = toggleIcon;
+    toggleIcon.addEventListener('click', () => this.toggleWindowVisibility());
   }
 
   setupSourceViewer() {
-    // Create modal for source code display
-    if (!document.getElementById('source-viewer-modal')) {
-      const modal = document.createElement('div');
-      modal.id = 'source-viewer-modal';
-      modal.className = 'source-viewer-modal';
-      modal.innerHTML = `
-        <div class="source-viewer-content">
-          <div class="source-viewer-header">
-            <h3 id="source-viewer-title">Source Code</h3>
-            <button class="source-viewer-close">&times;</button>
-          </div>
-          <div class="source-viewer-info">
-            <span id="source-viewer-file"></span> | 
-            <span id="source-viewer-function"></span> | 
-            <span id="source-viewer-line"></span>
-          </div>
-          <div class="source-viewer-code">
-            <pre id="source-viewer-pre"><code id="source-viewer-code"></code></pre>
-          </div>
-          <button class="source-viewer-copy-btn">Copy Code</button>
+    if (document.getElementById('source-viewer-modal')) return;
+    
+    const modal = document.createElement('div');
+    modal.id = 'source-viewer-modal';
+    modal.className = 'source-viewer-modal';
+    modal.innerHTML = `
+      <div class="source-viewer-content">
+        <div class="source-viewer-header">
+          <h3 id="source-viewer-title">Source Code</h3>
+          <button class="source-viewer-close">&times;</button>
         </div>
-      `;
-      document.body.appendChild(modal);
-      
-      // Close button
-      modal.querySelector('.source-viewer-close').addEventListener('click', () => {
-        this.closeSourceViewer();
-      });
-      
-      // Copy button
-      modal.querySelector('.source-viewer-copy-btn').addEventListener('click', () => {
-        this.copySourceCode();
-      });
-      
-      // Close on outside click
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          this.closeSourceViewer();
-        }
-      });
-    }
+        <div class="source-viewer-info">
+          <span id="source-viewer-file"></span> | 
+          <span id="source-viewer-function"></span> | 
+          <span id="source-viewer-line"></span>
+        </div>
+        <div class="source-viewer-code">
+          <pre id="source-viewer-pre"><code id="source-viewer-code"></code></pre>
+        </div>
+        <button class="source-viewer-copy-btn">Copy Code</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.querySelector('.source-viewer-close').addEventListener('click', () => this.closeSourceViewer());
+    modal.querySelector('.source-viewer-copy-btn').addEventListener('click', () => this.copySourceCode());
+    modal.addEventListener('click', (e) => e.target === modal && this.closeSourceViewer());
   }
 
   async fetchSourceFile(filePath) {
-    if (this.sourceCache[filePath]) {
-      return this.sourceCache[filePath];
-    }
-
+    if (this.sourceCache[filePath]) return this.sourceCache[filePath];
+    
     try {
       const response = await fetch(filePath);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const sourceCode = await response.text();
-      this.sourceCache[filePath] = sourceCode;
-      return sourceCode;
+      return this.sourceCache[filePath] = sourceCode;
     } catch (e) {
       console.error(`Failed to fetch source: ${filePath}`, e);
       return null;
     }
   }
 
-  async showSourceCode(metadata) {
-    const { fullPath, line, method, file } = metadata;
+  async showSourceCode({ fullPath, line, method, file }) {
+    if (!fullPath || line === '?') return alert('Source code information not available');
     
-    if (!fullPath || line === '?') {
-      alert('Source code information not available');
-      return;
-    }
+    const sourceCode = await this.fetchSourceFile(fullPath);
+    if (!sourceCode) return alert('Failed to load source code');
 
-    try {
-      const sourceCode = await this.fetchSourceFile(fullPath);
-      if (!sourceCode) {
-        alert('Failed to load source code');
-        return;
-      }
+    const lines = sourceCode.split('\n');
+    const targetLineIndex = parseInt(line) - 1;
+    const startLine = Math.max(0, targetLineIndex - 10);
+    const endLine = Math.min(lines.length, targetLineIndex + 11);
+    
+    const codeLines = lines.slice(startLine, endLine);
+    const displayCode = this.formatCodeLines(codeLines, startLine, parseInt(line));
 
-      const lines = sourceCode.split('\n');
-      const targetLineIndex = parseInt(line) - 1;
-      
-      // Default: show context (10 lines before and after)
-      let startLine = Math.max(0, targetLineIndex - 10);
-      let endLine = Math.min(lines.length, targetLineIndex + 11);
-      
-      const codeLines = lines.slice(startLine, endLine);
-      const displayCode = this.formatCodeLines(codeLines, startLine, parseInt(line));
-
-      // Update modal
-      const modal = document.getElementById('source-viewer-modal');
-      document.getElementById('source-viewer-title').textContent = `Source Code - ${file}`;
-      document.getElementById('source-viewer-file').textContent = `📄 ${fullPath}`;
-      document.getElementById('source-viewer-function').textContent = `ƒ ${method}`;
-      document.getElementById('source-viewer-line').textContent = `📍 Line ${line}`;
-      document.getElementById('source-viewer-code').innerHTML = displayCode;
-      
-      // Store metadata for full load button
-      this.currentSourceMetadata = { fullPath, line, file, lines };
-      this.currentSourceCode = codeLines.join('\n');
-      
-      // Add/show load full source button
-      this.setupLoadFullSourceButton(modal, lines, parseInt(line));
-      
-      modal.style.display = 'flex';
-    } catch (error) {
-      alert(`Error loading source code: ${error.message}`);
-    }
+    const modal = document.getElementById('source-viewer-modal');
+    document.getElementById('source-viewer-title').textContent = `Source Code - ${file}`;
+    document.getElementById('source-viewer-file').textContent = `📄 ${fullPath}`;
+    document.getElementById('source-viewer-function').textContent = `ƒ ${method}`;
+    document.getElementById('source-viewer-line').textContent = `📍 Line ${line}`;
+    document.getElementById('source-viewer-code').innerHTML = displayCode;
+    
+    this.currentSourceMetadata = { fullPath, line, file, lines };
+    this.currentSourceCode = codeLines.join('\n');
+    this.setupLoadFullSourceButton(modal, lines, parseInt(line));
+    
+    modal.style.display = 'flex';
   }
 
   formatCodeLines(codeLines, startLineNum, highlightLine) {
-    return codeLines
-      .map((codeLine, index) => {
-        const lineNum = startLineNum + index + 1;
-        const isTarget = lineNum === highlightLine;
-        const lineClass = isTarget ? 'highlight' : '';
-        return `<span class="line-number ${lineClass}">${lineNum}</span>${this.escapeHtml(codeLine)}`;
-      })
-      .join('\n');
+    return codeLines.map((codeLine, i) => {
+      const lineNum = startLineNum + i + 1;
+      const cls = lineNum === highlightLine ? 'highlight' : '';
+      return `<span class="line-number ${cls}">${lineNum}</span>${this.escapeHtml(codeLine)}`;
+    }).join('\n');
   }
 
   setupLoadFullSourceButton(modal, allLines, highlightLine) {
@@ -171,17 +137,9 @@ class ConsoleWindow {
     }
     
     loadFullBtn.onclick = () => {
-      // Load entire file
-      const displayCode = this.formatCodeLines(allLines, 0, highlightLine);
-      document.getElementById('source-viewer-code').innerHTML = displayCode;
-      
-      // Scroll to highlight line
+      document.getElementById('source-viewer-code').innerHTML = this.formatCodeLines(allLines, 0, highlightLine);
       this.scrollToLine(highlightLine);
-      
-      // Hide button after loading full source
       loadFullBtn.style.display = 'none';
-      
-      // Update stored code for copy functionality
       this.currentSourceCode = allLines.join('\n');
     };
     
@@ -190,31 +148,15 @@ class ConsoleWindow {
 
   scrollToLine(lineNumber) {
     const codeElement = document.getElementById('source-viewer-code');
-    const lineNumbers = codeElement.querySelectorAll('.line-number');
+    const target = Array.from(codeElement.querySelectorAll('.line-number'))
+      .find(el => el.textContent.trim() === lineNumber.toString());
     
-    if (lineNumbers.length > 0) {
-      // Find the highlighted line element
-      let targetElement = null;
-      for (let lineNum of lineNumbers) {
-        if (lineNum.textContent.trim() === lineNumber.toString()) {
-          targetElement = lineNum;
-          break;
-        }
-      }
-      
-      if (targetElement) {
-        // Scroll into view with some offset
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-
 
   closeSourceViewer() {
     const modal = document.getElementById('source-viewer-modal');
-    if (modal) {
-      modal.style.display = 'none';
-    }
+    if (modal) modal.style.display = 'none';
   }
 
   copySourceCode() {
@@ -224,9 +166,7 @@ class ConsoleWindow {
       const copyBtn = document.querySelector('.source-viewer-copy-btn');
       const originalText = copyBtn.textContent;
       copyBtn.textContent = '✓ Copied!';
-      setTimeout(() => {
-        copyBtn.textContent = originalText;
-      }, 2000);
+      setTimeout(() => copyBtn.textContent = originalText, 2000);
     }).catch(err => {
       console.error('Failed to copy:', err);
       alert('Failed to copy source code');
@@ -234,58 +174,30 @@ class ConsoleWindow {
   }
 
   escapeHtml(text) {
-    const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return text.replace(/[&<>"']/g, m => map[m]);
   }
 
-  setupToggleIcon() {
-    let toggleIcon = document.querySelector('.console-toggle-icon');
-    
-    if (!toggleIcon) {
-      toggleIcon = document.createElement('button');
-      toggleIcon.className = 'console-toggle-icon';
-      toggleIcon.title = 'Toggle Console';
-      toggleIcon.innerHTML = '📋';
-      document.body.appendChild(toggleIcon);
-    }
-    
-    this.toggleIcon = toggleIcon;
-    toggleIcon.addEventListener('click', () => this.toggleWindowVisibility());
-  }
-
   restoreWindowState() {
-    const saved = localStorage.getItem(this.storageKey);
-    if (saved) {
-      try {
-        const state = JSON.parse(saved);
-        
-        if (state.width) {
-          this.consoleWindow.style.width = state.width + 'px';
-        }
-        if (state.height) {
-          this.consoleWindow.style.height = state.height + 'px';
-        }
-        
-        if (state.left !== undefined && state.top !== undefined) {
-          this.consoleWindow.style.left = state.left + 'px';
-          this.consoleWindow.style.top = state.top + 'px';
-          this.consoleWindow.style.bottom = 'auto';
-          this.consoleWindow.style.right = 'auto';
-        }
-        
-        if (state.isHidden) {
-          this.consoleWindow.style.display = 'none';
-          this.isHidden = true;
-        }
-      } catch (error) {
-        console.error('Failed to restore console window state:', error);
+    try {
+      const state = JSON.parse(localStorage.getItem(this.storageKey));
+      if (!state) return;
+      
+      if (state.width) this.consoleWindow.style.width = state.width + 'px';
+      if (state.height) this.consoleWindow.style.height = state.height + 'px';
+      
+      if (state.left !== undefined && state.top !== undefined) {
+        this.consoleWindow.style.left = state.left + 'px';
+        this.consoleWindow.style.top = state.top + 'px';
+        this.consoleWindow.style.bottom = this.consoleWindow.style.right = 'auto';
       }
+      
+      if (state.isHidden) {
+        this.consoleWindow.style.display = 'none';
+        this.isHidden = true;
+      }
+    } catch (e) {
+      console.error('Failed to restore console window state:', e);
     }
   }
 
@@ -301,11 +213,7 @@ class ConsoleWindow {
   }
 
   toggleWindowVisibility() {
-    if (this.isHidden) {
-      this.showWindow();
-    } else {
-      this.hideWindow();
-    }
+    this.isHidden ? this.showWindow() : this.hideWindow();
   }
 
   hideWindow() {
@@ -325,86 +233,78 @@ class ConsoleWindow {
   }
 
   setupDragging() {
-    if (this.consoleHeader) {
-      this.consoleHeader.addEventListener('mousedown', (e) => this.startDrag(e));
-      document.addEventListener('mousemove', (e) => this.drag(e));
-      document.addEventListener('mouseup', () => this.stopDrag());
-      
-      this.consoleHeader.addEventListener('touchstart', (e) => this.startDrag(e));
-      document.addEventListener('touchmove', (e) => this.drag(e));
-      document.addEventListener('touchend', () => this.stopDrag());
-    }
-  }
-
-setupResizing() {
-  if (this.consoleWindow) {
-    this.consoleWindow.addEventListener('mousedown', (e) => this.startResize(e));
-    document.addEventListener('mousemove', (e) => this.resize(e));
-    document.addEventListener('mouseup', () => this.stopResize());
+    if (!this.consoleHeader) return;
     
-    this.consoleWindow.addEventListener('touchstart', (e) => this.startResize(e));
-    document.addEventListener('touchmove', (e) => this.resize(e));
-    document.addEventListener('touchend', () => this.stopResize());
+    const dragHandler = (e) => {
+      e.preventDefault();
+      this.startDrag(e);
+    };
+    const moveHandler = (e) => this.drag(e);
+    const stopHandler = () => this.stopDrag();
+    
+    this.consoleHeader.addEventListener('mousedown', dragHandler);
+    this.consoleHeader.addEventListener('touchstart', dragHandler);
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('touchmove', moveHandler);
+    document.addEventListener('mouseup', stopHandler);
+    document.addEventListener('touchend', stopHandler);
   }
-}
 
+  setupResizing() {
+    if (!this.consoleWindow) return;
+    
+    const resizeHandler = (e) => this.startResize(e);
+    const moveHandler = (e) => this.resize(e);
+    const stopHandler = () => this.stopResize();
+    
+    this.consoleWindow.addEventListener('mousedown', resizeHandler);
+    this.consoleWindow.addEventListener('touchstart', resizeHandler);
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('touchmove', moveHandler);
+    document.addEventListener('mouseup', stopHandler);
+    document.addEventListener('touchend', stopHandler);
+  }
 
   setupFilterInput() {
-    const filterContainer = document.querySelector('.console-filter-container');
+    let filterContainer = document.querySelector('.console-filter-container');
+    
     if (!filterContainer) {
-      const container = document.createElement('div');
-      container.className = 'console-filter-container';
-      container.innerHTML = `
-        <input 
-          type="text" 
-          class="console-filter-input" 
-          placeholder="Filter logs..."
-          aria-label="Filter console logs"
-        />
+      filterContainer = document.createElement('div');
+      filterContainer.className = 'console-filter-container';
+      filterContainer.innerHTML = `
+        <input type="text" class="console-filter-input" placeholder="Filter logs..." aria-label="Filter console logs" />
         <span class="console-filter-count">0/0</span>
       `;
-      this.consoleControls.insertBefore(container, this.consoleControls.firstChild);
+      this.consoleControls.insertBefore(filterContainer, this.consoleControls.firstChild);
     }
 
     const filterInput = document.querySelector('.console-filter-input');
-    if (filterInput) {
-      filterInput.addEventListener('input', (e) => this.filterLogs(e.target.value));
-    }
+    filterInput?.addEventListener('input', (e) => this.filterLogs(e.target.value));
   }
 
   setupCopyButton() {
-    const copyBtn = document.querySelector('.console-copy-btn');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => this.copyAllLogs());
-    }
+    document.querySelector('.console-copy-btn')?.addEventListener('click', () => this.copyAllLogs());
   }
 
   setupClearButton() {
-    const clearBtn = document.querySelector('.console-clear-btn');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => this.clear());
-    }
+    document.querySelector('.console-clear-btn')?.addEventListener('click', () => this.clear());
   }
 
   filterLogs(searchTerm) {
     if (!this.consoleOutput) return;
 
     const logs = this.consoleOutput.querySelectorAll('.console-log');
-    let visibleCount = 0;
     const searchLower = searchTerm.toLowerCase();
+    let visibleCount = 0;
 
     logs.forEach(log => {
-      const logText = log.textContent.toLowerCase();
-      const isMatch = logText.includes(searchLower);
-      
+      const isMatch = log.textContent.toLowerCase().includes(searchLower);
       log.style.display = isMatch ? 'block' : 'none';
       if (isMatch) visibleCount++;
     });
 
     const filterCount = document.querySelector('.console-filter-count');
-    if (filterCount) {
-      filterCount.textContent = `${visibleCount}/${logs.length}`;
-    }
+    if (filterCount) filterCount.textContent = `${visibleCount}/${logs.length}`;
   }
 
   copyAllLogs() {
@@ -414,18 +314,13 @@ setupResizing() {
       .map(log => log.textContent.trim())
       .join('\n');
 
-    if (!logs) {
-      alert('No logs to copy');
-      return;
-    }
+    if (!logs) return alert('No logs to copy');
 
     navigator.clipboard.writeText(logs).then(() => {
       const copyBtn = document.querySelector('.console-copy-btn');
       const originalText = copyBtn.textContent;
       copyBtn.textContent = '✓ Copied!';
-      setTimeout(() => {
-        copyBtn.textContent = originalText;
-      }, 2000);
+      setTimeout(() => copyBtn.textContent = originalText, 2000);
     }).catch(err => {
       console.error('Failed to copy:', err);
       alert('Failed to copy logs');
@@ -433,21 +328,15 @@ setupResizing() {
   }
 
   clear() {
-    if (this.consoleOutput) {
-      this.consoleOutput.innerHTML = '';
-    }
+    if (this.consoleOutput) this.consoleOutput.innerHTML = '';
     
-    // Reset filter
     const filterInput = document.querySelector('.console-filter-input');
     if (filterInput) {
       filterInput.value = '';
       const filterCount = document.querySelector('.console-filter-count');
-      if (filterCount) {
-        filterCount.textContent = '0/0';
-      }
+      if (filterCount) filterCount.textContent = '0/0';
     }
   }
-
 
   startDrag(e) {
     if (e.target.closest('.console-controls')) return;
@@ -463,14 +352,12 @@ setupResizing() {
 
   drag(e) {
     if (!this.isDragging) return;
+    
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
-    let newX = clientX - this.offsetX;
-    let newY = clientY - this.offsetY;
-    const maxX = window.innerWidth - this.consoleWindow.offsetWidth;
-    const maxY = window.innerHeight - this.consoleWindow.offsetHeight;
-    newX = Math.max(0, Math.min(newX, maxX));
-    newY = Math.max(0, Math.min(newY, maxY));
+    let newX = Math.max(0, Math.min(clientX - this.offsetX, window.innerWidth - this.consoleWindow.offsetWidth));
+    let newY = Math.max(0, Math.min(clientY - this.offsetY, window.innerHeight - this.consoleWindow.offsetHeight));
+    
     this.consoleWindow.style.bottom = 'auto';
     this.consoleWindow.style.right = 'auto';
     this.consoleWindow.style.left = newX + 'px';
@@ -488,11 +375,7 @@ setupResizing() {
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
     
-    const isOnResizeHandle = 
-      clientX > rect.right - 20 && 
-      clientY > rect.bottom - 20;
-
-    if (isOnResizeHandle && !this.isDragging) {
+    if (clientX > rect.right - 20 && clientY > rect.bottom - 20 && !this.isDragging) {
       this.isResizing = true;
       this.resizeStartX = clientX;
       this.resizeStartY = clientY;
@@ -508,12 +391,8 @@ setupResizing() {
     
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
-    
-    const deltaX = clientX - this.resizeStartX;
-    const deltaY = clientY - this.resizeStartY;
-    
-    const newWidth = Math.max(this.minWidth, this.resizeStartWidth + deltaX);
-    const newHeight = Math.max(this.minHeight, this.resizeStartHeight + deltaY);
+    const newWidth = Math.max(this.minWidth, this.resizeStartWidth + clientX - this.resizeStartX);
+    const newHeight = Math.max(this.minHeight, this.resizeStartHeight + clientY - this.resizeStartY);
     
     this.consoleWindow.style.width = newWidth + 'px';
     this.consoleWindow.style.height = newHeight + 'px';
@@ -530,38 +409,24 @@ setupResizing() {
     
     const logElement = document.createElement('div');
     logElement.className = `console-log ${type}`;
+    logElement.innerHTML = `<span class="console-timestamp">[${new Date().toLocaleTimeString()}]</span>${message}`;
     
-    const timestamp = new Date().toLocaleTimeString();
-    logElement.innerHTML = `<span class="console-timestamp">[${timestamp}]</span>${message}`;
+    Object.assign(logElement.dataset, {
+      method: metadata.method || 'unknown',
+      fullPath: metadata.fullPath || '',
+      line: metadata.line || '?',
+      column: metadata.column || '?',
+      file: metadata.file || '?'
+    });
     
-    // Store metadata on element
-    logElement.dataset.method = metadata.method || 'unknown';
-    logElement.dataset.fullPath = metadata.fullPath || '';
-    logElement.dataset.line = metadata.line || '?';
-    logElement.dataset.column = metadata.column || '?';
-    logElement.dataset.file = metadata.file || '?';
-    
-    // Add click handler to show source code
     if (metadata.fullPath && metadata.line !== '?') {
       logElement.style.cursor = 'pointer';
-      logElement.addEventListener('click', () => {
-        this.showSourceCode(metadata);
-      });
       logElement.title = 'Click to view source code';
+      logElement.addEventListener('click', () => this.showSourceCode(metadata));
     }
     
     this.consoleOutput.appendChild(logElement);
     this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
-  }
-
-  clear() {
-    if (this.consoleOutput) {
-      this.consoleOutput.innerHTML = '';
-    }
-  }
-
-  init() {
-    console.log('ConsoleWindow init called');
   }
 }
 

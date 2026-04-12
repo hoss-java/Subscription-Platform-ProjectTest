@@ -4,23 +4,33 @@ const OperatorSection = {
   isEditMode: false,
   serviceTypes: [],
   billingPeriods: [],
+  elements: {},
 
+  async init() {
+    this.cacheElements();
+    this.attachEventListeners();
+    await Promise.all([
+      this.loadServiceTypes(),
+      this.loadBillingPeriods(),
+      this.loadPlans()
+    ]);
+  },
 
-  init() {
-    setTimeout(() => {
-      this.attachEventListeners();
-      this.loadServiceTypes();
-      this.loadBillingPeriods();
-      this.loadPlans();
-    }, 100);
+  cacheElements() {
+    this.elements = {
+      container: document.getElementById('operator-plans-container'),
+      form: document.getElementById('operator-plan-form'),
+      viewSection: document.getElementById('operator-view'),
+      editSection: document.getElementById('operator-edit'),
+      createBtn: document.getElementById('operator-create-btn'),
+      refreshBtn: document.getElementById('operator-refresh-btn')
+    };
   },
 
   async loadServiceTypes() {
     try {
       const response = await apiClient.get('/plans/service-types');
-      if (Array.isArray(response)) {
-        this.serviceTypes = response;
-      }
+      if (Array.isArray(response)) this.serviceTypes = response;
     } catch (error) {
       console.error('Error loading service types:', error);
     }
@@ -29,256 +39,164 @@ const OperatorSection = {
   async loadBillingPeriods() {
     try {
       const response = await apiClient.get('/billings/billing-periods');
-      if (Array.isArray(response)) {
-        this.billingPeriods = response;
-      }
+      if (Array.isArray(response)) this.billingPeriods = response;
     } catch (error) {
       console.error('Error loading billing periods:', error);
     }
   },
 
   attachEventListeners() {
-    const createBtn = document.getElementById('operator-create-btn');
-    const refreshBtn = document.getElementById('operator-refresh-btn');
+    this.elements.createBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openPlanModal(null);
+    });
     
-    if (createBtn) {
-      createBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.openPlanModal(null);
-      });
-    }
-    
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.loadPlans();
-      });
-    }
+    this.elements.refreshBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.loadPlans();
+    });
   },
 
   async loadPlans() {
-    const container = document.getElementById('operator-plans-container');
-    if (!container) {
-      return;
-    }
+    if (!this.elements.container) return;
     
-    container.innerHTML = '<p class="loading-message">Loading plans...</p>';
+    this.elements.container.innerHTML = '<p class="loading-message">Loading plans...</p>';
     
     try {
       const response = await apiClient.get('/plans/my-plans');
+      this.plans = [response, response?.content, response?.plans, response?.data].find(Array.isArray) || [];
       
-      let plans = [];
+      this.elements.container.innerHTML = this.plans.length === 0 
+        ? '<p class="empty-message">No plans found.</p>'
+        : '';
       
-      if (Array.isArray(response)) {
-        plans = response;
-      } else if (response.content && Array.isArray(response.content)) {
-        plans = response.content;
-      } else if (response.plans && Array.isArray(response.plans)) {
-        plans = response.plans;
-      } else if (response.data && Array.isArray(response.data)) {
-        plans = response.data;
-      } else {
-        plans = [];
-      }
-      
-      this.plans = plans;
-      
-      if (this.plans.length === 0) {
-        container.innerHTML = '<p class="empty-message">No plans found.</p>';
-      } else {
-        this.renderPlans();
-      }
-      
+      if (this.plans.length > 0) this.renderPlans();
     } catch (error) {
-      container.innerHTML = `<p class="error-message">Error loading plans: ${error.message}</p>`;
-      
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error loading plans: ${error.message}`, 'error');
+      this.elements.container.innerHTML = `<p class="error-message">Error loading plans: ${error.message}</p>`;
+      UIController.getInstance().showMessage(`Error loading plans: ${error.message}`, 'error');
     }
   },
 
   renderPlans() {
-    const container = document.getElementById('operator-plans-container');
     const table = document.createElement('table');
     table.className = 'operator-plans-table';
     
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    
     const headers = ['Name', 'Description', 'Service Type', 'Base Price', 'Billing Period', 'Status', 'Created', 'Actions'];
-    headers.forEach(headerText => {
+    const thead = table.createTHead();
+    const headerRow = thead.insertRow();
+    headers.forEach(text => {
       const th = document.createElement('th');
-      th.textContent = headerText;
+      th.textContent = text;
       headerRow.appendChild(th);
     });
     
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
+    const tbody = table.createTBody();
+    this.plans.forEach(plan => tbody.appendChild(this.createPlanRow(plan)));
     
-    const tbody = document.createElement('tbody');
+    this.elements.container.innerHTML = '';
+    this.elements.container.appendChild(table);
+  },
+
+  createPlanRow(plan) {
+    const row = document.createElement('tr');
+    const createdDate = new Date(plan.createdAt).toLocaleDateString();
+    const statusClass = plan.status === 'ACTIVE' ? 'badge-success' : 'badge-danger';
     
-    this.plans.forEach(plan => {
-      const row = document.createElement('tr');
-      
-      const createdDate = new Date(plan.createdAt).toLocaleDateString();
-      const statusClass = plan.status === 'ACTIVE' ? 'badge-success' : 'badge-danger';
-      
-      const nameCell = document.createElement('td');
-      nameCell.textContent = this.escapeHtml(plan.name);
-      row.appendChild(nameCell);
-      
-      const descCell = document.createElement('td');
-      descCell.textContent = this.escapeHtml(plan.description || 'N/A');
-      row.appendChild(descCell);
-      
-      const serviceTypeCell = document.createElement('td');
-      serviceTypeCell.textContent = plan.serviceType || 'N/A';
-      row.appendChild(serviceTypeCell);
-      
-      const priceCell = document.createElement('td');
-      priceCell.textContent = `$${plan.basePrice}`;
-      row.appendChild(priceCell);
-      
-      const billingCell = document.createElement('td');
-      billingCell.textContent = plan.billingPeriod || 'N/A';
-      row.appendChild(billingCell);
-      
-      const statusCell = document.createElement('td');
-      const statusBadge = document.createElement('span');
-      statusBadge.className = `badge ${statusClass}`;
-      statusBadge.textContent = plan.status || 'N/A';
-      statusCell.appendChild(statusBadge);
-      row.appendChild(statusCell);
-      
-      const createdCell = document.createElement('td');
-      createdCell.textContent = createdDate;
-      row.appendChild(createdCell);
-      
-      const actionsCell = document.createElement('td');
-      
-      const editBtn = document.createElement('button');
-      editBtn.className = 'btn btn-sm btn-primary';
-      editBtn.textContent = 'Edit';
-      editBtn.dataset.planId = plan.id;
-      editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.openPlanModal(plan.id);
-      });
-      actionsCell.appendChild(editBtn);
-      
-      row.appendChild(actionsCell);
-      tbody.appendChild(row);
+    const cellData = [
+      this.escapeHtml(plan.name),
+      this.escapeHtml(plan.description || 'N/A'),
+      plan.serviceType || 'N/A',
+      `$${plan.basePrice}`,
+      plan.billingPeriod || 'N/A'
+    ];
+    
+    cellData.forEach(data => {
+      const td = row.insertCell();
+      td.textContent = data;
     });
     
-    table.appendChild(tbody);
-    container.innerHTML = '';
-    container.appendChild(table);
+    const statusCell = row.insertCell();
+    const statusBadge = document.createElement('span');
+    statusBadge.className = `badge ${statusClass}`;
+    statusBadge.textContent = plan.status || 'N/A';
+    statusCell.appendChild(statusBadge);
+    
+    const createdCell = row.insertCell();
+    createdCell.textContent = createdDate;
+    
+    const actionsCell = row.insertCell();
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-sm btn-primary';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', () => this.openPlanModal(plan.id));
+    actionsCell.appendChild(editBtn);
+    
+    return row;
   },
 
   openPlanModal(planId) {
-    const plan = planId ? this.plans.find(p => p.id === planId) : null;
-    
     this.currentPlanId = planId;
     this.isEditMode = !!planId;
-    
-    document.getElementById('operator-view').style.display = 'none';
-    document.getElementById('operator-edit').style.display = 'block';
-    this.generatePlanForm(plan);
+    this.elements.viewSection.style.display = 'none';
+    this.elements.editSection.style.display = 'block';
+    this.generatePlanForm(planId ? this.plans.find(p => p.id === planId) : null);
   },
 
   generatePlanForm(plan) {
-    const form = document.getElementById('operator-plan-form');
+    const form = this.elements.form;
     form.innerHTML = '';
     
-    const nameGroup = document.createElement('div');
-    nameGroup.className = 'form-group';
-    const nameLabel = document.createElement('label');
-    nameLabel.textContent = 'Plan Name';
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.id = 'operator-name-input';
-    nameInput.className = 'form-control';
-    nameInput.value = plan ? plan.name : '';
-    nameInput.required = true;
-    nameGroup.appendChild(nameLabel);
-    nameGroup.appendChild(nameInput);
-    form.appendChild(nameGroup);
+    const createInput = (label, id, type, options = {}) => {
+      const group = document.createElement('div');
+      group.className = 'form-group';
+      
+      const labelEl = document.createElement('label');
+      labelEl.textContent = label;
+      group.appendChild(labelEl);
+      
+      let input;
+      if (type === 'select') {
+        input = document.createElement('select');
+        input.id = id;
+        input.className = 'form-control';
+        if (options.required) input.required = true;
+        options.items?.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item;
+          option.textContent = item;
+          input.appendChild(option);
+        });
+        if (plan && options.planKey) input.value = plan[options.planKey] || '';
+      } else if (type === 'textarea') {
+        input = document.createElement('textarea');
+        input.id = id;
+        input.className = 'form-control';
+        input.rows = options.rows || 3;
+        input.placeholder = options.placeholder || '';
+        input.value = plan ? (plan[options.planKey] || '') : '';
+      } else {
+        input = document.createElement('input');
+        input.type = type;
+        input.id = id;
+        input.className = 'form-control';
+        if (options.required) input.required = true;
+        input.value = plan ? (plan[options.planKey] || '') : '';
+        if (options.step) input.step = options.step;
+      }
+      
+      group.appendChild(input);
+      return group;
+    };
     
-    const descGroup = document.createElement('div');
-    descGroup.className = 'form-group';
-    const descLabel = document.createElement('label');
-    descLabel.textContent = 'Description';
-    const descInput = document.createElement('textarea');
-    descInput.id = 'operator-desc-input';
-    descInput.className = 'form-control';
-    descInput.value = plan ? plan.description : '';
-    descInput.rows = 3;
-    descGroup.appendChild(descLabel);
-    descGroup.appendChild(descInput);
-    form.appendChild(descGroup);
+    const fields = [
+      { label: 'Plan Name', id: 'operator-name-input', type: 'text', required: true, planKey: 'name' },
+      { label: 'Description', id: 'operator-desc-input', type: 'textarea', rows: 3, planKey: 'description' },
+      { label: 'Service Type', id: 'operator-service-type-select', type: 'select', required: true, items: this.serviceTypes, planKey: 'serviceType' },
+      { label: 'Base Price', id: 'operator-price-input', type: 'number', required: true, step: '0.01', planKey: 'basePrice' },
+      { label: 'Billing Period', id: 'operator-billing-select', type: 'select', required: true, items: this.billingPeriods, planKey: 'billingPeriod' }
+    ];
     
-    const serviceTypeGroup = document.createElement('div');
-    serviceTypeGroup.className = 'form-group';
-    const serviceTypeLabel = document.createElement('label');
-    serviceTypeLabel.textContent = 'Service Type';
-    const serviceTypeSelect = document.createElement('select');
-    serviceTypeSelect.id = 'operator-service-type-select';
-    serviceTypeSelect.className = 'form-control';
-    serviceTypeSelect.required = true;
-    
-    this.serviceTypes.forEach(type => {
-      const option = document.createElement('option');
-      option.value = type;
-      option.textContent = type;
-      serviceTypeSelect.appendChild(option);
-    });
-    
-    if (plan) {
-      serviceTypeSelect.value = plan.serviceType;
-    }
-    
-    serviceTypeGroup.appendChild(serviceTypeLabel);
-    serviceTypeGroup.appendChild(serviceTypeSelect);
-    form.appendChild(serviceTypeGroup);
-    
-    const priceGroup = document.createElement('div');
-    priceGroup.className = 'form-group';
-    const priceLabel = document.createElement('label');
-    priceLabel.textContent = 'Base Price';
-    const priceInput = document.createElement('input');
-    priceInput.type = 'number';
-    priceInput.id = 'operator-price-input';
-    priceInput.className = 'form-control';
-    priceInput.value = plan ? plan.basePrice : '';
-    priceInput.step = '0.01';
-    priceInput.required = true;
-    priceGroup.appendChild(priceLabel);
-    priceGroup.appendChild(priceInput);
-    form.appendChild(priceGroup);
-    
-    const billingGroup = document.createElement('div');
-    billingGroup.className = 'form-group';
-    const billingLabel = document.createElement('label');
-    billingLabel.textContent = 'Billing Period';
-    const billingSelect = document.createElement('select');
-    billingSelect.id = 'operator-billing-select';
-    billingSelect.className = 'form-control';
-    billingSelect.required = true;
-    
-    this.billingPeriods.forEach(period => {
-      const option = document.createElement('option');
-      option.value = period;
-      option.textContent = period;
-      billingSelect.appendChild(option);
-    });
-    
-    if (plan) {
-      billingSelect.value = plan.billingPeriod;
-    }
-    
-    billingGroup.appendChild(billingLabel);
-    billingGroup.appendChild(billingSelect);
-    form.appendChild(billingGroup);
+    fields.forEach(field => form.appendChild(createInput(field.label, field.id, field.type, field)));
     
     const featuresGroup = document.createElement('div');
     featuresGroup.className = 'form-group';
@@ -287,154 +205,111 @@ const OperatorSection = {
     const featuresInput = document.createElement('textarea');
     featuresInput.id = 'operator-features-input';
     featuresInput.className = 'form-control';
-
-    let featuresValue = '';
-    if (plan && plan.features) {
-      try {
-        const parsed = JSON.parse(plan.features);
-        featuresValue = Array.isArray(parsed) ? parsed.join('\n') : plan.features;
-      } catch {
-        featuresValue = plan.features;
-      }
-    }
-
-    featuresInput.value = featuresValue;
     featuresInput.rows = 3;
     featuresInput.placeholder = 'Enter features (comma-separated or line-by-line)';
+    if (plan?.features) {
+      try {
+        const parsed = JSON.parse(plan.features);
+        featuresInput.value = Array.isArray(parsed) ? parsed.join('\n') : plan.features;
+      } catch {
+        featuresInput.value = plan.features;
+      }
+    }
     featuresGroup.appendChild(featuresLabel);
     featuresGroup.appendChild(featuresInput);
     form.appendChild(featuresGroup);
-
     
     const statusGroup = document.createElement('div');
     statusGroup.className = 'form-group';
-    const statusLabel = document.createElement('label');
     const statusCheckbox = document.createElement('input');
     statusCheckbox.type = 'checkbox';
     statusCheckbox.id = 'operator-status-checkbox';
-    statusCheckbox.checked = plan ? plan.status === 'ACTIVE' : true;
+    statusCheckbox.checked = !plan || plan.status === 'ACTIVE';
+    const statusLabel = document.createElement('label');
     statusLabel.appendChild(statusCheckbox);
     statusLabel.appendChild(document.createTextNode(' Active'));
     statusGroup.appendChild(statusLabel);
     form.appendChild(statusGroup);
     
+    this.createFormActions(form);
+  },
+
+  createFormActions(form) {
     const actionsDiv = document.createElement('div');
     actionsDiv.className = 'form-actions';
-
+    
+    const createButton = (text, className, handler) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = className;
+      btn.textContent = text;
+      btn.addEventListener('click', handler);
+      return btn;
+    };
+    
     const leftActions = document.createElement('div');
     leftActions.className = 'form-actions-left';
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.className = 'btn btn-secondary';
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', (e) => {
+    leftActions.appendChild(createButton('Cancel', 'btn btn-secondary', (e) => {
       e.preventDefault();
       this.closePlanModal();
-    });
-
-    const saveBtn = document.createElement('button');
-    saveBtn.type = 'button';
-    saveBtn.className = 'btn btn-primary';
-    saveBtn.textContent = this.isEditMode ? 'Update Plan' : 'Create Plan';
-    saveBtn.addEventListener('click', (e) => {
+    }));
+    leftActions.appendChild(createButton(this.isEditMode ? 'Update Plan' : 'Create Plan', 'btn btn-primary', (e) => {
       e.preventDefault();
       this.savePlan();
-    });
-
-    leftActions.appendChild(cancelBtn);
-    leftActions.appendChild(saveBtn);
+    }));
     actionsDiv.appendChild(leftActions);
-
+    
     if (this.isEditMode) {
       const rightActions = document.createElement('div');
       rightActions.className = 'form-actions-right';
-      
-      const deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.className = 'btn btn-danger';
-      deleteBtn.textContent = 'Delete Plan';
-      deleteBtn.addEventListener('click', (e) => {
+      rightActions.appendChild(createButton('Delete Plan', 'btn btn-danger', (e) => {
         e.preventDefault();
         this.deletePlan(this.currentPlanId);
-      });
-      rightActions.appendChild(deleteBtn);
+      }));
       actionsDiv.appendChild(rightActions);
     }
-
+    
     form.appendChild(actionsDiv);
   },
 
   async savePlan() {
-    const nameInput = document.getElementById('operator-name-input');
-    const descInput = document.getElementById('operator-desc-input');
-    const serviceTypeSelect = document.getElementById('operator-service-type-select');
-    const priceInput = document.getElementById('operator-price-input');
-    const billingSelect = document.getElementById('operator-billing-select');
-    const featuresInput = document.getElementById('operator-features-input');
-    const statusCheckbox = document.getElementById('operator-status-checkbox');
+    const getFieldValue = (id) => document.getElementById(id)?.value || '';
+    const name = getFieldValue('operator-name-input');
+    const basePrice = parseFloat(getFieldValue('operator-price-input'));
     
-    const name = nameInput ? nameInput.value : '';
-    const description = descInput ? descInput.value : '';
-    const serviceType = serviceTypeSelect ? serviceTypeSelect.value : '';
-    const basePrice = priceInput ? priceInput.value : '';
-    const billingPeriod = billingSelect ? billingSelect.value : '';
-    const features = featuresInput ? featuresInput.value : '';
-    const isActive = statusCheckbox ? statusCheckbox.checked : true;
-    
-    if (!name || !basePrice) {
-      const uiController = UIController.getInstance();
-      uiController.showMessage('Please fill in all required fields', 'error');
+    if (!name || !basePrice || isNaN(basePrice)) {
+      UIController.getInstance().showMessage('Please fill in all required fields with valid values', 'error');
       return;
     }
     
     const saveBtn = document.querySelector('#operator-plan-form button[type="button"]:last-of-type');
-    if (!saveBtn) {
-      return;
-    }
+    if (!saveBtn) return;
     
     const originalText = saveBtn.textContent;
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
     
     try {
-      let featuresValue = features;
-      if (features) {
-        // Remove surrounding quotes if they exist
-        featuresValue = features.replace(/^["']|["']$/g, '');
-      }
-
       const planData = {
-        name: name,
-        description: description,
-        serviceType: serviceType,
-        basePrice: parseFloat(basePrice),
-        billingPeriod: billingPeriod,
-        features: featuresValue,
-        status: isActive ? 'ACTIVE' : 'INACTIVE'
+        name,
+        description: getFieldValue('operator-desc-input'),
+        serviceType: getFieldValue('operator-service-type-select'),
+        basePrice,
+        billingPeriod: getFieldValue('operator-billing-select'),
+        features: getFieldValue('operator-features-input').replace(/^["']|["']$/g, ''),
+        status: document.getElementById('operator-status-checkbox')?.checked ? 'ACTIVE' : 'INACTIVE'
       };
-
-      
-      if (isNaN(planData.basePrice)) {
-        throw new Error('Base price must be a valid number');
-      }
       
       const uiController = UIController.getInstance();
+      const method = this.isEditMode ? 'put' : 'post';
+      const url = this.isEditMode ? `/plans/${this.currentPlanId}` : '/plans';
       
-      if (this.isEditMode) {
-        await apiClient.put(`/plans/${this.currentPlanId}`, planData);
-        uiController.showMessage('Plan updated successfully!', 'success');
-      } else {
-        await apiClient.post('/plans', planData);
-        uiController.showMessage('Plan created successfully!', 'success');
-      }
-      
+      await apiClient[method](url, planData);
+      uiController.showMessage(this.isEditMode ? 'Plan updated successfully!' : 'Plan created successfully!', 'success');
       this.closePlanModal();
-      this.loadPlans();
-      
+      await this.loadPlans();
     } catch (error) {
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error saving plan: ${error.message}`, 'error');
+      UIController.getInstance().showMessage(`Error saving plan: ${error.message}`, 'error');
     } finally {
       saveBtn.disabled = false;
       saveBtn.textContent = originalText;
@@ -444,22 +319,17 @@ const OperatorSection = {
   async deletePlan(planId) {
     try {
       await apiClient.delete(`/plans/${planId}`);
-      
-      const uiController = UIController.getInstance();
-      uiController.showMessage('Plan deleted successfully!', 'success');
-      
+      UIController.getInstance().showMessage('Plan deleted successfully!', 'success');
       this.closePlanModal();
-      this.loadPlans();
-      
+      await this.loadPlans();
     } catch (error) {
-      const uiController = UIController.getInstance();
-      uiController.showMessage(`Error deleting plan: ${error.message}`, 'error');
+      UIController.getInstance().showMessage(`Error deleting plan: ${error.message}`, 'error');
     }
   },
 
   closePlanModal() {
-    document.getElementById('operator-view').style.display = 'block';
-    document.getElementById('operator-edit').style.display = 'none';
+    this.elements.viewSection.style.display = 'block';
+    this.elements.editSection.style.display = 'none';
     this.currentPlanId = null;
     this.isEditMode = false;
   },
@@ -468,10 +338,6 @@ const OperatorSection = {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-  },
-
-  cleanup() {
-    // Optional: cleanup when section is unloaded
   }
 };
 

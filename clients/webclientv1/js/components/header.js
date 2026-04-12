@@ -10,26 +10,16 @@ class HeaderComponent {
   }
 
   static getInstance() {
-    if (HeaderComponent.instance === null) {
-      HeaderComponent.instance = new HeaderComponent();
-    }
-    return HeaderComponent.instance;
+    return HeaderComponent.instance ||= new HeaderComponent();
   }
 
   async init() {
     try {
-      await this.loadHeaderHTML();
-      await this.loadConfig();
+      await Promise.all([this.loadHeaderHTML(), this.loadConfig()]);
       this.cacheElements();
       this.attachEventListeners();
       this.update();
-      
-      // Listen for auth state changes
-      document.addEventListener('authStateChanged', () => {
-        console.debug('[HeaderComponent] Auth state changed, updating header');
-        this.update();
-      });
-      
+      document.addEventListener('authStateChanged', () => this.update());
       console.log('✓ HeaderComponent initialized');
     } catch (error) {
       console.error('[HeaderComponent] ERROR:', error);
@@ -38,9 +28,7 @@ class HeaderComponent {
 
   async loadHeaderHTML() {
     try {
-      const response = await fetch('pages/header.html');
-      const html = await response.text();
-      document.getElementById('app-header').innerHTML = html;
+      document.getElementById('app-header').innerHTML = await (await fetch('pages/header.html')).text();
     } catch (error) {
       console.error('[HeaderComponent] Failed to load header HTML:', error);
     }
@@ -48,8 +36,7 @@ class HeaderComponent {
 
   async loadConfig() {
     try {
-      const response = await fetch('config/config.json');
-      const config = await response.json();
+      const config = await (await fetch('config/config.json')).json();
       document.title = config.app.title;
       this.appTitle = config.app.header.h1;
       this.appDescription = config.app.header.p;
@@ -63,7 +50,6 @@ class HeaderComponent {
       this.userDisplay = document.getElementById('user-display');
       this.logoutBtn = document.getElementById('header-logout-btn');
       this.loginLink = document.getElementById('login-link');
-      
       document.getElementById('app-title').textContent = this.appTitle;
       document.getElementById('app-description').textContent = this.appDescription;
     } catch (error) {
@@ -72,64 +58,33 @@ class HeaderComponent {
   }
 
   attachEventListeners() {
-    if (this.logoutBtn && !this.logoutBtn._listenerAttached) {
-      this.logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        await this.handleLogout();
-      });
-      this.logoutBtn._listenerAttached = true;
-    }
-    
-    if (this.loginLink && !this.loginLink._listenerAttached) {
-      this.loginLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.href = '#login';
-      });
-      this.loginLink._listenerAttached = true;
-    }
+    this.logoutBtn?.addEventListener('click', (e) => (e.preventDefault(), this.handleLogout()));
+    this.loginLink?.addEventListener('click', (e) => (e.preventDefault(), window.location.href = '#login'));
   }
 
   update() {
     const isAuthenticated = authService.isAuthenticated();
     const userData = authService.getUserData();
+    const isAuth = isAuthenticated && userData;
 
-    if (isAuthenticated && userData) {
-      this.userDisplay.textContent = `Welcome, ${userData.email}`;
-      this.logoutBtn.style.display = 'inline-block';
-      this.loginLink.style.display = 'none';
-    } else {
-      this.userDisplay.textContent = '';
-      this.logoutBtn.style.display = 'none';
-      this.loginLink.style.display = 'inline-block';
-    }
+    this.userDisplay.textContent = isAuth ? `Welcome, ${userData.email}` : '';
+    this.logoutBtn.style.display = isAuth ? 'inline-block' : 'none';
+    this.loginLink.style.display = isAuth ? 'none' : 'inline-block';
   }
 
   async handleLogout() {
-    console.debug('[HeaderComponent] handleLogout() called');
+    const redirect = () => setTimeout(() => window.location.href = '#login', 500);
     try {
       await authService.logout();
-      console.debug('[HeaderComponent] Logout completed, updating header');
-      this.update();
-      document.dispatchEvent(new Event('authStateChanged'));
-      
-      console.debug('[HeaderComponent] Redirecting to login page');
-      setTimeout(() => {
-        window.location.href = '#login';
-      }, 500);
-      
     } catch (error) {
       console.error('[HeaderComponent] Logout error:', error);
       authService.clearAuth();
+    } finally {
       this.update();
       document.dispatchEvent(new Event('authStateChanged'));
-      
-      console.debug('[HeaderComponent] Error logout, redirecting to login page');
-      setTimeout(() => {
-        window.location.href = '#login';
-      }, 500);
+      redirect();
     }
   }
-
 }
 
 window.HeaderComponent = HeaderComponent;
