@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-@Order(2)
+@Order(3)
 @RequiredArgsConstructor
+@Profile("dev")
 @EnableConfigurationProperties(UserProperties.class)
-@Profile("!test")
-public class AdminInitializer implements ApplicationRunner {
+public class UserInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -32,7 +32,11 @@ public class AdminInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        initializeUsersByRole(userProperties.getAdmins(), RoleType.ADMIN);
+        // Initialize Customer Users
+        initializeUsersByRole(userProperties.getCustomers(), RoleType.CUSTOMER);
+        
+        // Initialize Operator Users
+        initializeUsersByRole(userProperties.getOperators(), RoleType.OPERATOR);
     }
 
     private void initializeUsersByRole(List<UserProperties.UserConfig> users, RoleType roleType) {
