@@ -514,3 +514,126 @@ Once operators and plans are available, Phase 3 (Dashboard Enhancements) adds an
 
 ---
 
+---
+
+## 📸 Screenshots
+
+### Authentication
+- [Login Page](#login-page)
+- [Register Page](#register-page)
+
+### Customer Dashboard
+- [Plans](#plans)
+- [Plan Details](#plan-details)
+- [My Subscriptions](#my-subscriptions)
+- [Subscription Invoice](#subscription-invoice)
+- [Customer Invoice](#customer-invoice)
+
+### Operator Dashboard
+- [My Plans](#my-plans)
+- [Add New Plan](#add-new-plan)
+- [Manage Subscriptions](#manage-subscriptions)
+- [Bill Manager](#bill-manager)
+- [Invoice](#invoice)
+
+### User Settings
+- [Profile Section](#profile-section)
+- [Settings Section](#settings-section)
+- [Admin Section](#admin-section)
+
+---
+
+### Login Page
+
+![Login Page](./clients/screenshots/login-page.png)
+
+---
+
+### Register Page
+
+![Register Page](./clients/screenshots/register-page.png)
+
+---
+
+## Customer Dashboard
+
+### Plans
+
+![Plans](./clients/screenshots/customer-plans.png)
+
+---
+
+### Plan Details
+
+![Plan Details](./clients/screenshots/customer-plan-detail.png)
+
+---
+
+### My Subscriptions
+
+![My Subscriptions](./clients/screenshots/customer-mysubscriptions.png)
+
+---
+
+### Subscription Invoice
+
+![Subscription Invoice](./clients/screenshots/customer-mysubscriptions-invoice.png)
+
+---
+
+### Customer Invoice
+
+![Customer Invoice](./clients/screenshots/customer-invoice.png)
+
+---
+
+## Operator Dashboard
+
+### My Plans
+
+![My Plans](./clients/screenshots/operator-myplans.png)
+
+---
+
+### Add New Plan
+
+![Add New Plan](./clients/screenshots/oprator-myplans-add.png)
+
+---
+
+### Manage Subscriptions
+
+![Manage Subscriptions](./clients/screenshots/operator-manage-subscriptions.png)
+
+---
+
+### Bill Manager
+
+![Bill Manager](./clients/screenshots/oprator-bill-manager.png)
+
+---
+
+### Invoice
+
+![Invoice](./clients/screenshots/oprator-invoice.png)
+
+---
+
+## User Settings
+
+### Profile Section
+
+![Profile Section](./clients/screenshots/profile-section.png)
+
+---
+
+### Settings Section
+
+![Settings Section](./clients/screenshots/settings-section.png)
+
+---
+
+### Admin Section
+
+![Admin Section](./clients/screenshots/admin-section.png)
+
