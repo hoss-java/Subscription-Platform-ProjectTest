@@ -1,0 +1,27 @@
+{
+  "scripts": [
+    "js/console.js",
+    "js/console-logger.js",
+    "js/utils/apiClient.js",
+    "js/router.js",
+    "js/services/authService.js",
+    "js/services/authGuard.js",
+    "js/components/header.js",
+    "js/theme-manager.js",
+    "js/ui-controller.js",
+    "js/pages/login.js",
+    "js/pages/register.js",
+    "js/dashboard-section-manager.js",
+    "js/pages/sections/admin.js",
+    "js/pages/sections/plans.js",
+    "js/pages/sections/operator.js",
+    "js/pages/sections/profile.js",
+    "js/pages/sections/subscriptionsman.js",
+    "js/pages/sections/mysubscriptions.js",
+    "js/pages/sections/settings.js",
+    "js/pages/sections/billmanager.js",
+    "js/pages/dashboard.js",
+    "js/app.js"
+  ]
+}
+
