@@ -127,7 +127,15 @@ jobs:
             exit 1
           fi
 
-      # Step 10: Copy and Push Changes
+      # Step 10: Cleanup node_modules
+      - name: Cleanup node_modules
+        if: env.file_changed == 'true'
+        run: |
+          cd clients
+          rm -rf node_modules
+          rm -rf package-lock.json
+
+      # Step 11: Copy and Push Changes
       - name: Copy and Push Changes
         if: env.file_changed == 'true' && success()
         run: |
