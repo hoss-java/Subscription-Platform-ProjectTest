@@ -5,6 +5,7 @@
 /.node_modules
 /.pnp
 /.workingon
+/.chat
 .pnp.js
 
 # testing
