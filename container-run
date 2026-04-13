@@ -64,11 +64,37 @@ container-run() {
         return 1
     fi
 
+    # Extract path from directives
+    local working_path=""
+
+    local command_to_run_array
+    local clean_command_to_run=""
+
+    IFS=' ' read -ra command_to_run_array <<< "$command_to_run"
+
+    # Loop through all items in command_to_run_array
+    for command_item in "${command_to_run_array[@]}"; do
+        if [[ $command_item == ---path=* ]]; then
+            working_path="${command_item#---path=}"
+        else
+            clean_command_to_run="$clean_command_to_run $command_item"
+        fi
+    done
+
+    # Remove leading space
+    clean_command_to_run="${clean_command_to_run# }"
+
+    command_to_run="$clean_command_to_run"
+
     # Loop through all provided arguments
     for arg in "$@"; do
         if [[ $arg == ---* ]]; then
             # If the argument is a directive, add it to the array
-            directives+=("$arg")
+            if [[ $arg == ---path:* ]]; then
+                working_path="${arg#---path:}"
+            else
+                directives+=("$arg")
+            fi
         else
             non_directives+=("$arg")
         fi
@@ -83,19 +109,19 @@ container-run() {
     # Check for the ---noit directive and run the appropriate Docker command
     if [[ " ${directives[@]} " =~ " ---noit " ]]; then
         # Capture the output of the Docker command without TTY
-        output=$(docker exec "$docker_name" $command_to_run "$@" 2>&1)
+        output=$(docker exec -w "$working_path" "$docker_name" $command_to_run "$@" 2>&1)
         exit_code=$?
     elif [[ " ${directives[@]} " =~ " ---it " ]]; then
         # Run with -it option for interactive mode
-        docker exec -it "$docker_name" $command_to_run "$@"
+        docker exec -it -w "$working_path" "$docker_name" $command_to_run "$@"
         exit_code=$?
     elif [[ " ${directives[@]} " =~ " ---i " ]]; then
         # Run with -i only for interactive input
-        docker exec -i "$docker_name" $command_to_run "$@"
+        docker exec -i -w "$working_path" "$docker_name" $command_to_run "$@"
         exit_code=$?
     else
         # Default: use -it for interactive unless specified otherwise
-        docker exec -it "$docker_name" $command_to_run "$@"
+        docker exec -it -w "$working_path" "$docker_name" $command_to_run "$@"
         exit_code=$?
     fi
 
@@ -124,11 +150,18 @@ container-status() {
     local directives=()
     local non_directives=()
 
+    # Extract path from directives
+    local working_path=""
+
     # Loop through all provided arguments
     for arg in "$@"; do
         if [[ $arg == ---* ]]; then
             # If the argument is a directive, add it to the array
-            directives+=("$arg")
+            if [[ $arg == ---path:* ]]; then
+                working_path="${arg#---path:}"
+            else
+                directives+=("$arg")
+            fi
         else
             non_directives+=("$arg")
         fi

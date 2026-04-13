@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Title</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+
+  <div id="app">
+    <div id="page-container"></div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Console Window -->
+  <div class="console-window" id="console-window">
+    <div class="console-header">
+      <span class="console-title">Console</span>
+      <div class="console-controls">
+        <button class="console-btn console-copy-btn">📋 Copy</button>
+        <button class="console-btn console-clear-btn">Clear</button>
+      </div>
+    </div>
+    <div class="console-output"></div>
+  </div>
+
+  <script src="js/script-loader.js"></script>
+  <script src="js/initializer.js"></script>
+  <script>
+    fetch('config/scripts.json')
+      .then(res => res.json())
+      .then(data => scriptLoader.loadScripts(data.scripts))
+      .then(() => {
+        // Trigger DOMContentLoaded manually if DOM is already ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => Initializer.init());
+        } else {
+          Initializer.init();
+        }
+      })
+      .catch(err => console.error('Error:', err));
+  </script>
+
+  <script>
+    // Initialize theme manager first
+    //window.ThemeManager.getInstance().postInit();
+
+    // Then initialize other components
+    document.getElementById('clear-btn')?.addEventListener('click', () => {
+      window.consoleWindow?.clear();
+    });
+  </script>
+</body>
+</html>

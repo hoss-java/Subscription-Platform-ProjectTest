@@ -29,7 +29,7 @@ declare -A FILE_PATTERNS=(
 
 declare -A TEST_DIRECTORIES=(
     ["java"]="subscriptionapi/src/test"
-    ["js"]="src/tests"
+    ["js"]="clients/webclientv1/tests"
 )
 
 declare -A TEST_RUNNERS=(
@@ -227,6 +227,7 @@ extract_java_test_methods() {
 # Extract test methods from JavaScript test file
 extract_js_test_methods() {
     local test_file=$1
+    
     # Remove file extensions
     test_file="${test_file%.test.js}"
     test_file="${test_file%.spec.js}"
@@ -234,19 +235,15 @@ extract_js_test_methods() {
     
     local test_dir="${TEST_DIRECTORIES[js]}"
     
-    # Try both extensions
-    local full_path=""
-    [ -f "$test_dir/${test_file}.test.js" ] && full_path="$test_dir/${test_file}.test.js"
-    [ -f "$test_dir/${test_file}.spec.js" ] && full_path="$test_dir/${test_file}.spec.js"
-
-    if [ -z "$full_path" ]; then
+    # Search for the file recursively in the test directory
+    local full_path=$(find "$test_dir" -name "${test_file}.test.js" -o -name "${test_file}.spec.js" | head -1)
+    
+    if [ -z "$full_path" ] || [ ! -f "$full_path" ]; then
         return
     fi
 
-    # Extract test names from it() and test() functions
-    grep -E "^\s*(it|test)\(" "$full_path" | sed "s/.*['\"]([^'\"]*)['\"].*/\1/" | sort -u
+    grep -E "(it|test)\(\s*['\"]" "$full_path" | sed "s/.*['\"\`]\([^'\"]*\)['\"\`].*/\1/" | sort -u
 }
-
 
 # Function to filter tests based on criteria
 filter_tests() {
@@ -328,18 +325,38 @@ parse_jest_output() {
     local test_class=$1
     local output=$2
     
-    # Extract test counts from Jest output
-    # Jest outputs: "Tests: X passed, Y failed, Z total"
-    if [[ $output =~ Tests:[[:space:]]+([0-9]+)[[:space:]]passed ]]; then
-        local passed=${BASH_REMATCH[1]}
-        local total=0
-        if [[ $output =~ ([0-9]+)[[:space:]]total ]]; then
-            total=${BASH_REMATCH[1]}
-        fi
-        local failed=$((total - passed))
-        TEST_COUNTS["$test_class"]="$passed/$total"
+    # Extract failed test method names - remove newlines, carriage returns, and ANSI codes
+    local failures=$(echo "$output" | grep "●.*›" | sed 's/.*› //' | tr '\n' ',' | sed 's/,$//' | tr -d '\r' | sed 's/\x1b\[[0-9;]*m//g')
+    
+    if [ -n "$failures" ]; then
+        TEST_FAILURES["$test_class"]="$failures"
     fi
+    
+    # Count total tests and failed tests from the test file itself
+    local file_type="js"
+    local extractor="${TEST_METHODS_EXTRACTORS[$file_type]}"
+    
+    # Get all test methods
+    local all_methods=()
+    while IFS= read -r method; do
+        if [ -n "$method" ]; then
+            all_methods+=("$method")
+        fi
+    done < <($extractor "$test_class")
+    
+    local total=${#all_methods[@]}
+    
+    # Count failures
+    local failed=0
+    if [ -n "$failures" ]; then
+        failed=$(echo "$failures" | tr ',' '\n' | grep -v '^$' | wc -l)
+    fi
+    
+    local passed=$((total - failed))
+    
+    TEST_COUNTS["$test_class"]="$passed/$total"
 }
+
 
 # Run Maven test
 run_maven_test() {
@@ -358,26 +375,26 @@ run_maven_test() {
     return $exit_code
 }
 
-
 # Run Jest test
 run_jest_test() {
     local test=$1
+    
     local test_name="${test%.test.js}"
     test_name="${test_name%.spec.js}"
+    
     local test_dir="${TEST_DIRECTORIES[js]}"
+    
     local output
     
-    # Try to find the test file
-    local test_file=""
-    [ -f "$test_dir/${test_name}.test.js" ] && test_file="$test_dir/${test_name}.test.js"
-    [ -f "$test_dir/${test_name}.spec.js" ] && test_file="$test_dir/${test_name}.spec.js"
+    # Search for the test file recursively (like extract_js_test_methods does)
+    local test_file=$(find "$test_dir" -name "${test_name}.test.js" -o -name "${test_name}.spec.js" | head -1)
     
-    if [ -z "$test_file" ]; then
+    if [ -z "$test_file" ] || [ ! -f "$test_file" ]; then
         echo "Test file not found: $test"
         return 1
     fi
     
-    output=$(jest "$test_file" 2>&1)
+    output=$(npx jest "$test_file" 2>&1)
     local exit_code=$?
     
     parse_jest_output "$test" "$output"
@@ -525,18 +542,22 @@ show_test_methods() {
     
     declare -a failed_methods
     
-    # Parse failed methods into an array
+    # Parse failed methods into an array (handle different separators)
     if [ -n "$failed_methods_str" ]; then
-        IFS=', ' read -ra failed_methods <<< "$failed_methods_str"
+        if [ "$file_type" = "js" ]; then
+            IFS=',' read -ra failed_methods <<< "$failed_methods_str"
+        fi
     fi
     
     local method_count=0
     while IFS= read -r method; do
         if [ -n "$method" ]; then
+            
             # Check if this method is in the failed methods list
             local is_failed=false
             for failed_method in "${failed_methods[@]}"; do
-                if [ "$method" = "$failed_method" ]; then
+                local trimmed_failed=$(echo "$failed_method" | xargs)
+                if [[ "$method" == "$trimmed_failed" ]]; then
                     is_failed=true
                     break
                 fi
@@ -551,13 +572,7 @@ show_test_methods() {
             ((method_count++))
         fi
     done < <($extractor "$test")
-    
-    if [ $method_count -eq 0 ]; then
-        printf "  ${YELLOW}(no test methods found)${NC}\n"
-    fi
 }
-
-
 
 # Main script execution
 main() {
@@ -623,8 +638,7 @@ main() {
         echo -ne "[$current/$total_tests] Running $test [$file_type]... "
         
         # Run test and capture exit code
-        #if run_test "$test_entry" > /dev/null 2>&1; then
-        if run_test "$test_entry"; then
+        if run_test "$test_entry" > /dev/null 2>&1; then
             echo -e "${GREEN}✓ PASSED${NC}"
             PASSED_TESTS+=("$test_entry")
         else
@@ -664,4 +678,3 @@ main() {
 
 # Run main function with all arguments
 main "$@"
-
