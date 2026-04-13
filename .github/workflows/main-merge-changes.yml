@@ -121,6 +121,7 @@ jobs:
         if: env.file_changed == 'true'
         run: |
           cd clients
+          npm instal jest
           npx jest webclientv1/tests/js
           if [ $? -ne 0 ]; then
             exit 1
