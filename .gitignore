@@ -4,8 +4,6 @@
 /node_modules
 /.node_modules
 /.pnp
-/.workingon
-/.chat
 .pnp.js
 
 # testing
@@ -20,7 +18,9 @@ bin/
 pack/
 **/pack/
 target/
-#**/target/
+**/target/
+.workingon/
+.chat/
 
 # misc
 *.pyc
