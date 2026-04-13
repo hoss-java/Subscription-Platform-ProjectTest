@@ -1,0 +1,112 @@
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="url"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+/* Date and datetime inputs - auto width */
+input[type="date"],
+input[type="datetime-local"] {
+  width: auto;
+  padding: 10px;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="number"]::placeholder,
+input[type="date"]::placeholder,
+input[type="datetime-local"]::placeholder,
+input[type="url"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: #666;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #5dade2;
+  box-shadow: 0 0 5px rgba(93, 173, 226, 0.3);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.required {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.optional {
+  color: #999;
+  font-size: 0.9em;
+}
+
+.help-text {
+  display: block;
+  font-size: 0.85em;
+  color: #999;
+  margin-top: 4px;
+}
+
+select:invalid {
+  border-color: #ff6b6b;
+}
+
+select:valid {
+  border-color: #51cf66;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.form-actions-left {
+  display: flex;
+  gap: 10px;
+}
+
+.form-actions-right {
+  display: flex;
+  gap: 10px;
+}

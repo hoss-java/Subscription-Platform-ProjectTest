@@ -1,0 +1,48 @@
+/* ============================================
+   AppToast - Light Mode Theme
+   ============================================ */
+
+.toast {
+  background-color: #ffffff;
+  color: #333333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Success - Light */
+.toast.success {
+  border-left-color: #4caf50;
+  background-color: #f1f8f4;
+}
+
+.toast.success .toast-icon::before {
+  color: #4caf50;
+}
+
+/* Error - Light */
+.toast.error {
+  border-left-color: #f44336;
+  background-color: #fef1f0;
+}
+
+.toast.error .toast-icon::before {
+  color: #f44336;
+}
+
+/* Info - Light */
+.toast.info {
+  border-left-color: #2196f3;
+  background-color: #f0f7ff;
+}
+
+.toast.info .toast-icon::before {
+  color: #2196f3;
+}
+
+/* Close Button - Light */
+.toast-close {
+  color: #999999;
+}
+
+.toast-close:hover {
+  color: #333333;
+}
