@@ -2857,39 +2857,9 @@ gantt
 > # Reports:
 > </details>
 
-## 001-0012
-> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
-> <details >
->     <summary>Details</summary>
-> 
-> # DOD (definition of done):
-> - AuthService converted to TypeScript with proper interfaces
-> - All components have TypeScript types
-> - Redux/Zustand/Context store implemented for auth state management
-> - Auth state changes automatically trigger UI updates
-> - Type-safe selectors for user, token, isAuthenticated, userRole
-> - No `any` types used (strict mode)
-> - All API calls properly typed with request/response interfaces
-> 
-> # TODO:
-> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
-> - [ ] 2. Convert AuthService to TypeScript with proper typing
-> - [ ] 3. Convert AuthGuard to TypeScript
-> - [ ] 4. Convert ApiClient to TypeScript
-> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
-> - [ ] 6. Implement auth reducer/actions for login, logout, register
-> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
-> - [ ] 8. Integrate state management with existing components
-> - [ ] 9. Replace localStorage-only approach with state management
-> - [ ] 10. Test state persistence and retrieval after page refresh
-> 
-> # Reports:
-> * (to be filled during development)
-> </details>
-
 ## 001-0028
-> **Set up JS testing framework, write tests for apiClient.js, and integrate CI/CD** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
-> <details open>
+> **Set up JS testing framework, write tests for apiClient.js, and integrate CI/CD** ![status](https://img.shields.io/badge/status-DONE-brightgreen)
+> <details >
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
@@ -3040,8 +3010,6 @@ gantt
 > **Next step:**
 > - Run script to generate test structure
 > - Then setup Jest configuration and package.json
-> 
-> # GitHub Workflow Setup Report
 > 
 > ## Test Infrastructure Implementation
 > 
@@ -3221,7 +3189,36 @@ gantt
 > - Test templates generated retroactively (source code written before tests)
 > - In real projects, write tests in parallel with source code (script not needed)
 > - Jest configured with jsdom for browser API mocking
-> - All dependencies installed in `package.json`
 > - Module loader uses static analysis (no code execution)
 > - Container isolation prevents local system pollution
+> </details>
+
+## 001-0012
+> **TypeScript Conversion & State Management (Redux/Zustand/Context)** ![status](https://img.shields.io/badge/status-NOT--STARTED-lightgrey)
+> <details >
+>     <summary>Details</summary>
+> 
+> # DOD (definition of done):
+> - AuthService converted to TypeScript with proper interfaces
+> - All components have TypeScript types
+> - Redux/Zustand/Context store implemented for auth state management
+> - Auth state changes automatically trigger UI updates
+> - Type-safe selectors for user, token, isAuthenticated, userRole
+> - No `any` types used (strict mode)
+> - All API calls properly typed with request/response interfaces
+> 
+> # TODO:
+> - [ ] 1. Create TypeScript interfaces for User, AuthResponse, LoginRequest, RegisterRequest
+> - [ ] 2. Convert AuthService to TypeScript with proper typing
+> - [ ] 3. Convert AuthGuard to TypeScript
+> - [ ] 4. Convert ApiClient to TypeScript
+> - [ ] 5. Choose state management library (Redux, Zustand, or Context API)
+> - [ ] 6. Implement auth reducer/actions for login, logout, register
+> - [ ] 7. Create selectors for user, token, isAuthenticated, userRole
+> - [ ] 8. Integrate state management with existing components
+> - [ ] 9. Replace localStorage-only approach with state management
+> - [ ] 10. Test state persistence and retrieval after page refresh
+> 
+> # Reports:
+> * (to be filled during development)
 > </details>
