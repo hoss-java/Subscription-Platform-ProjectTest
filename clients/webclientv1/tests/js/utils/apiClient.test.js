@@ -45,31 +45,31 @@ describe('apiClient', () => {
 
   // Add these to app.test.js or header.test.js to create failures
 
-  // Test 1: Simple assertion failure
-  test('should fail intentionally - null check', () => {
-    expect(apiClient).toBeNull();
-  });
-
-  // Test 2: Equality failure
-  test('should fail intentionally - wrong value', () => {
-    expect(1 + 1).toBe(3);
-  });
-
-  // Test 3: String mismatch
-  test('should fail intentionally - string mismatch', () => {
-    expect('hello').toBe('world');
-  });
-
-  // Test 4: Array length failure
-  test('should fail intentionally - array length', () => {
-    expect([1, 2, 3]).toHaveLength(5);
-  });
-
-  // Test 5: Object property failure
-  test('should fail intentionally - missing property', () => {
-    expect({ name: 'John' }).toHaveProperty('age');
-  });
-
+//  // Test 1: Simple assertion failure
+//  test('should fail intentionally - null check', () => {
+//    expect(apiClient).toBeNull();
+//  });
+//
+//  // Test 2: Equality failure
+//  test('should fail intentionally - wrong value', () => {
+//    expect(1 + 1).toBe(3);
+//  });
+//
+//  // Test 3: String mismatch
+//  test('should fail intentionally - string mismatch', () => {
+//    expect('hello').toBe('world');
+//  });
+//
+//  // Test 4: Array length failure
+//  test('should fail intentionally - array length', () => {
+//    expect([1, 2, 3]).toHaveLength(5);
+//  });
+//
+//  // Test 5: Object property failure
+//  test('should fail intentionally - missing property', () => {
+//    expect({ name: 'John' }).toHaveProperty('age');
+//  });
+//
 //  test('should fail intentionally', () => {
 //    expect(apiClient).toBeNull();
 //  });

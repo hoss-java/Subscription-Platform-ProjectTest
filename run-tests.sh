@@ -28,8 +28,8 @@ declare -A FILE_PATTERNS=(
 )
 
 declare -A TEST_DIRECTORIES=(
-    ["java"]="subscriptionapi/src/test"
-    ["js"]="clients/webclientv1/tests"
+    ["java"]="$SCRIPT_DIR/subscriptionapi/src/test"
+    ["js"]="$SCRIPT_DIR/clients/webclientv1/tests"
 )
 
 declare -A TEST_RUNNERS=(
@@ -201,6 +201,7 @@ discover_tests() {
     echo "${discovered_tests[@]}"
 }
 
+
 # Extract test methods from Java test file
 extract_java_test_methods() {
     local test_file=$1
@@ -242,7 +243,8 @@ extract_js_test_methods() {
         return
     fi
 
-    grep -E "(it|test)\(\s*['\"]" "$full_path" | sed "s/.*['\"\`]\([^'\"]*\)['\"\`].*/\1/" | sort -u
+    # Only match test() or it() that are NOT preceded by // (comments)
+    grep -E "^\s*(it|test)\(\s*['\"]" "$full_path" | sed "s/.*['\"\`]\([^'\"]*\)['\"\`].*/\1/" | sort -u
 }
 
 # Function to filter tests based on criteria
@@ -386,7 +388,6 @@ run_jest_test() {
     
     local output
     
-    # Search for the test file recursively (like extract_js_test_methods does)
     local test_file=$(find "$test_dir" -name "${test_name}.test.js" -o -name "${test_name}.spec.js" | head -1)
     
     if [ -z "$test_file" ] || [ ! -f "$test_file" ]; then
@@ -394,7 +395,7 @@ run_jest_test() {
         return 1
     fi
     
-    output=$(npx jest "$test_file" 2>&1)
+    output=$(npx jest "$test_file" --no-cache 2>&1)  # ← Add --no-cache here
     local exit_code=$?
     
     parse_jest_output "$test" "$output"
@@ -405,6 +406,7 @@ run_jest_test() {
     
     return $exit_code
 }
+
 
 # Run a single test (dispatches to appropriate runner)
 run_test() {

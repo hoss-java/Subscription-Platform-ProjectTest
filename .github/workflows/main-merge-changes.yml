@@ -1,4 +1,3 @@
-# File main-merge-change.yml
 name: main-merge-changes
 
 on:
@@ -29,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Step 2: Set up Java
+      # Step 2: Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -37,7 +36,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Step 3: Check out requested commit
+      # Step 3: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Step 4: Check out requested commit
       - name: Check out requested commit
         run: |
           echo "Requested commit: ${{ inputs.commit_sha }}"
@@ -48,13 +53,13 @@ jobs:
           git rev-parse HEAD
           git log -1 --oneline
 
-      # Step 4: Debug git state
+      # Step 5: Debug git state
       - name: Debug git state
         run: |
           git status --short --branch
           git log -3 --oneline
 
-      # Step 5: Read the list of files and folders
+      # Step 6: Read the list of files and folders
       - name: Read files list
         id: readfiles
         run: |
@@ -70,7 +75,7 @@ jobs:
             exit 0
           fi
 
-      # Step 6: Check for changes in the specified files
+      # Step 7: Check for changes
       - name: Check for changes
         id: check-changes
         run: |
@@ -98,24 +103,33 @@ jobs:
             fi
           done
 
-      # Step 7: Run Tests
-      - name: Run Tests
+      # Step 8: Run Java Tests
+      - name: Run Java Tests
         if: env.file_changed == 'true'
         run: |
-          output=$(mvn -f subscriptionapi test -Dspring.profiles.active=test)  # Run tests
-          TEST_RESULT=$?  # Capture test result
-          output+=$(mvn -f subscriptionapi clean -Dspring.profiles.active=test)  # Clean up after tests
+          output=$(mvn -f subscriptionapi test -Dspring.profiles.active=test)
+          TEST_RESULT=$?
+          output+=$(mvn -f subscriptionapi clean -Dspring.profiles.active=test)
 
           if [ $TEST_RESULT -ne 0 ]; then
             echo "$output"
-            exit 1  # Fail the step if tests did not pass
+            exit 1
           fi
 
-      # Step 8: Copy and Push Changes
-      - name: Copy and Push Changes
-        if: env.file_changed == 'true' && success()  # Only run if tests passed
+      # Step 9: Run JS Tests
+      - name: Run JS Tests
+        if: env.file_changed == 'true'
         run: |
-          #set -x
+          cd clients
+          npx jest webclientv1/tests/js
+          if [ $? -ne 0 ]; then
+            exit 1
+          fi
+
+      # Step 10: Copy and Push Changes
+      - name: Copy and Push Changes
+        if: env.file_changed == 'true' && success()
+        run: |
           git checkout ${TARGET_BRANCH}
 
           changes_made=false
@@ -125,7 +139,6 @@ jobs:
             fi
           done
 
-          # Check if any file was modified
           if [[ "$(git status --porcelain)" ]]; then
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
@@ -134,5 +147,5 @@ jobs:
             git push origin ${TARGET_BRANCH}
           else
             echo "No changes to push"
-            exit 0  # Return 0 if there are no changes
+            exit 0
           fi
