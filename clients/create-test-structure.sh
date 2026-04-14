@@ -26,6 +26,10 @@ fi
 PROJECT_ROOT=$(dirname "$(dirname "$SOURCE_DIR")")
 TEST_DIR="$PROJECT_ROOT/tests/js"
 
+# Get the script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMPLATE_FILE="$SCRIPT_DIR/.create-test-structure.template"
+
 echo "Source: $SOURCE_DIR"
 echo "Target: $TEST_DIR"
 echo ""
@@ -51,6 +55,7 @@ find "$SOURCE_DIR" -type f -name "*.js" -exec bash -c '
     SOURCE_DIR="$2"
     TEST_DIR="$3"
     PROJECT_ROOT="$4"
+    TEMPLATE_FILE="$5"
     
     relative_path="${file#$SOURCE_DIR/}"
     test_file="$TEST_DIR/${relative_path%.js}.test.js"
@@ -71,39 +76,26 @@ find "$SOURCE_DIR" -type f -name "*.js" -exec bash -c '
             export_name=$(echo "$source_file_name" | sed -r "s/(^|-)([a-z])/\U\2/g")
         fi
         
-        cat > "$test_file" << EOF
+        # Check if template file exists
+        if [ -f "$TEMPLATE_FILE" ]; then
+            # Read template and substitute variables
+            export export_name
+            export source_relative_path
+            export PROJECT_ROOT
+            cat "$TEMPLATE_FILE" | envsubst > "$test_file"
+        else
+            # Create empty test file with comment
+            cat > "$test_file" << EOF
 // Test file for: $source_relative_path
-const testSetup = require(process.cwd() + '\''/$PROJECT_ROOT/tests/setup.js'\'');
-const loadModules = require(process.cwd() + '\''/$PROJECT_ROOT/tests/load-modules.js'\'');
-const { $export_name } = loadModules('\''$export_name'\'');
-
-describe('\''$export_name'\'', () => {
-  
-  beforeEach(() => {
-    // Setup before each test
-  });
-
-  afterEach(() => {
-    // Cleanup after each test
-  });
-
-  test('\''should be defined'\'', () => {
-    expect($export_name).toBeDefined();
-  });
-
-  // TODO: Add your tests here
-  // Example:
-  // test('\''should do something'\'', () => {
-  //   expect(result).toBe(expected);
-  // });
-
-});
+// TODO: Add your test class here
 EOF
+        fi
+        
         echo "✓ Created test file: $test_file"
     else
         echo "ℹ Test file already exists: $test_file"
     fi
-' _ {} "$SOURCE_DIR" "$TEST_DIR" "$PROJECT_ROOT" \;
+' _ {} "$SOURCE_DIR" "$TEST_DIR" "$PROJECT_ROOT" "$TEMPLATE_FILE" \;
 
 echo ""
 echo "✓ Test structure created successfully!"

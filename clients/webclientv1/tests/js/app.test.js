@@ -1,9 +1,9 @@
-// Test file for: webclientv1/src/js/utils/apiClient.js
+// Test file for: webclientv1/src/js/app.js
 const testSetup = require(process.cwd() + '/webclientv1/tests/setup.js');
 const loadModules = require(process.cwd() + '/webclientv1/tests/load-modules.js');
-const { ApiClient } = loadModules('ApiClient');
+const { App } = loadModules('App');
 
-describe('ApiClient', () => {
+describe('App', () => {
   let component;
   let mockService;
   let mockElement;
@@ -12,18 +12,18 @@ describe('ApiClient', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    ApiClient.instance = null;
+    App.instance = null;
   });
 
   afterEach(() => {
     jest.useRealTimers();
     jest.restoreAllMocks();
     jest.clearAllMocks();
-    ApiClient.instance = null;
+    App.instance = null;
   });
 
   test('should be defined', () => {
-    expect(ApiClient).toBeDefined();
+    expect(App).toBeDefined();
   });
 
   // ===== SIMPLE TEST =====
