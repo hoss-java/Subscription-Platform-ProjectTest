@@ -3224,15 +3224,367 @@ gantt
 > </details>
 
 ## 001-0029
-> **new card** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
+> **Code unit tests for JavaScript frontend** ![status](https://img.shields.io/badge/status-ONGOING-yellow)
 > <details open>
 >     <summary>Details</summary>
 > 
 > # DOD (definition of done):
+> - All 18 test files implemented with passing tests
+> - Minimum 80% code coverage achieved
 > 
 > # TODO:
-> - [] 1.
+> - [x] 1. Set up test framework and dependencies (Jest or Mocha)
+> - [x] 2. Create setup.js and load-modules.js configuration
+> - [x] 3. Code header.test.js component tests
+> - [ ] 4. Code console-logger.test.js and console.test.js tests
+> - [ ] 5. Code dashboard-section-manager.test.js tests
+> - [ ] 6. Code page tests (login.test.js, register.test.js, dashboard.test.js)
+> - [ ] 7. Code section tests (admin.test.js, billmanager.test.js, mysubscriptions.test.js, operator.test.js, plans.test.js, profile.test.js, settings.test.js, subscriptionsman.test.js)
+> - [ ] 8. Code router.test.js tests
+> - [ ] 9. Code service tests (authGuard.test.js, authService.test.js)
+> - [ ] 10. Code theme-manager.test.js tests
+> - [ ] 11. Code ui-controller.test.js tests
+> - [ ] 12. Code apiClient.test.js utility tests
+> - [ ] 13. Run all tests and verify coverage report
 > 
 > # Reports:
-> *
+> ## JavaScript Unit Testing Guide - Jest Test Structure & Patterns
+> This guide explains the core concepts, patterns, and best practices for writing unit tests in Jest. It covers test structure objects, setup/teardown hooks, mocking strategies, and when to use each pattern.
+> 
+> 
+> ### 1. Test Structure Objects
+> 
+> #### What Are They?
+> Test structure objects are the fundamental building blocks that organize and define test cases in Jest.
+> 
+> #### Types & When to Use
+> 
+> | Type | Purpose | When to Use | Example |
+> |------|---------|-----------|---------|
+> | **Test Suite** | Groups related tests together | Always - wraps all tests | `describe('ComponentName', () => {...})` |
+> | **Nested Test Suite** | Organizes tests into logical features | Complex components with multiple features | `describe('Authentication', () => { describe('Login', () => {...}) })` |
+> | **Simple Test** | Single test case with basic assertions | Quick validation of single behavior | `test('should be defined', () => { expect(obj).toBeDefined() })` |
+> | **Parametrized Test** | Runs same test with multiple data sets | Testing same logic with different inputs | `test.each([['val1', exp1], ['val2', exp2]])` |
+> | **Async Test** | Tests asynchronous operations | API calls, promises, timeouts | `test('should load', async () => { await fetch() })` |
+> 
+> #### Usage Pattern
+> ```javascript
+> // ===== TEST SUITE =====
+> describe('ComponentName', () => {
+>   // ===== NESTED TEST SUITE =====
+>   describe('Feature Name', () => {
+>     // ===== SIMPLE TEST =====
+>     test('should do something', () => {
+>       expect(result).toBe(expected);
+>     });
+> 
+>     // ===== PARAMETRIZED TEST =====
+>     test.each([['case1', val1, exp1]])('should handle %s', (name, input, expected) => {
+>       expect(result(input)).toBe(expected);
+>     });
+> 
+>     // ===== ASYNC TEST =====
+>     test('should load data', async () => {
+>       const result = await fetchData();
+>       expect(result).toBeDefined();
+>     });
+>   });
+> });
+> ```
+> 
+> 
+> ### 2. Setup & Teardown Hooks
+> 
+> #### What Are They?
+> Lifecycle hooks that prepare test environment before tests run and clean up after tests complete.
+> 
+> #### Types & When to Use
+> 
+> | Hook | Purpose | When to Use | Timing |
+> |------|---------|-----------|--------|
+> | **beforeEach** | Initialize test data and mocks | Every test needs fresh state | Before EACH test |
+> | **afterEach** | Clean up mocks, timers, and state | Every test to prevent side effects | After EACH test |
+> | **beforeAll** | One-time setup for entire suite | Expensive setup (database, server) | Before ALL tests in suite |
+> | **afterAll** | One-time cleanup for entire suite | Close connections, clean files | After ALL tests in suite |
+> 
+> #### Usage Pattern
+> ```javascript
+> describe('Component', () => {
+>   let component;
+>   
+>   // Initialize before each test
+>   beforeEach(() => {
+>     component = new Component();
+>     jest.useFakeTimers();
+>     jest.spyOn(console, 'error').mockImplementation(() => {});
+>   });
+>   
+>   // Clean up after each test
+>   afterEach(() => {
+>     jest.useRealTimers();
+>     jest.restoreAllMocks();
+>     jest.clearAllMocks();
+>   });
+>   
+>   test('should work', () => {
+>     expect(component).toBeDefined();
+>   });
+> });
+> ```
+> 
+> 
+> ### 3. Mock Objects
+> 
+> #### What Are They?
+> Mocks replace real implementations with fake ones to isolate code being tested and control external dependencies.
+> 
+> #### Types & When to Use
+> 
+> | Type | Purpose | When to Use | Example |
+> |------|---------|-----------|---------|
+> | **Mock Function** | Create spyable function | Track function calls | `jest.fn()` |
+> | **Mock with Implementation** | Function with custom logic | Simulate specific behavior | `jest.fn((id) => elements[id])` |
+> | **Mock Return Value** | Returns specific value | Simple return values | `jest.fn(() => false)` |
+> | **Mock Resolved Value** | Resolves promise with data | API success responses | `mockFn.mockResolvedValueOnce({data})` |
+> | **Mock Rejected Value** | Rejects promise with error | API error handling | `mockFn.mockRejectedValueOnce(error)` |
+> | **Spy on Method** | Track existing method calls | Monitor real method behavior | `jest.spyOn(obj, 'method')` |
+> | **Mock DOM Element** | Simulate HTML element | Test DOM interactions | `{ textContent: '', addEventListener: jest.fn() }` |
+> | **Mock Global Object** | Replace browser APIs | Control fetch, window, document | `global.fetch = jest.fn()` |
+> 
+> #### Usage Pattern
+> ```javascript
+> beforeEach(() => {
+>   // ===== MOCK FUNCTION =====
+>   const mockFn = jest.fn();
+> 
+>   // ===== MOCK WITH IMPLEMENTATION =====
+>   const mockService = jest.fn((id) => {
+>     return elements[id] || null;
+>   });
+> 
+>   // ===== MOCK RESOLVED VALUE =====
+>   global.fetch = jest.fn().mockResolvedValueOnce({
+>     json: jest.fn().mockResolvedValue({ data: 'test' })
+>   });
+> 
+>   // ===== MOCK REJECTED VALUE =====
+>   mockService.logout = jest.fn().mockRejectedValueOnce(new Error('Failed'));
+> 
+>   // ===== SPY ON METHOD =====
+>   jest.spyOn(component, 'update');
+> 
+>   // ===== MOCK DOM ELEMENT =====
+>   const mockElement = {
+>     textContent: '',
+>     addEventListener: jest.fn(),
+>     style: { display: 'none' }
+>   };
+> 
+>   // ===== MOCK GLOBAL OBJECT =====
+>   document.getElementById = jest.fn((id) => mockElement);
+> });
+> ```
+> 
+> 
+> ### 4. Assertions
+> 
+> #### What Are They?
+> Statements that verify expected behavior by comparing actual results with expected values.
+> 
+> #### Common Types & When to Use
+> 
+> | Assertion | Purpose | When to Use | Example |
+> |-----------|---------|-----------|---------|
+> | **toBe()** | Strict equality (===) | Primitives, exact values | `expect(count).toBe(5)` |
+> | **toBeDefined()** | Value is defined | Check initialization | `expect(obj).toBeDefined()` |
+> | **toBeNull()** | Value is null | Check null state | `expect(value).toBeNull()` |
+> | **toHaveBeenCalled()** | Function was called | Track invocations | `expect(mockFn).toHaveBeenCalled()` |
+> | **toHaveBeenCalledWith()** | Function called with args | Verify call arguments | `expect(mockFn).toHaveBeenCalledWith(arg)` |
+> | **toHaveBeenCalledTimes()** | Function called N times | Count invocations | `expect(mockFn).toHaveBeenCalledTimes(2)` |
+> | **expect.any()** | Flexible type matching | Match any value of type | `expect(mockFn).toHaveBeenCalledWith(expect.any(Function))` |
+> | **expect.objectContaining()** | Partial object match | Validate object properties | `expect(event).toEqual(expect.objectContaining({type: 'click'}))` |
+> 
+> #### Usage Pattern
+> ```javascript
+> test('should validate behavior', () => {
+>   const mockFn = jest.fn();
+>   
+>   // ===== ASSERTION =====
+>   expect(component).toBeDefined();
+>   expect(mockFn).toHaveBeenCalled();
+>   expect(mockFn).toHaveBeenCalledWith(expect.any(String));
+>   expect(mockFn).toHaveBeenCalledTimes(1);
+>   expect(result).toBe(expected);
+> });
+> ```
+> 
+> 
+> ### 5. Test Organization Best Practices
+> 
+> #### File Structure
+> ```
+> tests/
+> ├── setup.js                 (Global test configuration)
+> ├── load-modules.js         (Module loading utilities)
+> ├── components/
+> │   ├── header.test.js
+> │   └── footer.test.js
+> ├── services/
+> │   ├── authService.test.js
+> │   └── apiClient.test.js
+> └── pages/
+>     ├── login.test.js
+>     └── dashboard.test.js
+> ```
+> 
+> #### Test Organization Pattern
+> ```javascript
+> // Test file for: webclientv1/src/js/components/header.js
+> const testSetup = require(process.cwd() + '/webclientv1/tests/setup.js');
+> const loadModules = require(process.cwd() + '/webclientv1/tests/load-modules.js');
+> const { HeaderComponent } = loadModules('HeaderComponent');
+> 
+> describe('HeaderComponent', () => {
+>   let component;
+>   
+>   // 1. SETUP
+>   beforeEach(() => {
+>     jest.useFakeTimers();
+>     jest.spyOn(console, 'error').mockImplementation(() => {});
+>   });
+> 
+>   afterEach(() => {
+>     jest.useRealTimers();
+>     jest.restoreAllMocks();
+>   });
+> 
+>   // 2. SIMPLE TESTS
+>   describe('Initialization', () => {
+>     test('should be defined', () => {
+>       expect(component).toBeDefined();
+>     });
+>   });
+> 
+>   // 3. PARAMETRIZED TESTS
+>   describe('State Changes', () => {
+>     test.each([['state1', exp1], ['state2', exp2]])('should handle %s', (state, expected) => {
+>       expect(result(state)).toBe(expected);
+>     });
+>   });
+> 
+>   // 4. ASYNC TESTS
+>   describe('Async Operations', () => {
+>     test('should load data', async () => {
+>       const result = await component.init();
+>       expect(result).toBeDefined();
+>     });
+>   });
+> 
+>   // 5. MOCK TESTS
+>   describe('Event Handling', () => {
+>     test('should call handler on event', () => {
+>       const mockHandler = jest.fn();
+>       component.addEventListener('click', mockHandler);
+>       component.click();
+>       expect(mockHandler).toHaveBeenCalled();
+>     });
+>   });
+> });
+> ```
+> 
+> 
+> ### 6. Coverage Requirements
+> 
+> #### Minimum Coverage Goals
+> - **Line Coverage:** 80% - Most statements executed
+> - **Branch Coverage:** 80% - All if/else paths tested
+> - **Function Coverage:** 80% - All functions called
+> - **Statement Coverage:** 80% - All code executed
+> 
+> #### Achieving Coverage
+> 1. **Test happy paths** - Normal behavior
+> 2. **Test error cases** - Exception handling
+> 3. **Test edge cases** - Boundary conditions
+> 4. **Test state changes** - UI updates
+> 5. **Test integrations** - Component interactions
+> 
+> 
+> ### 7. Common Patterns in This Project
+> 
+> #### Singleton Pattern Testing
+> ```javascript
+> test('getInstance should return same instance', () => {
+>   const instance1 = Component.getInstance();
+>   const instance2 = Component.getInstance();
+>   expect(instance1).toBe(instance2);
+> });
+> ```
+> 
+> #### Async/Await with Mocks
+> ```javascript
+> test('should handle async operation', async () => {
+>   global.fetch.mockResolvedValueOnce({
+>     json: jest.fn().mockResolvedValue({ data: 'test' })
+>   });
+>   
+>   const result = await component.init();
+>   expect(result).toBeDefined();
+> });
+> ```
+> 
+> #### Event Listener Testing
+> ```javascript
+> test('should attach event listener', () => {
+>   const mockElement = { addEventListener: jest.fn() };
+>   component.attachListener(mockElement, 'click', handler);
+>   expect(mockElement.addEventListener).toHaveBeenCalledWith('click', expect.any(Function));
+> });
+> ```
+> 
+> #### Auth State Testing
+> ```javascript
+> test.each([
+>   [true, { email: 'user@test.com' }, 'Welcome, user@test.com'],
+>   [false, null, '']
+> ])(
+>   'should display message for auth state %s',
+>   (isAuth, userData, expectedMsg) => {
+>     mockAuthService.isAuthenticated.mockReturnValue(isAuth);
+>     mockAuthService.getUserData.mockReturnValue(userData);
+>     
+>     component.update();
+>     
+>     expect(component.userDisplay.textContent).toBe(expectedMsg);
+>   }
+> );
+> ```
+> 
+> 
+> ### Summary Table
+> 
+> | Concept | When | How | Why |
+> |---------|------|-----|-----|
+> | **beforeEach** | Before each test | Initialize state | Ensure clean environment |
+> | **afterEach** | After each test | Restore mocks | Prevent side effects |
+> | **Simple Tests** | Basic behavior | Single assertion | Fast, focused tests |
+> | **Parametrized Tests** | Multiple scenarios | test.each() | DRY, comprehensive coverage |
+> | **Async Tests** | Async operations | async/await | Test promises, APIs |
+> | **Mocks** | External dependencies | jest.fn() | Isolate code, control behavior |
+> | **Spies** | Track real methods | jest.spyOn() | Monitor actual calls |
+> | **Assertions** | Verify results | expect() | Validate behavior |
+> 
+> 
+> ### Implementation Checklist for admin.test.js
+> 
+> - [ ] Import test setup and load modules
+> - [ ] Create describe block for AdminSection
+> - [ ] Setup beforeEach with mocks and initialization
+> - [ ] Setup afterEach with cleanup
+> - [ ] Write simple tests for basic functionality
+> - [ ] Write parametrized tests for multiple scenarios
+> - [ ] Write async tests for async operations
+> - [ ] Mock external services and DOM elements
+> - [ ] Test error handling paths
+> - [ ] Verify minimum 80% code coverage
+> - [ ] Run tests and ensure all pass
 > </details>
