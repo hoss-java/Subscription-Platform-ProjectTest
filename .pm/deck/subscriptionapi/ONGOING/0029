@@ -26,7 +26,7 @@ endAt:
 - [ ] 7. Code section tests (admin.test.js, billmanager.test.js, mysubscriptions.test.js, operator.test.js, plans.test.js, profile.test.js, settings.test.js, subscriptionsman.test.js)
 - [x] 8. Code router.test.js tests
 - [ ] 9. Code service tests (authGuard.test.js, authService.test.js)
-- [ ] 10. Code theme-manager.test.js tests
+- [x] 10. Code theme-manager.test.js tests
 - [ ] 11. Code ui-controller.test.js tests
 - [ ] 12. Code apiClient.test.js utility tests
 - [ ] 13. Run all tests and verify coverage report
