@@ -3240,7 +3240,7 @@ gantt
 > - [ ] 5. Code dashboard-section-manager.test.js tests
 > - [ ] 6. Code page tests (login.test.js, register.test.js, dashboard.test.js)
 > - [ ] 7. Code section tests (admin.test.js, billmanager.test.js, mysubscriptions.test.js, operator.test.js, plans.test.js, profile.test.js, settings.test.js, subscriptionsman.test.js)
-> - [ ] 8. Code router.test.js tests
+> - [x] 8. Code router.test.js tests
 > - [ ] 9. Code service tests (authGuard.test.js, authService.test.js)
 > - [ ] 10. Code theme-manager.test.js tests
 > - [ ] 11. Code ui-controller.test.js tests
