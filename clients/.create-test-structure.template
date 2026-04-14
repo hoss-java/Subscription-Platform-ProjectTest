@@ -4,6 +4,51 @@ const loadModules = require(process.cwd() + '/${PROJECT_ROOT}/tests/load-modules
 const { ${export_name} } = loadModules('${export_name}');
 
 describe('${export_name}', () => {
+  // ===== TEST SUITE DOCUMENTATION =====
+  // Component: ConsoleWindow
+  // Purpose: A draggable, resizable console window for displaying logs with filtering, copying, and source code viewing
+  // 
+  // SETUP OVERVIEW:
+  // - jest.useFakeTimers(): Mock setTimeout/setInterval for time-based tests
+  // - jest.spyOn(console, 'error'): Suppress console errors during tests
+  // - ConsoleWindow.instance = null: Reset singleton instance between tests
+  // - document.body.innerHTML: Mock DOM structure with required elements
+  // - jest.spyOn(ConsoleWindow.prototype, 'setupSourceViewer'): Mock DOM-heavy initialization
+  //
+  // SHARED MOCKS:
+  // - ConsoleWindow.prototype.setupSourceViewer() - Prevents errors from DOM element creation
+  //
+  // TESTING RULES & BEST PRACTICES:
+  // 1. Prefer parametrized tests (test.each) instead of repeating similar tests
+  //    - Reduces code duplication
+  //    - Makes it easy to add more test cases
+  //    - Improves readability with clear input/output mappings
+  //
+  // 2. Unit tests should mock all external dependencies
+  //    - Mock DOM elements, fetch calls, timers, services
+  //    - Only test the method's logic, not its dependencies
+  //    - Isolates the unit under test
+  //
+  // 3. One assertion per test concept (can have multiple expects for same concept)
+  //    - Tests should be focused and test one behavior
+  //    - Easier to identify what failed
+  //
+  // 4. Use descriptive test names following: "should [expected behavior] when [condition]"
+  //    - Makes test purpose clear without reading the test body
+  //
+  // 5. Mock methods that cause side effects
+  //    - DOM creation, API calls, localStorage, console output
+  //    - Setup mocks in beforeEach or at test level
+  //
+  // 6. Clean up after each test
+  //    - Reset mocks, clear timers, restore spies
+  //    - Prevents test pollution
+  //
+  // TEST INVENTORY:
+  // 1. getInstance should return same instance - Singleton pattern verification
+  // [Add more tests as they are created]
+  //
+
   let component;
   let mockService;
   let mockElement;
@@ -22,12 +67,34 @@ describe('${export_name}', () => {
     ${export_name}.instance = null;
   });
 
+  // REMOVE IT AFTER CODDING THE FIRST TEST
   test('should be defined', () => {
     expect(${export_name}).toBeDefined();
   });
 
+  // ===== TEST COMMENT GUIDE =====
+  // Every test should include comments above it with:
+  // - Test: Brief description of what is being tested
+  // - Scenario: The specific use case or condition being tested
+  // - Methods tested: Which methods/functions are involved
+  // - Mocks: What is mocked and why (e.g., "setupSourceViewer() - prevents DOM errors")
+  // - Expected: What the test expects to happen
+  // Example:
+  // // Test: getInstance should return same instance
+  // // Scenario: Calling getInstance() twice should return the same instance (Singleton pattern)
+  // // Methods tested: getInstance(), setupSourceViewer()
+  // // Mocks: setupSourceViewer() - prevents DOM creation errors during initialization
+  // // Expected: Both calls return identical instance reference
+
+  // ---
+
   // ===== SIMPLE TEST =====
   // TODO: Add your simple test here
+  // Test: [what is being tested]
+  // Scenario: [specific use case]
+  // Methods tested: [method names]
+  // Mocks: [what is mocked and why]
+  // Expected: [expected result]
   // Example:
   // test('should be defined', () => {
   //   expect(component).toBeDefined();
@@ -37,6 +104,11 @@ describe('${export_name}', () => {
 
   // ===== PARAMETRIZED TEST =====
   // TODO: Add your parametrized test here
+  // Test: [what is being tested]
+  // Scenario: [specific use case with multiple inputs]
+  // Methods tested: [method names]
+  // Mocks: [what is mocked and why]
+  // Expected: [expected results for each case]
   // Example:
   // test.each([['case1', val1, exp1], ['case2', val2, exp2]])('should handle %s', (name, input, expected) => {
   //   expect(result(input)).toBe(expected);
@@ -46,6 +118,11 @@ describe('${export_name}', () => {
 
   // ===== ASYNC TEST =====
   // TODO: Add your async test here
+  // Test: [what is being tested]
+  // Scenario: [async operation being tested]
+  // Methods tested: [method names]
+  // Mocks: [what is mocked (e.g., fetch, promises) and why]
+  // Expected: [expected async result]
   // Example:
   // test('should load data', async () => {
   //   const result = await fetchData();
@@ -56,6 +133,11 @@ describe('${export_name}', () => {
 
   // ===== MOCK FUNCTION =====
   // TODO: Add your mock function here
+  // Test: [what is being tested]
+  // Scenario: [when mock function is needed]
+  // Methods tested: [method names]
+  // Mocks: jest.fn() - [purpose of the mock]
+  // Expected: [expected behavior]
   // Example:
   // const mockFn = jest.fn();
 
@@ -63,6 +145,11 @@ describe('${export_name}', () => {
 
   // ===== MOCK WITH IMPLEMENTATION =====
   // TODO: Add your mock with implementation here
+  // Test: [what is being tested]
+  // Scenario: [specific behavior being mocked]
+  // Methods tested: [method names]
+  // Mocks: jest.fn() with implementation - [what it does]
+  // Expected: [expected return values]
   // Example:
   // const mockFn = jest.fn((id) => {
   //   return elements[id] || null;
@@ -72,6 +159,11 @@ describe('${export_name}', () => {
 
   // ===== MOCK RESOLVED VALUE =====
   // TODO: Add your mock resolved value here
+  // Test: [what is being tested]
+  // Scenario: [successful async operation]
+  // Methods tested: [method names]
+  // Mocks: global.fetch or service method - [what data it returns]
+  // Expected: [expected resolved data]
   // Example:
   // global.fetch.mockResolvedValueOnce({
   //   json: jest.fn().mockResolvedValue({ data: 'test' })
@@ -81,6 +173,11 @@ describe('${export_name}', () => {
 
   // ===== MOCK REJECTED VALUE =====
   // TODO: Add your mock rejected value here
+  // Test: [what is being tested]
+  // Scenario: [failed async operation or error handling]
+  // Methods tested: [method names]
+  // Mocks: service method - [what error it throws]
+  // Expected: [expected error handling]
   // Example:
   // mockService.logout.mockRejectedValueOnce(new Error('Logout failed'));
 
@@ -88,6 +185,11 @@ describe('${export_name}', () => {
 
   // ===== SPY ON OBJECT METHOD =====
   // TODO: Add your spy on object method here
+  // Test: [what is being tested]
+  // Scenario: [tracking method calls]
+  // Methods tested: [method name being spied on]
+  // Mocks: jest.spyOn() - [which method and why]
+  // Expected: [expected call count or arguments]
   // Example:
   // jest.spyOn(component, 'update');
 
@@ -95,6 +197,11 @@ describe('${export_name}', () => {
 
   // ===== MOCK DOM ELEMENT =====
   // TODO: Add your mock DOM element here
+  // Test: [what is being tested]
+  // Scenario: [DOM interaction being tested]
+  // Methods tested: [method names that use DOM]
+  // Mocks: mockElement - [which DOM properties/methods]
+  // Expected: [expected DOM state changes]
   // Example:
   // mockElement = {
   //   textContent: '',
@@ -106,6 +213,11 @@ describe('${export_name}', () => {
 
   // ===== MOCK GLOBAL OBJECT =====
   // TODO: Add your mock global object here
+  // Test: [what is being tested]
+  // Scenario: [global API or object being tested]
+  // Methods tested: [method names]
+  // Mocks: global.fetch or global.localStorage - [what it returns]
+  // Expected: [expected global behavior]
   // Example:
   // global.fetch = jest.fn();
 
@@ -113,6 +225,11 @@ describe('${export_name}', () => {
 
   // ===== ASSERTION =====
   // TODO: Add your assertion here
+  // Test: [what is being tested]
+  // Scenario: [specific condition]
+  // Methods tested: [method names]
+  // Mocks: [what is mocked]
+  // Expected: [expected assertion result]
   // Example:
   // expect(result).toBe(expected);
 
@@ -120,11 +237,15 @@ describe('${export_name}', () => {
 
   // ===== NESTED TEST SUITE =====
   // TODO: Add your nested test suite here
+  // Test: [feature or component being grouped]
+  // Scenario: [multiple related test cases]
+  // Methods tested: [method names in this suite]
+  // Mocks: [shared mocks for this suite]
+  // Expected: [expected behaviors]
   // Example:
   // describe('Feature Name', () => {
   //   test('should work', () => {
   //     expect(true).toBe(true);
   //   });
   // });
-
 });

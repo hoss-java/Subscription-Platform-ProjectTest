@@ -266,6 +266,7 @@ class ConsoleWindow {
   }
 
   setupFilterInput() {
+    if (!this.consoleControls) return;
     let filterContainer = document.querySelector('.console-filter-container');
     
     if (!filterContainer) {
@@ -437,3 +438,4 @@ window.ConsoleWindow = ConsoleWindow;
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ConsoleWindow;
 }
+
