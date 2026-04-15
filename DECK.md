@@ -3244,7 +3244,7 @@ gantt
 > - [ ] 9. Code service tests (authGuard.test.js, authService.test.js)
 > - [x] 10. Code theme-manager.test.js tests
 > - [x] 11. Code ui-controller.test.js tests
-> - [ ] 12. Code apiClient.test.js utility tests
+> - [x] 12. Code apiClient.test.js utility tests
 > - [ ] 13. Run all tests and verify coverage report
 > 
 > # Reports:
