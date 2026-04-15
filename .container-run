@@ -6,6 +6,8 @@ remotemysql@sshd:mysql -u eventman -peventmanpass -h 172.32.0.16
 mongosh@sshd:mongo 172.32.0.17:27017
 cssh@sshd:ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 mongo@mongodb:mongo
-node@nodejs:node ---path=/home/hossein/github-java/Subscription-Platform-ProjectTest/clients
+node@nodejs:node ---workdir=/home/hossein/github-java/Subscription-Platform-ProjectTest/clients
 npm@nodejs:npm
-npx@nodejs:npx ---path=/home/hossein/github-java/Subscription-Platform-ProjectTest/clients
+npx@nodejs:npx ---workdir=/home/hossein/github-java/Subscription-Platform-ProjectTest/clients jest
+jest@nodejs:npx ---workdir=/home/hossein/github-java/Subscription-Platform-ProjectTest/clients jest --rootDir="."
+npbash@nodejs:bash ---workdir=/home/hossein/github-java/Subscription-Platform-ProjectTest/clients

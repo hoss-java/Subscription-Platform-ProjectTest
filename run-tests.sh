@@ -395,7 +395,7 @@ run_jest_test() {
         return 1
     fi
     
-    output=$(npx jest "$test_file" --no-cache 2>&1)  # ← Add --no-cache here
+    output=$(jest "$test_file" --no-cache 2>&1)  # ← Add --no-cache here
     local exit_code=$?
     
     parse_jest_output "$test" "$output"
