@@ -73,13 +73,14 @@ describe('${export_name}', () => {
   });
 
   // ===== TEST COMMENT GUIDE =====
-  // Every test should include comments above it with:
+  // Every test should include comments above it starting with "// Test <number>" followed by:
   // - Test: Brief description of what is being tested
   // - Scenario: The specific use case or condition being tested
   // - Methods tested: Which methods/functions are involved
   // - Mocks: What is mocked and why (e.g., "setupSourceViewer() - prevents DOM errors")
   // - Expected: What the test expects to happen
   // Example:
+  // // Test 1
   // // Test: getInstance should return same instance
   // // Scenario: Calling getInstance() twice should return the same instance (Singleton pattern)
   // // Methods tested: getInstance(), setupSourceViewer()

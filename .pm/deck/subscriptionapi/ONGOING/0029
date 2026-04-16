@@ -21,11 +21,11 @@ endAt:
 - [x] 2. Create setup.js and load-modules.js configuration
 - [x] 3. Code header.test.js component tests
 - [ ] 4. Code console-logger.test.js and console.test.js tests
-- [ ] 5. Code dashboard-section-manager.test.js tests
+- [x] 5. Code dashboard-section-manager.test.js tests
 - [ ] 6. Code page tests (login.test.js, register.test.js, dashboard.test.js)
 - [ ] 7. Code section tests (admin.test.js, billmanager.test.js, mysubscriptions.test.js, operator.test.js, plans.test.js, profile.test.js, settings.test.js, subscriptionsman.test.js)
 - [x] 8. Code router.test.js tests
-- [ ] 9. Code service tests (authGuard.test.js, authService.test.js)
+- [x] 9. Code service tests (authGuard.test.js, authService.test.js)
 - [x] 10. Code theme-manager.test.js tests
 - [x] 11. Code ui-controller.test.js tests
 - [x] 12. Code apiClient.test.js utility tests

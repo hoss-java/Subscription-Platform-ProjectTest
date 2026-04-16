@@ -291,8 +291,10 @@ class ConsoleWindow {
     document.querySelector('.console-clear-btn')?.addEventListener('click', () => this.clear());
   }
 
-  filterLogs(searchTerm) {
-    if (!this.consoleOutput) return;
+filterLogs(searchTerm) {
+  console.log('filterLogs called, consoleOutput exists?', !!this.consoleOutput);
+  
+  if (!this.consoleOutput) return;
 
     const logs = this.consoleOutput.querySelectorAll('.console-log');
     const searchLower = searchTerm.toLowerCase();
@@ -405,30 +407,37 @@ class ConsoleWindow {
     this.saveWindowState();
   }
 
-  addLog(message, type = 'log', metadata = {}) {
-    if (!this.consoleOutput) return;
-    
-    const logElement = document.createElement('div');
-    logElement.className = `console-log ${type}`;
-    logElement.innerHTML = `<span class="console-timestamp">[${new Date().toLocaleTimeString()}]</span>${message}`;
-    
-    Object.assign(logElement.dataset, {
-      method: metadata.method || 'unknown',
-      fullPath: metadata.fullPath || '',
-      line: metadata.line || '?',
-      column: metadata.column || '?',
-      file: metadata.file || '?'
-    });
-    
-    if (metadata.fullPath && metadata.line !== '?') {
-      logElement.style.cursor = 'pointer';
-      logElement.title = 'Click to view source code';
-      logElement.addEventListener('click', () => this.showSourceCode(metadata));
-    }
-    
-    this.consoleOutput.appendChild(logElement);
-    this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+addLog(message, type = 'log', metadata = {}) {
+  console.log('addLog - consoleOutput exists?', !!this.consoleOutput);
+  
+  if (!this.consoleOutput) {
+    console.log('addLog - consoleOutput is null, returning');
+    return;
   }
+  
+  const logElement = document.createElement('div');
+  logElement.className = `console-log ${type}`;
+  logElement.innerHTML = `<span class="console-timestamp">[${new Date().toLocaleTimeString()}]</span>${message}`;
+  
+  Object.assign(logElement.dataset, {
+    method: metadata.method || 'unknown',
+    fullPath: metadata.fullPath || '',
+    line: metadata.line || '?',
+    column: metadata.column || '?',
+    file: metadata.file || '?'
+  });
+  
+  if (metadata.fullPath && metadata.line !== '?') {
+    logElement.style.cursor = 'pointer';
+    logElement.title = 'Click to view source code';
+    logElement.addEventListener('click', () => this.showSourceCode(metadata));
+  }
+  
+  this.consoleOutput.appendChild(logElement);
+  this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+}
+
+
 }
 
 // EXPORT TO WINDOW
