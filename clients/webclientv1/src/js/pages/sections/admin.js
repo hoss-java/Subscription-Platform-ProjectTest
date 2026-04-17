@@ -12,6 +12,7 @@ const AdminSection = {
   },
 
   attachEventListeners() {
+    console.log('attachEventListeners called');
     document.getElementById('admin-refresh-btn')?.addEventListener('click', (e) => {
       e.preventDefault();
       this.loadUsers();
@@ -29,17 +30,25 @@ const AdminSection = {
 
   async loadUsers() {
     const container = document.getElementById('admin-users-container');
+    
+    if (!container) {
+      return;
+    }
+    
     container.innerHTML = '<p class="loading-message">Loading users...</p>';
     
     try {
       const response = await apiClient.get('/admin/users');
+      
       this.users = Array.isArray(response) ? response : response.users || response.data || [];
       
       container.innerHTML = this.users.length 
         ? '' 
         : '<p class="empty-message">No users found</p>';
       
-      if (this.users.length) this.renderUsers();
+      if (this.users.length) {
+        this.renderUsers();
+      }
     } catch (error) {
       container.innerHTML = `<p class="error-message">Error loading users: ${error.message}</p>`;
       UIController.getInstance().showMessage(`Error loading users: ${error.message}`, 'error');

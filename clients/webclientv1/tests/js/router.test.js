@@ -43,32 +43,30 @@ describe('Router', () => {
   let mockElement;
 
   // ===== SETUP =====
-beforeEach(() => {
-  jest.useFakeTimers();
-  jest.spyOn(console, 'error').mockImplementation(() => {});
-  
-  // Create actual container
-  const container = document.createElement('div');
-  container.id = 'page-container';
-  document.body.appendChild(container);
-  
-  // Mock getElementById to return the real container
-  jest.spyOn(document, 'getElementById').mockImplementation((id) => {
-    if (id === 'page-container') return container;
-    return null;
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    
+    // Create actual container
+    const container = document.createElement('div');
+    container.id = 'page-container';
+    document.body.appendChild(container);
+    
+    // Mock getElementById to return the real container
+    jest.spyOn(document, 'getElementById').mockImplementation((id) => {
+      if (id === 'page-container') return container;
+      return null;
+    });
+    
+    global.fetch = jest.fn();
   });
-  
-  global.fetch = jest.fn();
-});
 
-afterEach(() => {
-  jest.useRealTimers();
-  jest.restoreAllMocks();
-  jest.clearAllMocks();
-  document.body.innerHTML = '';
-});
-
-
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    document.body.innerHTML = '';
+  });
 
   // ===== TEST 1 =====
   // Test: constructor should initialize container and pages object
