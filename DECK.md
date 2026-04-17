@@ -3238,8 +3238,8 @@ gantt
 > - [x] 3. Code header.test.js component tests
 > - [ ] 4. Code console-logger.test.js and console.test.js tests
 > - [x] 5. Code dashboard-section-manager.test.js tests
-> - [ ] 6. Code page tests (login.test.js, register.test.js, dashboard.test.js)
-> - [ ] 7. Code section tests (admin.test.js, billmanager.test.js, mysubscriptions.test.js, operator.test.js, plans.test.js, profile.test.js, settings.test.js, subscriptionsman.test.js)
+> - [x] 6. Code page tests (login.test.js, register.test.js, dashboard.test.js)
+> - [-] 7. Code section tests (admin.test.js, billmanager.test.js, mysubscriptions.test.js, operator.test.js, plans.test.js, profile.test.js, settings.test.js, subscriptionsman.test.js)
 > - [x] 8. Code router.test.js tests
 > - [x] 9. Code service tests (authGuard.test.js, authService.test.js)
 > - [x] 10. Code theme-manager.test.js tests
