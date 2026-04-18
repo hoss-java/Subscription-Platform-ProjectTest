@@ -4,12 +4,10 @@ const SettingsSection = {
   ELEMENT_IDS: { THEME: 'theme-selector', NOTIFY: 'notifications-enabled', SAVE: 'settings-save-btn' },
 
   init() {
-    console.debug('[SettingsSection] Page initialized');
     setTimeout(() => {
       this.populateThemeOptions();
       this.loadSettings();
       this.attachEventListeners();
-      console.debug('[SettingsSection] Settings section initialization complete');
     }, 100);
   },
 
@@ -25,7 +23,7 @@ const SettingsSection = {
     this.getTM().getAvailableThemes().forEach(t => {
       const opt = document.createElement('option');
       opt.value = t;
-      opt.textContent = t.charAt(0).toUpperCase() + t.slice(1);
+      opt.textContent = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
       frag.appendChild(opt);
     });
     sel.appendChild(frag);
