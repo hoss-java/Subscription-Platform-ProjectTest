@@ -189,9 +189,14 @@ const MysubscriptionsSection = {
 
   renderPagination(containerId, currentPage, totalPages, callback) {
     const container = document.getElementById(containerId);
-    if (!container || totalPages <= 1) return;
+    if (!container) return;
     
     container.innerHTML = '';
+    
+    if (totalPages <= 1) {
+      container.innerHTML = '';
+      return;
+    }
     const createBtn = (text, disabled, onClick) => {
       const btn = document.createElement('button');
       btn.className = 'btn btn-sm btn-secondary';
