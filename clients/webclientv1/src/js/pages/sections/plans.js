@@ -27,7 +27,6 @@ const PlansSection = {
       const response = await apiClient.get('/subscriptions/my-subscriptions?page=0&size=1000');
       const subscriptions = Array.isArray(response.content) ? response.content : (Array.isArray(response) ? response : []);
       this.userSubscriptions = subscriptions.reduce((acc, { planId, status }) => ({ ...acc, [planId]: status }), {});
-      console.debug('[PlansSection] User subscriptions loaded:', this.userSubscriptions);
     } catch (error) {
       console.error('[PlansSection] Error loading user subscriptions:', error);
     }
@@ -127,7 +126,7 @@ const PlansSection = {
   buildPlanEndpoint() {
     const baseParams = `page=${this.currentPage}&size=${this.pageSize}`;
     if (this.currentSearchQuery) return `/plans/search?q=${encodeURIComponent(this.currentSearchQuery)}&${baseParams}`;
-    if (this.currentServiceType) return `/plans/filter?serviceType=${this.currentServiceType}&${baseParams}`;
+    if (this.currentServiceType) return `/plans/filter?serviceType=${encodeURIComponent(this.currentServiceType)}&${baseParams}`;
     return `/plans?${baseParams}`;
   },
 
@@ -366,6 +365,9 @@ const PlansSection = {
 
   async subscribeToplan(planId) {
     const subscribeBtn = document.getElementById('plans-detail-subscribe-btn');
+
+    if (!subscribeBtn) return;
+
     const originalText = subscribeBtn.textContent;
     try {
       subscribeBtn.disabled = true;
@@ -406,6 +408,7 @@ const PlansSection = {
   },
 
   escapeHtml(text) {
+    if (text === null || text === undefined) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -413,8 +416,9 @@ const PlansSection = {
 
   getUserRole() {
     try {
-      const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-      return (user.roles && user.roles.length > 0) ? user.roles[0] : '';
+      const data = localStorage.getItem('user_data');
+      const user = JSON.parse(data || '{}');
+      return (Array.isArray(user.roles) && user.roles.length > 0) ? user.roles[0] : '';
     } catch (error) {
       console.error('[PlansSection] Error parsing user role:', error);
       return '';
