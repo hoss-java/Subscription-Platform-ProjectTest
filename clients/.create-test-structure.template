@@ -5,66 +5,511 @@ const { ${export_name} } = loadModules('${export_name}');
 
 describe('${export_name}', () => {
   // ===== TEST SUITE DOCUMENTATION =====
-  // Component: ConsoleWindow
-  // Purpose: A draggable, resizable console window for displaying logs with filtering, copying, and source code viewing
-  // 
+  // Component: SettingsSection
+  // Purpose: Manage theme selection, notification preferences, and settings persistence.
+  //          Handles DOM population, localStorage sync, and API interactions for settings management.
+  //
   // SETUP OVERVIEW:
-  // - jest.useFakeTimers(): Mock setTimeout/setInterval for time-based tests
-  // - jest.spyOn(console, 'error'): Suppress console errors during tests
-  // - ConsoleWindow.instance = null: Reset singleton instance between tests
-  // - document.body.innerHTML: Mock DOM structure with required elements
-  // - jest.spyOn(ConsoleWindow.prototype, 'setupSourceViewer'): Mock DOM-heavy initialization
+  // - jest.spyOn(ThemeManager.getInstance(), 'setTheme'): Mock theme application
+  // - jest.spyOn(UIController.getInstance(), 'showMessage'): Mock UI notifications
+  // - jest.spyOn(localStorage, 'setItem/getItem'): Mock storage operations
+  // - Mock DOM elements: select, checkbox, button with proper structure
+  // - SettingsSection state reset: Clear _cache between tests
+  // - jest.useFakeTimers(): Control setTimeout in init() method
   //
   // SHARED MOCKS:
-  // - ConsoleWindow.prototype.setupSourceViewer() - Prevents errors from DOM element creation
+  // - ThemeManager.getInstance() - Mock theme retrieval and application
+  // - UIController.getInstance() - Mock UI notifications (success/error messages)
+  // - localStorage - Mock persistent storage for notification preference
+  // - document DOM elements - Mock all required HTML elements (theme selector, checkbox, button)
+  // - setTimeout - Mock timing for delayed init() execution
   //
   // TESTING RULES & BEST PRACTICES:
-  // 1. Prefer parametrized tests (test.each) instead of repeating similar tests
-  //    - Reduces code duplication
-  //    - Makes it easy to add more test cases
-  //    - Improves readability with clear input/output mappings
+  // 1. Split complex functions into focused, isolated tests
+  //    - One test per behavior/scenario, NOT multiple scenarios in one parametrized test
+  //    - Separate success path from error/edge cases
+  //    - Example: handleSaveSettings() needs 3+ separate tests (success, button state, error)
+  //    - Easier to identify what failed when one test breaks
   //
-  // 2. Unit tests should mock all external dependencies
-  //    - Mock DOM elements, fetch calls, timers, services
-  //    - Only test the method's logic, not its dependencies
+  // 2. Use parametrization ONLY for similar variations of same behavior
+  //    - Valid for: multiple theme names, true/false boolean states
+  //    - Invalid for: combining success + error + edge cases in one test
+  //    - Each parametrized case should test identical logic with different inputs
+  //
+  // 3. Unit tests must mock all external dependencies
+  //    - Mock ThemeManager, UIController, DOM elements, localStorage, setTimeout
+  //    - Only test the method's logic, not its dependencies' behavior
   //    - Isolates the unit under test
   //
-  // 3. One assertion per test concept (can have multiple expects for same concept)
-  //    - Tests should be focused and test one behavior
-  //    - Easier to identify what failed
+  // 4. One assertion focus per test (multiple expects allowed for same concept)
+  //    - Tests should validate one primary behavior
+  //    - Easier to identify root cause of failure
+  //    - Example: "should set theme and persist checkbox" (two expects, same behavior)
   //
-  // 4. Use descriptive test names following: "should [expected behavior] when [condition]"
-  //    - Makes test purpose clear without reading the test body
+  // 5. Use descriptive test names: "should [expected behavior] when [specific condition]"
+  //    - Clarifies test purpose without reading test body
+  //    - Example: "should restore button text after settings saved" vs "should handle button"
   //
-  // 5. Mock methods that cause side effects
-  //    - DOM creation, API calls, localStorage, console output
-  //    - Setup mocks in beforeEach or at test level
+  // 6. Isolate error and edge case tests separately
+  //    - Create dedicated tests for: missing elements, invalid data, exceptions
+  //    - Don't bundle error cases with success path
+  //    - Example: handleSaveSettings() success, handleSaveSettings() error, handleSaveSettings() missing element
   //
-  // 6. Clean up after each test
-  //    - Reset mocks, clear timers, restore spies
-  //    - Prevents test pollution
+  // 7. Mock side effects that cause state changes
+  //    - API calls, DOM manipulation, storage operations, UI notifications, timers
+  //    - Verify mocks were called with correct arguments
+  //    - Don't test actual side effects, test that mock was invoked correctly
   //
-  // TEST INVENTORY:
-  // 1. getInstance should return same instance - Singleton pattern verification
+  // 8. Clean up after each test
+  //    - Reset mocks, clear _cache, restore spies, clear localStorage
+  //    - Prevents test pollution and state leakage
+  //
+  // ===== TEST INVENTORY (FOCUSED & SPLIT) =====
+  // FORMAT: FunctionName() | should [specific behavior] when [specific condition]
+  //
+  // EXPLANATION:
+  // - One line per isolated test scenario
+  // - Each scenario tests ONE behavior or edge case
+  // - Error/edge cases are separate tests, not parametrized variations
+  // - Success path and failure paths are distinct tests
+  // - Use this as blueprint for writing detailed test blocks
+  //
+  // ===== SCENARIOS =====
+  //
   // [Add more tests as they are created]
+
+
+
+
+
+  // ===== TESTING GUIDE: Unit Testing Browser-Based JavaScript Code in Node.js/Jest =====
+  // 
+  // This guide explains how to test JavaScript code written for browser 
+  // environments (DOM manipulation, localStorage, global APIs) using Node.js 
+  // and Jest, where browser APIs don't naturally exist.
+  //
+  // ===== 1. MOCK FACTORY PATTERN (Reusable & Configurable) =====
+  // 
+  // Instead of creating individual mock objects, use factory functions that:
+  // - Accept configuration parameters (id, custom properties)
+  // - Define default properties
+  // - Merge defaults with custom config using spread operator
+  // - Include a reset() method that restores to original config state
+  // 
+  // Benefits:
+  // - Easy to create multiple instances of the same element type
+  // - Customizable per test without duplicating code
+  // - Reset state between tests without recreating the entire mock
+  // - Maintains consistency across similar elements
+  // 
+  // Pattern:
+  // const createElementMock = (id, config = {}) => {
+  //   const defaults = { property1: value1, property2: value2 };
+  //   const props = { ...defaults, ...config };
+  //   return {
+  //     id,
+  //     _property: props.property,
+  //     get property() { return this._property; },
+  //     set property(val) { this._property = val; },
+  //     reset() {
+  //       this._property = props.property;
+  //       this.mockMethod.mockClear();
+  //     }
+  //   };
+  // };
+  // 
+  // ===== 2. EVENT LISTENER TRACKING (Scoped per Mock) =====
+  // 
+  // Each mock element must track event listeners independently.
+  // 
+  // Pattern:
+  // - Create a `listeners` object INSIDE the factory function
+  // - This object is unique to each mock instance
+  // - addEventListener stores handlers in this object keyed by event type
+  // - In tests, retrieve and manually invoke handlers: listeners['eventType'](mockEvent)
+  // 
+  // Why scoped listeners matter:
+  // - Multiple elements can have different handlers for the same event type
+  // - Prevents listener collision between mocks
+  // - Each mock is truly independent
+  // 
+  // Example:
+  // const listeners = {};
+  // addEventListener: jest.fn(function(eventType, handler) {
+  //   listeners[eventType] = handler;
+  // })
+  // 
+  // Later in test:
+  // // Manually trigger the change event on this specific element
+  // const handler = listeners['change'];
+  // handler({ target: { value: 'new-value' } });
+  // 
+  // ===== 3. FRAGMENT & NESTED CHILDREN HANDLING =====
+  // 
+  // DocumentFragment flattening is critical for testing DOM building code.
+  // 
+  // Real browser behavior:
+  // - appendChild(fragment) extracts children from fragment, doesn't append fragment itself
+  // - appendChild(element with children) appends that element (with its children intact)
+  // 
+  // Mock pattern for appendChild:
+  // - Check if argument is a fragment (has children array, no className)
+  // - If fragment: iterate children and flatten them into parent's children array
+  // - If regular element: append element itself
+  // - Handle nested children recursively (fragments within fragments, elements with children)
+  // 
+  // Example:
+  // appendChild: jest.fn(function(child) {
+  //   if (child.children && !child.className) {
+  //     // Fragment detected, flatten its children
+  //     child.children.forEach(c => this.children.push(c));
+  //   } else {
+  //     // Regular element, append as-is
+  //     this.children.push(child);
+  //   }
+  // })
+  // 
+  // ===== 4. CONFIGURATION-DRIVEN MOCK SETUP =====
+  // 
+  // Instead of hardcoding mocks in beforeEach, use a configuration object
+  // that maps element IDs to their factory functions and arguments.
+  // 
+  // Benefits:
+  // - Central, easy-to-read declaration of all mocks
+  // - Simple to add/remove elements for different tests
+  // - Scales well as component complexity grows
+  // - Configuration can be modified per test suite
+  // 
+  // Pattern:
+  // const mockConfigs = {
+  //   'element-id-1': { 
+  //     factory: createSelectMock, 
+  //     args: ['element-id-1'] 
+  //   },
+  //   'element-id-2': { 
+  //     factory: createButtonMock, 
+  //     args: ['element-id-2', { textContent: 'Custom Text' }] 
+  //   }
+  // };
+  // 
+  // Object.entries(mockConfigs).forEach(([id, config]) => {
+  //   mocks[id] = config.factory(...(config.args || [id]));
+  // });
+  // 
+  // ===== 5. SINGLETON GLOBAL OBJECTS (ThemeManager, UIController, etc.) =====
+  // 
+  // Components often use singleton-like global objects accessed via getInstance().
+  // 
+  // Pattern:
+  // 1. Create a mock instance object with the required methods
+  // 2. Create a global mock with getInstance() that returns the instance
+  // 3. Keep getInstance separate from the actual instance methods
+  // 
+  // Example:
+  // const mockThemeManager = {
+  //   getAvailableThemes: jest.fn(() => ['light', 'dark']),
+  //   getCurrentTheme: jest.fn(() => 'light'),
+  //   setTheme: jest.fn()
+  // };
+  // 
+  // global.ThemeManager = {
+  //   getInstance: jest.fn(() => mockThemeManager)
+  // };
+  // 
+  // Why separate getInstance:
+  // - Reflects actual singleton pattern in code
+  // - Allows tracking if getInstance() was called
+  // - Component caches the instance, so getInstance matters
+  // 
+  // ===== 6. RESETTABLE MOCK STATE (Critical for Test Isolation) =====
+  // 
+  // Each mock must have a reset() method that:
+  // - Restores all properties to their original default state
+  // - Clears all jest.fn() call history
+  // - Does NOT recreate the entire mock object
+  // 
+  // Why important:
+  // - Tests share the same mocks object
+  // - State from one test must not leak to the next
+  // - reset() is called in afterEach for every mock
+  // - This prevents "test pollution"
+  // 
+  // Pattern in reset():
+  // reset() {
+  //   this._value = props.defaultValue;
+  //   this._disabled = props.disabled;
+  //   this.style = {};
+  //   this.methodName.mockClear();
+  //   this.anotherMethod.mockClear();
+  // }
+  // 
+  // ===== 7. GETTER/SETTER PROPERTIES (Mimic Real DOM) =====
+  // 
+  // DOM elements use getter/setter properties, not simple fields.
+  // 
+  // Pattern:
+  // - Use underscore-prefixed field to store actual value (_value, _checked)
+  // - Define getter that returns underscore field
+  // - Define setter that assigns to underscore field
+  // - This allows code to read/write like: element.value = 'text'
+  // 
+  // Example:
+  // _value: '',
+  // get value() {
+  //   return this._value;
+  // },
+  // set value(val) {
+  //   this._value = val;
+  // }
+  // 
+  // ===== 8. DOCUMENT METHODS MOCKING =====
+  // 
+  // Mock document methods to return appropriate mocks:
+  // 
+  // A. document.getElementById(id)
+  //    - Return mocks[id] if exists, null otherwise
+  //    - Must be jest.fn() to track calls
+  //    - Pattern: jest.fn((id) => mocks[id] || null)
+  // 
+  // B. document.createElement(tag)
+  //    - For specific tags (e.g., 'option'), return specialized mock
+  //    - For all others, return generic element mock with basic properties
+  //    - Must include: tagName, value, textContent, className, style, etc.
+  //    - Include methods: addEventListener, appendChild
+  //    - Pattern: Check tag with if/else, return appropriate mock
+  // 
+  // C. document.createDocumentFragment()
+  //    - Return object with appendChild method and children array
+  //    - appendChild should add to children array
+  //    - Expose children as getter (not static property)
+  //    - Pattern: Return { appendChild: jest.fn(...), get children() {...} }
+  // 
+  // D. document.querySelector(selector)
+  //    - Usually not needed, return null or specific mock if used
+  // 
+  // ===== 9. LOCALSTORAGE MOCKING =====
+  // 
+  // localStorage is a key-value store that persists across sessions.
+  // In tests, use a simple object to simulate it.
+  // 
+  // Pattern:
+  // global.localStorage = {
+  //   _store: {},
+  //   getItem: jest.fn((key) => global.localStorage._store[key] || null),
+  //   setItem: jest.fn((key, value) => {
+  //     global.localStorage._store[key] = value.toString();
+  //   }),
+  //   removeItem: jest.fn((key) => {
+  //     delete global.localStorage._store[key];
+  //   }),
+  //   clear: jest.fn(() => {
+  //     global.localStorage._store = {};
+  //   })
+  // };
+  // 
+  // Important:
+  // - Values are always strings (like real localStorage)
+  // - Use toString() when setting
+  // - clear() in afterEach to reset between tests
+  // 
+  // ===== 10. SETUP (beforeEach) ORDER & STRUCTURE =====
+  // 
+  // Order matters! Setup in this sequence:
+  // 
+  // 1. Enable fake timers (jest.useFakeTimers())
+  // 2. Define mock configuration object (mockConfigs)
+  // 3. Create mocks from configurations using factories
+  // 4. Mock document methods (getElementById, createElement, etc.)
+  // 5. Mock global objects (ThemeManager, UIController, localStorage, etc.)
+  // 6. Initialize component/section state if needed
+  // 
+  // Why this order:
+  // - Timers must be fake before component init (if it uses setTimeout)
+  // - Mocks must exist before document methods reference them
+  // - Global objects must be ready before component uses getInstance()
+  // - Component state reset ensures clean initial state
+  // 
+  // ===== 11. CLEANUP (afterEach) STRUCTURE =====
+  // 
+  // Cleanup in this sequence:
+  // 
+  // 1. Call reset() on every mock in mocks object
+  // 2. Run pending timers (jest.runOnlyPendingTimers())
+  // 3. Switch to real timers (jest.useRealTimers())
+  // 4. Clear all Jest mocks (jest.clearAllMocks())
+  // 5. Clear localStorage
+  // 6. Call component cleanup method if it exists (component.cleanup())
+  // 
+  // Why this order:
+  // - Reset mocks first so state is clean
+  // - Run pending timers before switching to real timers
+  // - Clear all mocks before next test
+  // - Clear storage to prevent cross-test pollution
+  // - Component cleanup last to finalize state
+  // 
+  // ===== 12. COMMON MOCK ELEMENT TYPES =====
+  // 
+  // SELECT/DROPDOWN:
+  // - Properties: value (getter/setter), innerHTML (getter/setter), disabled
+  // - Methods: appendChild, addEventListener
+  // - Special: innerHTML setter should clear children array
+  // 
+  // CHECKBOX/RADIO:
+  // - Properties: checked (getter/setter), disabled, type
+  // - Methods: addEventListener
+  // - No appendChild needed
+  // 
+  // BUTTON:
+  // - Properties: textContent (getter/setter), disabled
+  // - Methods: addEventListener
+  // - No appendChild needed (unless dynamically adding children)
+  // 
+  // GENERIC CONTAINER (div, span, etc.):
+  // - Properties: innerHTML (getter/setter), className
+  // - Methods: appendChild, addEventListener
+  // - Similar to select but no value property
+  // 
+  // ===== 13. TESTING PATTERNS FOR COMMON SCENARIOS =====
+  // 
+  // A. Testing Event Handlers
+  //    - Component calls element.addEventListener(type, handler)
+  //    - Test retrieves handler from mock's listeners object
+  //    - Test manually invokes handler with mock event
+  //    - Assert expected side effects occurred
+  // 
+  // B. Testing DOM Population (fragments, createElement, appendChild)
+  //    - Component creates option elements and appends to fragment
+  //    - Fragment is appended to select element
+  //    - Test checks mock.children array for expected elements
+  //    - Test verifies appendChild was called correct number of times
+  // 
+  // C. Testing Async Operations (setTimeout)
+  //    - Use jest.useFakeTimers()
+  //    - Component calls setTimeout in init()
+  //    - Test calls jest.runOnlyPendingTimers()
+  //    - Assert methods were called after timeout
+  // 
+  // D. Testing localStorage Persistence
+  //    - Set localStorage value
+  //    - Call component method that reads it
+  //    - Assert component uses the value correctly
+  // 
+  // E. Testing Singleton Caching (getEl, getTM, getUI)
+  //    - First call to getEl() stores in _cache
+  //    - Second call returns cached value
+  //    - Test that getInstance() is called only once per singleton
+  // 
+  // ===== 14. DEBUGGING FAILED TESTS =====
+  // 
+  // Common issues and solutions:
+  // 
+  // Issue: "Cannot read property 'addEventListener' of null"
+  // - Element ID in mocks doesn't match ID in component code
+  // - Check spelling and case sensitivity
+  // - Verify mockConfigs includes the ID
+  // 
+  // Issue: "mock.children is empty when it should have items"
+  // - appendChild wasn't mocked properly
+  // - Fragment flattening logic may be broken
+  // - Check if createElement is returning correct structure
+  // 
+  // Issue: "Test passes individually but fails in suite"
+  // - Mock state not being reset in afterEach
+  // - Ensure reset() is called on all mocks
+  // - Check localStorage.clear() is called
+  // 
+  // Issue: "Handler function not being called in test"
+  // - Event listener not registered (check addEventListener was called)
+  // - Listeners object scope incorrect (should be inside factory)
+  // - Check event type matches (e.g., 'change' vs 'input')
   //
 
+  // ===== AI INSTRUCTION: SETUP CODE STRUCTURE ORDER (MANDATORY) =====
+  // This section is for AI only. Users should ignore.
+  //
+  // AI: Follow this exact sequence, nothing more:
+  //
+  // 1. All mock factory functions first (createSelectMock, createInputMock, etc.)
+  // 2. beforeEach block (instantiates mocks using factories)
+  // 3. afterEach block (resets and cleans up mocks)
+  //
+  // AI: Do not mix or interleave these sections.
+  // AI: Do not add test code, test classes, or any other content.
+  // AI: Print ONLY the setup code — nothing else, no explanations.
+  //
+  // ===== AI INSTRUCTION: DO NOT ASK CLARIFYING QUESTIONS =====
+  // This section is for AI only. Users should ignore.
+  //
+  // AI: Analyze the code yourself and create the complete setup.
+  // AI: Make reasonable assumptions for any unknowns.
+  // AI: If something is ambiguous, choose the most logical option and proceed.
+  // AI: Do not print explanations, clarifications, or anything after the code.
+
+  
   let component;
-  let mockService;
-  let mockElement;
+  let mocks = {};
+
+  // ===== MOCK FACTORIES (Create reusable, configurable mock elements) =====
+  // Pattern: Factory function that accepts (id, config = {}) with defaults + config merge
+  // Include: getter/setter properties, listeners object (scoped per mock), reset() method
+  // const createSelectMock = (id, config = {}) => { ... };
+  // const createCheckboxMock = (id, config = {}) => { ... };
+  // const createButtonMock = (id, config = {}) => { ... };
+
+  // ===== GLOBAL MOCKS (Singleton objects like ThemeManager, UIController) =====
+  // Pattern: Create mock instance object with methods, then create global with getInstance()
+  // const mockThemeManager = { method1: jest.fn(), method2: jest.fn() };
+  // global.ThemeManager = { getInstance: jest.fn(() => mockThemeManager) };
 
   // ===== SETUP =====
   beforeEach(() => {
     jest.useFakeTimers();
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    ${export_name}.instance = null;
+
+    // 1. Define mock configuration object (maps element IDs to factories + args)
+    // const mockConfigs = {
+    //   'element-id': { factory: createSelectMock, args: ['element-id'] },
+    //   'button-id': { factory: createButtonMock, args: ['button-id', { textContent: 'Custom' }] }
+    // };
+
+    // 2. Create mocks from configurations
+    // Object.entries(mockConfigs).forEach(([id, config]) => {
+    //   mocks[id] = config.factory(...(config.args || [id]));
+    // });
+
+    // 3. Mock document methods (getElementById, createElement, createDocumentFragment)
+    // document.getElementById = jest.fn((id) => mocks[id] || null);
+    // document.createElement = jest.fn((tag) => { ... return element mock ... });
+    // document.createDocumentFragment = jest.fn(() => { ... return fragment mock ... });
+
+    // 4. Mock global objects (localStorage, ThemeManager, UIController, etc.)
+    // global.localStorage = { _store: {}, getItem: jest.fn(...), setItem: jest.fn(...), ... };
+    // global.ThemeManager = { getInstance: jest.fn(() => mockThemeManager) };
+    // global.UIController = { getInstance: jest.fn(() => mockUIController) };
+
+    // 5. Reset component state
+    // ${export_name}._cache = {};
   });
 
   afterEach(() => {
+    // 1. Reset all mocks in mocks object
+    // Object.values(mocks).forEach(mock => {
+    //   if (mock && mock.reset) mock.reset();
+    // });
+
+    // 2. Run pending timers and switch to real timers
+    jest.runOnlyPendingTimers();
     jest.useRealTimers();
-    jest.restoreAllMocks();
+
+    // 3. Clear all Jest mocks
     jest.clearAllMocks();
-    ${export_name}.instance = null;
+    jest.restoreAllMocks();
+
+    // 4. Clear localStorage
+    // global.localStorage.clear();
+
+    // 5. Call component cleanup method
+    // ${export_name}.cleanup();
   });
 
   // REMOVE IT AFTER CODDING THE FIRST TEST
@@ -77,15 +522,22 @@ describe('${export_name}', () => {
   // - Test: Brief description of what is being tested
   // - Scenario: The specific use case or condition being tested
   // - Methods tested: Which methods/functions are involved
-  // - Mocks: What is mocked and why (e.g., "setupSourceViewer() - prevents DOM errors")
+  // - Mocks: What is mocked and why
   // - Expected: What the test expects to happen
+  // - Parametrized: NO if single test, YES if multiple test cases with different inputs
+  // - Setup dependencies: List mocks from setup that are used (don't create new ones)
+  // - Assertions: Key assertions made in this test
   // Example:
   // // Test 1
-  // // Test: getInstance should return same instance
-  // // Scenario: Calling getInstance() twice should return the same instance (Singleton pattern)
+  // // Test: getInstance should return same instance on multiple calls
+  // // Scenario: Calling getInstance() twice returns the exact same cached instance reference without reinitializing
   // // Methods tested: getInstance(), setupSourceViewer()
-  // // Mocks: setupSourceViewer() - prevents DOM creation errors during initialization
-  // // Expected: Both calls return identical instance reference
+  // // Mocks: setupSourceViewer() from setup prevents DOM creation errors during initialization; global.UIController from setup prevents UI notifications
+  // // Expected: First getInstance() call creates and caches instance; second getInstance() call returns identical cached instance; setupSourceViewer() called only once
+  // // Setup dependencies: setupSourceViewer jest.fn() mock, global.UIController.getInstance() mock
+  // // Assertions: Both calls return same object reference; setupSourceViewer called exactly once; instance is cached on second call
+  // // Parametrized: NO
+
 
   // ---
 

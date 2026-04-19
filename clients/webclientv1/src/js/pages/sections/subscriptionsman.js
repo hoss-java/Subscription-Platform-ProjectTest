@@ -59,7 +59,9 @@ const SubscriptionsmanSection = {
       Object.values(elements).map(id => document.getElementById(id));
 
     const resetFilters = () => {
-      this.currentPage = this.currentStatusFilter = this.currentSearchQuery = 0;
+      this.currentPage = 0;
+      this.currentStatusFilter = '';
+      this.currentSearchQuery = '';
       if (statusFilter) statusFilter.value = '';
       if (searchInput) searchInput.value = '';
       this.loadSubscriptions();
@@ -230,8 +232,8 @@ const SubscriptionsmanSection = {
     modal.classList.add('active');
 
     try {
-      const subscription = (await apiClient.get(`/subscriptions/${subscriptionId}`)).data || 
-                          await apiClient.get(`/subscriptions/${subscriptionId}`);
+      const response = await apiClient.get(`/subscriptions/${subscriptionId}`);
+      const subscription = response.data || response;
 
       document.getElementById('subscriptions-manager-detail-title').textContent = 
         `${subscription.customerName} - ${subscription.planName}`;
@@ -259,6 +261,8 @@ const SubscriptionsmanSection = {
 
   updateDetailModalActions(subscription) {
     const actionsContainer = document.getElementById('subscriptions-manager-detail-actions');
+    if (!actionsContainer) return;
+
     actionsContainer.innerHTML = '';
 
     const statuses = [
