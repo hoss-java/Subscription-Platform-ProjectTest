@@ -2,9 +2,9 @@
 
 # dependencies
 /node_modules
-/.node_modules
 /.pnp
 .pnp.js
+.failed_tests
 
 # testing
 /coverage
@@ -20,7 +20,10 @@ pack/
 target/
 **/target/
 .workingon/
+**/.workingon/
 .chat/
+**/.chat/
+#**/target/
 
 # misc
 *.pyc
