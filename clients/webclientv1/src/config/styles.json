@@ -1,0 +1,30 @@
+{
+  "base": [
+    "base.css",
+    "auth-base.css",
+    "toast-base.css",
+    "theme-switcher.css"
+  ],
+  "theme": [
+    "header.css",
+    "layout.css",
+    "tabs.css",
+    "header-auth.css",
+    "auth.css",
+    "grid.css",
+    "forms.css",
+    "invoice.css",
+    "modal-overlay.css",
+    "buttons.css",
+    "tables.css",
+    "messages.css",
+    "utilities.css",
+    "responsive.css",
+    "console.css",
+    "toast.css",
+    "list.css",
+    "sections.css",
+    "dashboard.css",
+    "subscriptions.css"
+  ]
+}
