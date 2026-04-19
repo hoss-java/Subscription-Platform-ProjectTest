@@ -37,7 +37,7 @@ A **multi-tenant subscription platform** where service operators manage subscrip
 
 ---
 
-## 🎯 What You Actually Built
+## 🎯 What Actually Built
 
 ### Backend (Spring Boot)
 - ✅ **Complete JWT authentication** with token refresh mechanism
