@@ -770,7 +770,7 @@ localStorage.user_data = JSON.stringify({
   enabled: true,
   createdAt: "2024-01-01T00:00:00Z"
 });
-
+```
 // Auth tokens
 localStorage.auth_token = "jwt-token-here";
 localStorage.refresh_token = "refresh-token-here";
