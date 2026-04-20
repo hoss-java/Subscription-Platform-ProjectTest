@@ -718,7 +718,7 @@ uiController.showMessage('Please fill in all fields', 'info');
 - `'info'` — Blue toast for information messages
 
 ---
-```markdown
+
 ## 📚 Reference Guide
 
 ### DashboardSectionManager Methods
@@ -774,7 +774,7 @@ localStorage.user_data = JSON.stringify({
 // Auth tokens
 localStorage.auth_token = "jwt-token-here";
 localStorage.refresh_token = "refresh-token-here";
-```
+
 
 ---
 
